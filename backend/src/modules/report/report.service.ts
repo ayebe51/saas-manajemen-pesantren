@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as ExcelJS from 'exceljs';
-import PdfPrinter from 'pdfmake';
+import * as PdfPrinter from 'pdfmake';
 import { TDocumentDefinitions } from 'pdfmake/interfaces';
 import { PrismaService } from '../../common/prisma/prisma.service';
 
@@ -16,7 +16,7 @@ export class ReportService {
     workbook.creator = 'Sistem Manajemen Pesantren';
     workbook.created = new Date();
 
-    const sheet = workbook.addWorksheet(\`\${module.toUpperCase()} Report\`);
+    const sheet = workbook.addWorksheet(`${module.toUpperCase()} Report`);
 
     // --- Mock Logic per Module (Can be expanded with real Prisma querying) ---
     if (module === 'santri') {
@@ -32,7 +32,7 @@ export class ReportService {
         sheet.addRow({ id: index + 1, nisn: row.nisn, name: row.name, gender: row.gender });
       });
     } else {
-       sheet.addRow([\`Report module '\${module}' is under construction\`]);
+       sheet.addRow([`Report module '${module}' is under construction`]);
     }
 
     // Styling Header
@@ -40,7 +40,7 @@ export class ReportService {
     sheet.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE0E0E0' } };
 
     const buffer = await workbook.xlsx.writeBuffer();
-    return buffer as Buffer;
+    return buffer as unknown as Buffer;
   }
 
   /**
@@ -63,7 +63,7 @@ export class ReportService {
     const docDefinition: TDocumentDefinitions = {
       content: [
         { text: title, style: 'header' },
-        { text: \`Generated on: \${new Date().toLocaleDateString('id-ID')}\`, margin: [0, 0, 0, 20] },
+        { text: `Generated on: ${new Date().toLocaleDateString('id-ID')}`, margin: [0, 0, 0, 20] },
         {
           table: {
             headerRows: 1,

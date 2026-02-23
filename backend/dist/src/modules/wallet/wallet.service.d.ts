@@ -6,13 +6,13 @@ export declare class WalletService {
     constructor(prisma: PrismaService);
     getWallet(tenantId: string, santriId: string): Promise<{
         transactions: {
+            method: string;
+            type: string;
             id: string;
             status: string;
             createdAt: Date;
-            type: string;
             description: string | null;
             amount: number;
-            method: string;
             walletId: string;
             reference: string | null;
             handledBy: string | null;
@@ -30,38 +30,38 @@ export declare class WalletService {
         message: string;
         uniqueAmount: number;
         transaction: {
+            method: string;
+            type: string;
             id: string;
             status: string;
             createdAt: Date;
-            type: string;
             description: string | null;
             amount: number;
-            method: string;
             walletId: string;
             reference: string | null;
             handledBy: string | null;
         };
     }>;
     manualResolveDeposit(tenantId: string, userId: string, dto: ManualResolveDepositDto): Promise<{
+        method: string;
+        type: string;
         id: string;
         status: string;
         createdAt: Date;
-        type: string;
         description: string | null;
         amount: number;
-        method: string;
         walletId: string;
         reference: string | null;
         handledBy: string | null;
     }>;
     makePayment(tenantId: string, cashierId: string, dto: CreatePaymentDto): Promise<{
+        method: string;
+        type: string;
         id: string;
         status: string;
         createdAt: Date;
-        type: string;
         description: string | null;
         amount: number;
-        method: string;
         walletId: string;
         reference: string | null;
         handledBy: string | null;

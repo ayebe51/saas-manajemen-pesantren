@@ -4,10 +4,10 @@ export declare class TahfidzController {
     private readonly tahfidzService;
     constructor(tahfidzService: TahfidzService);
     createTahfidz(tenantId: string, userId: string, dto: CreateTahfidzDto): Promise<{
+        type: string;
         id: string;
         createdAt: Date;
         tenantId: string;
-        type: string;
         santriId: string;
         date: Date;
         grade: string | null;
@@ -17,10 +17,10 @@ export declare class TahfidzController {
         notes: string | null;
     }>;
     getTahfidzHistory(tenantId: string, santriId: string): Promise<{
+        type: string;
         id: string;
         createdAt: Date;
         tenantId: string;
-        type: string;
         santriId: string;
         date: Date;
         grade: string | null;

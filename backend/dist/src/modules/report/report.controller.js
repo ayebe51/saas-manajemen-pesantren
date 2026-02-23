@@ -28,38 +28,18 @@ let ReportController = class ReportController {
     async downloadExcel(tenantId, module, res) {
         const buffer = await this.reportService.generateExcelReport(tenantId, module);
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        res.setHeader('Content-Disposition', `attachment; filename=Laporan-\${module}-\${Date.now()}.xlsx\`);
-
-    return res.end(buffer);
-  }
-
-  @Get('pdf/:module')
-  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS')
-  @ApiOperation({ summary: 'Mencetak Laporan Langsung ke format PDF' })
-  async downloadPdf(
-    @TenantId() tenantId: string,
-    @Param('module') module: string,
-    @Res() res: Response,
-  ) {
-    // Dummy Data for Preview based on module parameter
-    const dummyData = [
-      { description: \`Item 1 for \${module}\`, value: '100' },
-      { description: \`Item 2 for \${module}\`, value: '250' },
-    ];
-
-    const buffer = await this.reportService.generatePdfReport(
-        tenantId, 
-        \`Cetak Laporan - \${module.toUpperCase()}\`, 
-        dummyData
-    );
-
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', \`attachment; filename=Laporan-\${module}-\${Date.now()}.pdf\`);
-
-    return res.end(buffer);
-  }
-}
-        );
+        res.setHeader('Content-Disposition', `attachment; filename=Laporan-${module}-${Date.now()}.xlsx`);
+        return res.end(buffer);
+    }
+    async downloadPdf(tenantId, module, res) {
+        const dummyData = [
+            { description: `Item 1 for ${module}`, value: '100' },
+            { description: `Item 2 for ${module}`, value: '250' },
+        ];
+        const buffer = await this.reportService.generatePdfReport(tenantId, `Cetak Laporan - ${module.toUpperCase()}`, dummyData);
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename=Laporan-${module}-${Date.now()}.pdf`);
+        return res.end(buffer);
     }
 };
 exports.ReportController = ReportController;
@@ -74,6 +54,17 @@ __decorate([
     __metadata("design:paramtypes", [String, String, Object]),
     __metadata("design:returntype", Promise)
 ], ReportController.prototype, "downloadExcel", null);
+__decorate([
+    (0, common_1.Get)('pdf/:module'),
+    (0, roles_decorator_1.Roles)('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS'),
+    (0, swagger_1.ApiOperation)({ summary: 'Mencetak Laporan Langsung ke format PDF' }),
+    __param(0, (0, tenant_id_decorator_1.TenantId)()),
+    __param(1, (0, common_1.Param)('module')),
+    __param(2, (0, common_1.Res)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, Object]),
+    __metadata("design:returntype", Promise)
+], ReportController.prototype, "downloadPdf", null);
 exports.ReportController = ReportController = __decorate([
     (0, swagger_1.ApiTags)('Laporan (Cetak PDF / Excel)'),
     (0, swagger_1.ApiBearerAuth)(),

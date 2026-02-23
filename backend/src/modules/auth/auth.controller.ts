@@ -3,6 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagg
 import { Response, Request } from 'express';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
+import { FcmTokenDto } from './dto/fcm-token.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 
 @ApiTags('Authentication')
@@ -76,5 +77,16 @@ export class AuthController {
     return {
       message: 'Logged out successfully',
     };
+  }
+
+  @Post('fcm-token')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Register Firebase Cloud Messaging (FCM) device token' })
+  @ApiResponse({ status: 200, description: 'FCM Token registered successfully' })
+  async registerFcmToken(@Req() request: any, @Body() fcmTokenDto: FcmTokenDto) {
+    await this.authService.saveFcmToken(request.user.id, fcmTokenDto.token);
+    return { message: 'FCM Token registered successfully' };
   }
 }

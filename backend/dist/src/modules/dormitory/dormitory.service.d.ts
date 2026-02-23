@@ -4,8 +4,8 @@ export declare class DormitoryService {
     private readonly prisma;
     constructor(prisma: PrismaService);
     createBuilding(tenantId: string, dto: CreateBuildingDto): Promise<{
-        id: string;
         name: string;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
@@ -18,8 +18,8 @@ export declare class DormitoryService {
             rooms: number;
         };
     } & {
-        id: string;
         name: string;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
@@ -28,8 +28,8 @@ export declare class DormitoryService {
         capacity: number;
     })[]>;
     updateBuilding(tenantId: string, id: string, dto: UpdateBuildingDto): Promise<{
-        id: string;
         name: string;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
@@ -38,8 +38,8 @@ export declare class DormitoryService {
         capacity: number;
     }>;
     createRoom(tenantId: string, dto: CreateRoomDto): Promise<{
-        id: string;
         name: string;
+        id: string;
         createdAt: Date;
         tenantId: string;
         capacity: number;
@@ -55,8 +55,8 @@ export declare class DormitoryService {
             assignments: number;
         };
     } & {
-        id: string;
         name: string;
+        id: string;
         createdAt: Date;
         tenantId: string;
         capacity: number;
@@ -64,8 +64,8 @@ export declare class DormitoryService {
         picName: string | null;
     })[]>;
     updateRoom(tenantId: string, id: string, dto: UpdateRoomDto): Promise<{
-        id: string;
         name: string;
+        id: string;
         createdAt: Date;
         tenantId: string;
         capacity: number;
@@ -91,13 +91,13 @@ export declare class DormitoryService {
         roomId: string;
     }>;
     createTicket(tenantId: string, dto: CreateMaintenanceTicketDto, userId: string): Promise<{
+        title: string;
         id: string;
         status: string;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
         description: string;
-        title: string;
         roomId: string;
         priority: string;
         resolvedAt: Date | null;
@@ -111,26 +111,26 @@ export declare class DormitoryService {
             };
         };
     } & {
+        title: string;
         id: string;
         status: string;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
         description: string;
-        title: string;
         roomId: string;
         priority: string;
         resolvedAt: Date | null;
         reportedBy: string;
     })[]>;
     updateTicket(tenantId: string, id: string, dto: UpdateMaintenanceTicketDto): Promise<{
+        title: string;
         id: string;
         status: string;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
         description: string;
-        title: string;
         roomId: string;
         priority: string;
         resolvedAt: Date | null;

@@ -13,15 +13,16 @@ export declare class AuthService {
         refreshToken: string;
         user: {
             id: string;
+            email: string;
+            tenantId: string | null;
+            role: string;
             name: string;
             phone: string | null;
-            createdAt: Date;
-            updatedAt: Date;
-            email: string;
-            role: string;
             isActive: boolean;
             lastLogin: Date | null;
-            tenantId: string | null;
+            fcmTokens: string | null;
+            createdAt: Date;
+            updatedAt: Date;
         };
     }>;
     refreshToken(token: string): Promise<{
@@ -29,18 +30,22 @@ export declare class AuthService {
         newRefreshToken: string;
         user: {
             id: string;
+            email: string;
+            tenantId: string | null;
+            role: string;
             name: string;
             phone: string | null;
-            createdAt: Date;
-            updatedAt: Date;
-            email: string;
-            role: string;
             isActive: boolean;
             lastLogin: Date | null;
-            tenantId: string | null;
+            fcmTokens: string | null;
+            createdAt: Date;
+            updatedAt: Date;
         };
     }>;
     logout(userId: string, refreshToken: string): Promise<void>;
+    saveFcmToken(userId: string, token: string): Promise<{
+        success: boolean;
+    }>;
     private generateAccessToken;
     private generateRefreshToken;
     private saveRefreshToken;

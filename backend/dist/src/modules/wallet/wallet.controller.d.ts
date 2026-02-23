@@ -5,13 +5,13 @@ export declare class WalletController {
     constructor(walletService: WalletService);
     getWallet(tenantId: string, santriId: string): Promise<{
         transactions: {
+            method: string;
+            type: string;
             id: string;
             status: string;
             createdAt: Date;
-            type: string;
             description: string | null;
             amount: number;
-            method: string;
             walletId: string;
             reference: string | null;
             handledBy: string | null;
@@ -29,38 +29,38 @@ export declare class WalletController {
         message: string;
         uniqueAmount: number;
         transaction: {
+            method: string;
+            type: string;
             id: string;
             status: string;
             createdAt: Date;
-            type: string;
             description: string | null;
             amount: number;
-            method: string;
             walletId: string;
             reference: string | null;
             handledBy: string | null;
         };
     }>;
     manualResolveDeposit(tenantId: string, userId: string, dto: ManualResolveDepositDto): Promise<{
+        method: string;
+        type: string;
         id: string;
         status: string;
         createdAt: Date;
-        type: string;
         description: string | null;
         amount: number;
-        method: string;
         walletId: string;
         reference: string | null;
         handledBy: string | null;
     }>;
     makePayment(tenantId: string, userId: string, dto: CreatePaymentDto): Promise<{
+        method: string;
+        type: string;
         id: string;
         status: string;
         createdAt: Date;
-        type: string;
         description: string | null;
         amount: number;
-        method: string;
         walletId: string;
         reference: string | null;
         handledBy: string | null;

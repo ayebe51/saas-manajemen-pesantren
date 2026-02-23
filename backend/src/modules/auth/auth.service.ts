@@ -50,7 +50,8 @@ export class AuthService {
     });
 
     // Return sanitized user data
-    const { passwordHash: _, ...sanitizedUser } = user;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { passwordHash, ...sanitizedUser } = user;
 
     return {
       accessToken,
@@ -100,7 +101,8 @@ export class AuthService {
         }),
       ]);
 
-      const { passwordHash: _, ...sanitizedUser } = savedToken.user;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { passwordHash, ...sanitizedUser } = savedToken.user;
 
       return {
         accessToken: newAccessToken,
@@ -125,6 +127,36 @@ export class AuthService {
     } catch (error) {
       this.logger.error(`Logout error: ${error.message}`);
     }
+  }
+
+  async saveFcmToken(userId: string, token: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    let tokens: string[] = [];
+    if (user.fcmTokens) {
+      try {
+        tokens = JSON.parse(user.fcmTokens);
+      } catch (e) {
+        tokens = [];
+      }
+    }
+
+    // Add token if not already exists
+    if (!tokens.includes(token)) {
+      tokens.push(token);
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: { fcmTokens: JSON.stringify(tokens) },
+      });
+    }
+    
+    return { success: true };
   }
 
   private generateAccessToken(user: any): string {

@@ -4,24 +4,24 @@ export declare class AcademicController {
     private readonly academicService;
     constructor(academicService: AcademicService);
     createSchedule(tenantId: string, dto: CreateScheduleDto): Promise<{
+        subject: string;
         id: string;
         createdAt: Date;
         tenantId: string;
         kelas: string;
         room: string | null;
-        subject: string;
         teacherId: string;
         dayOfWeek: number;
         startTime: string;
         endTime: string;
     }>;
     getSchedule(tenantId: string, kelas: string): Promise<{
+        subject: string;
         id: string;
         createdAt: Date;
         tenantId: string;
         kelas: string;
         room: string | null;
-        subject: string;
         teacherId: string;
         dayOfWeek: number;
         startTime: string;
@@ -40,24 +40,24 @@ export declare class AcademicController {
         scheduleId: string | null;
     }[]>;
     createGrade(tenantId: string, dto: CreateGradeDto): Promise<{
+        subject: string;
+        type: string;
         id: string;
         createdAt: Date;
         tenantId: string;
-        type: string;
         santriId: string;
-        subject: string;
         notes: string | null;
         semester: string;
         academicYear: string;
         score: number;
     }>;
     getGrade(tenantId: string, santriId: string, semester?: string, academicYear?: string): Promise<{
+        subject: string;
+        type: string;
         id: string;
         createdAt: Date;
         tenantId: string;
-        type: string;
         santriId: string;
-        subject: string;
         notes: string | null;
         semester: string;
         academicYear: string;

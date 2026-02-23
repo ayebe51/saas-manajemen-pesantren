@@ -5,24 +5,24 @@ export declare class AcademicService {
     private readonly logger;
     constructor(prisma: PrismaService);
     createSchedule(tenantId: string, dto: CreateScheduleDto): Promise<{
+        subject: string;
         id: string;
         createdAt: Date;
         tenantId: string;
         kelas: string;
         room: string | null;
-        subject: string;
         teacherId: string;
         dayOfWeek: number;
         startTime: string;
         endTime: string;
     }>;
     getScheduleByKelas(tenantId: string, kelas: string): Promise<{
+        subject: string;
         id: string;
         createdAt: Date;
         tenantId: string;
         kelas: string;
         room: string | null;
-        subject: string;
         teacherId: string;
         dayOfWeek: number;
         startTime: string;
@@ -41,24 +41,24 @@ export declare class AcademicService {
         scheduleId: string | null;
     }[]>;
     createGrade(tenantId: string, dto: CreateGradeDto): Promise<{
+        subject: string;
+        type: string;
         id: string;
         createdAt: Date;
         tenantId: string;
-        type: string;
         santriId: string;
-        subject: string;
         notes: string | null;
         semester: string;
         academicYear: string;
         score: number;
     }>;
     getGradeReport(tenantId: string, santriId: string, semester?: string, academicYear?: string): Promise<{
+        subject: string;
+        type: string;
         id: string;
         createdAt: Date;
         tenantId: string;
-        type: string;
         santriId: string;
-        subject: string;
         notes: string | null;
         semester: string;
         academicYear: string;

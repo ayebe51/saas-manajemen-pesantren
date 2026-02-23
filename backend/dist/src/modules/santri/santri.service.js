@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SantriService = void 0;
 const common_1 = require("@nestjs/common");
+const exceljs_1 = require("exceljs");
 const prisma_service_1 = require("../../common/prisma/prisma.service");
 let SantriService = class SantriService {
     constructor(prisma) {
@@ -63,6 +64,83 @@ let SantriService = class SantriService {
             where: { id },
             data: updateSantriDto,
         });
+    }
+    async bulkImport(tenantId, file) {
+        if (!file) {
+            throw new common_1.BadRequestException('File Excel wajib diunggah');
+        }
+        const workbook = new exceljs_1.Workbook();
+        try {
+            await workbook.xlsx.load(file.buffer);
+        }
+        catch (e) {
+            throw new common_1.BadRequestException('Format file tidak valid. Pastikan file berformat .xlsx');
+        }
+        const worksheet = workbook.worksheets[0];
+        if (!worksheet) {
+            throw new common_1.BadRequestException('Sheet utama tidak ditemukan dalam file Excel');
+        }
+        let successCount = 0;
+        let failedCount = 0;
+        const errors = [];
+        const santriDataToInsert = [];
+        worksheet.eachRow((row, rowNumber) => {
+            if (rowNumber === 1)
+                return;
+            try {
+                const nisn = row.getCell(1).text?.trim() || null;
+                const name = row.getCell(2).text?.trim();
+                const genderRaw = row.getCell(3).text?.trim()?.toUpperCase();
+                const gender = genderRaw === 'L' || genderRaw === 'P' ? genderRaw : 'L';
+                const dobRaw = row.getCell(4).value;
+                const kelas = row.getCell(5).text?.trim() || null;
+                const room = row.getCell(6).text?.trim() || null;
+                const contact = row.getCell(7).text?.trim() || null;
+                const address = row.getCell(8).text?.trim() || null;
+                if (!name) {
+                    errors.push(`Baris ${rowNumber}: Nama wajib diisi`);
+                    failedCount++;
+                    return;
+                }
+                let dob = null;
+                if (dobRaw instanceof Date) {
+                    dob = dobRaw;
+                }
+                else if (typeof dobRaw === 'string') {
+                    const parsed = new Date(dobRaw);
+                    if (!isNaN(parsed.getTime()))
+                        dob = parsed;
+                }
+                santriDataToInsert.push({
+                    tenantId,
+                    nisn,
+                    name,
+                    gender,
+                    dob,
+                    kelas,
+                    room,
+                    contact,
+                    address,
+                    status: 'AKTIF',
+                });
+                successCount++;
+            }
+            catch (err) {
+                errors.push(`Baris ${rowNumber}: Gagal diproses (${err.message})`);
+                failedCount++;
+            }
+        });
+        if (santriDataToInsert.length > 0) {
+            await this.prisma.santri.createMany({
+                data: santriDataToInsert,
+            });
+        }
+        return {
+            message: 'Impor data massal selesai diproses',
+            successCount,
+            failedCount,
+            errors
+        };
     }
     async addWali(santriId, tenantId, createWaliDto) {
         await this.findOne(santriId, tenantId);

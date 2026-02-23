@@ -8,8 +8,17 @@ import {
   Query,
   UseGuards,
   UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiQuery,
+  ApiConsumes,
+  ApiBody,
+} from '@nestjs/swagger';
 import { SantriService } from './santri.service';
 import { CreateSantriDto, UpdateSantriDto, CreateWaliDto } from './dto/santri.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -31,6 +40,26 @@ export class SantriController {
   @ApiOperation({ summary: 'Create a new santri' })
   create(@Body() createSantriDto: CreateSantriDto, @TenantId() tenantId: string) {
     return this.santriService.create(tenantId, createSantriDto);
+  }
+
+  @Post('import/bulk')
+  @Roles('SUPERADMIN', 'TENANT_ADMIN')
+  @ApiOperation({ summary: 'Bulk Create/Import Santri via Excel File' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @UseInterceptors(FileInterceptor('file'))
+  async bulkImport(@UploadedFile() file: any, @TenantId() tenantId: string) {
+    return this.santriService.bulkImport(tenantId, file);
   }
 
   @Get()

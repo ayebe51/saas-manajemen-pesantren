@@ -3,6 +3,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { BullModule } from '@nestjs/bullmq';
+import { CacheModule } from '@nestjs/cache-manager';
+// @ts-ignore
+import * as redisStore from 'cache-manager-ioredis';
 
 // Core
 import { PrismaModule } from './common/prisma/prisma.module';
@@ -54,6 +57,17 @@ import { ReportModule } from './modules/report/report.module';
           host: configService.get('REDIS_HOST') || 'localhost',
           port: configService.get('REDIS_PORT') || 6379,
         },
+      }),
+      inject: [ConfigService],
+    }),
+    CacheModule.registerAsync({
+      isGlobal: true,
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        store: redisStore,
+        host: configService.get('REDIS_HOST') || 'localhost',
+        port: configService.get('REDIS_PORT') || 6379,
+        ttl: 300, // 5 menit default TTL
       }),
       inject: [ConfigService],
     }),

@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const auth_service_1 = require("./auth.service");
 const login_dto_1 = require("./dto/login.dto");
+const fcm_token_dto_1 = require("./dto/fcm-token.dto");
 const jwt_auth_guard_1 = require("../../common/guards/jwt-auth.guard");
 let AuthController = class AuthController {
     constructor(authService) {
@@ -61,6 +62,10 @@ let AuthController = class AuthController {
             message: 'Logged out successfully',
         };
     }
+    async registerFcmToken(request, fcmTokenDto) {
+        await this.authService.saveFcmToken(request.user.id, fcmTokenDto.token);
+        return { message: 'FCM Token registered successfully' };
+    }
 };
 exports.AuthController = AuthController;
 __decorate([
@@ -99,6 +104,19 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "logout", null);
+__decorate([
+    (0, common_1.Post)('fcm-token'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, swagger_1.ApiOperation)({ summary: 'Register Firebase Cloud Messaging (FCM) device token' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'FCM Token registered successfully' }),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, fcm_token_dto_1.FcmTokenDto]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "registerFcmToken", null);
 exports.AuthController = AuthController = __decorate([
     (0, swagger_1.ApiTags)('Authentication'),
     (0, common_1.Controller)('auth'),

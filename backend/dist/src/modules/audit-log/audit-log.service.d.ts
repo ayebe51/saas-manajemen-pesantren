@@ -22,8 +22,8 @@ export declare class AuditLogService {
     findOne(tenantId: string, id: string): Promise<({
         user: {
             name: string;
-            email: string;
             role: string;
+            email: string;
         } | null;
     } & {
         id: string;

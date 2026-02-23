@@ -5,10 +5,10 @@ export declare class TahfidzService {
     private readonly logger;
     constructor(prisma: PrismaService);
     createTahfidz(tenantId: string, userId: string, dto: CreateTahfidzDto): Promise<{
+        type: string;
         id: string;
         createdAt: Date;
         tenantId: string;
-        type: string;
         santriId: string;
         date: Date;
         grade: string | null;
@@ -18,10 +18,10 @@ export declare class TahfidzService {
         notes: string | null;
     }>;
     getTahfidzBySantri(tenantId: string, santriId: string): Promise<{
+        type: string;
         id: string;
         createdAt: Date;
         tenantId: string;
-        type: string;
         santriId: string;
         date: Date;
         grade: string | null;

@@ -12,6 +12,8 @@ const config_1 = require("@nestjs/config");
 const core_1 = require("@nestjs/core");
 const throttler_1 = require("@nestjs/throttler");
 const bullmq_1 = require("@nestjs/bullmq");
+const cache_manager_1 = require("@nestjs/cache-manager");
+const redisStore = require("cache-manager-ioredis");
 const prisma_module_1 = require("./common/prisma/prisma.module");
 const tenant_middleware_1 = require("./common/middleware/tenant.middleware");
 const tenant_guard_1 = require("./common/guards/tenant.guard");
@@ -68,6 +70,17 @@ exports.AppModule = AppModule = __decorate([
                         host: configService.get('REDIS_HOST') || 'localhost',
                         port: configService.get('REDIS_PORT') || 6379,
                     },
+                }),
+                inject: [config_1.ConfigService],
+            }),
+            cache_manager_1.CacheModule.registerAsync({
+                isGlobal: true,
+                imports: [config_1.ConfigModule],
+                useFactory: async (configService) => ({
+                    store: redisStore,
+                    host: configService.get('REDIS_HOST') || 'localhost',
+                    port: configService.get('REDIS_PORT') || 6379,
+                    ttl: 300,
                 }),
                 inject: [config_1.ConfigService],
             }),

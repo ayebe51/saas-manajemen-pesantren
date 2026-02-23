@@ -10,15 +10,17 @@ exports.PublicModule = void 0;
 const common_1 = require("@nestjs/common");
 const public_service_1 = require("./public.service");
 const public_controller_1 = require("./public.controller");
+const webhook_controller_1 = require("./webhook.controller");
 const prisma_module_1 = require("../../common/prisma/prisma.module");
 const config_1 = require("@nestjs/config");
+const notification_module_1 = require("../notification/notification.module");
 let PublicModule = class PublicModule {
 };
 exports.PublicModule = PublicModule;
 exports.PublicModule = PublicModule = __decorate([
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule, config_1.ConfigModule],
-        controllers: [public_controller_1.PublicController],
+        imports: [prisma_module_1.PrismaModule, config_1.ConfigModule, notification_module_1.NotificationModule],
+        controllers: [public_controller_1.PublicController, webhook_controller_1.WebhookController],
         providers: [public_service_1.PublicService],
         exports: [public_service_1.PublicService],
     })

@@ -9,7 +9,7 @@ export class PpdbService {
   async create(tenantId: string, createPpdbDto: CreatePpdbDto) {
     // Generate unique registration number (Example: PPDB-2026-XXXX)
     const count = await this.prisma.ppdbRegistration.count({ where: { tenantId } });
-    const regNumber = \`PPDB-\${new Date().getFullYear()}-\${(count + 1).toString().padStart(4, '0')}\`;
+    const regNumber = `PPDB-${new Date().getFullYear()}-${(count + 1).toString().padStart(4, '0')}`;
 
     return this.prisma.ppdbRegistration.create({
       data: {

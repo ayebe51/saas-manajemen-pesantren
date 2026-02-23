@@ -4,12 +4,12 @@ export declare class PerizinanController {
     private readonly perizinanService;
     constructor(perizinanService: PerizinanService);
     create(createIzinDto: CreateIzinDto, tenantId: string, req: any): Promise<{
+        type: string;
         id: string;
         status: string;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
-        type: string;
         reason: string;
         startAt: Date;
         endAt: Date;
@@ -30,12 +30,12 @@ export declare class PerizinanController {
             room: string | null;
         };
     } & {
+        type: string;
         id: string;
         status: string;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
-        type: string;
         reason: string;
         startAt: Date;
         endAt: Date;
@@ -53,10 +53,10 @@ export declare class PerizinanController {
         santri: {
             walis: ({
                 wali: {
-                    id: string;
-                    name: string;
-                    address: string | null;
                     phone: string;
+                    name: string;
+                    id: string;
+                    address: string | null;
                     createdAt: Date;
                     updatedAt: Date;
                     email: string | null;
@@ -69,8 +69,8 @@ export declare class PerizinanController {
                 santriId: string;
             })[];
         } & {
-            id: string;
             name: string;
+            id: string;
             address: string | null;
             status: string;
             createdAt: Date;
@@ -85,12 +85,12 @@ export declare class PerizinanController {
             photo: string | null;
         };
     } & {
+        type: string;
         id: string;
         status: string;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
-        type: string;
         reason: string;
         startAt: Date;
         endAt: Date;
@@ -105,12 +105,12 @@ export declare class PerizinanController {
         santriId: string;
     }>;
     approve(id: string, approveIzinDto: ApproveIzinDto): Promise<{
+        type: string;
         id: string;
         status: string;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
-        type: string;
         reason: string;
         startAt: Date;
         endAt: Date;
@@ -125,12 +125,12 @@ export declare class PerizinanController {
         santriId: string;
     }>;
     checkout(id: string, tenantId: string, req: any): Promise<{
+        type: string;
         id: string;
         status: string;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
-        type: string;
         reason: string;
         startAt: Date;
         endAt: Date;
@@ -145,12 +145,12 @@ export declare class PerizinanController {
         santriId: string;
     }>;
     checkin(id: string, tenantId: string, req: any): Promise<{
+        type: string;
         id: string;
         status: string;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
-        type: string;
         reason: string;
         startAt: Date;
         endAt: Date;

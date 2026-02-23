@@ -4,8 +4,8 @@ export declare class InventoryController {
     private readonly inventoryService;
     constructor(inventoryService: InventoryService);
     createItem(tenantId: string, createItemDto: CreateItemDto): Promise<{
-        id: string;
         name: string;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
@@ -18,8 +18,8 @@ export declare class InventoryController {
         minStock: number;
     }>;
     findAllItems(tenantId: string, category?: string): Promise<{
-        id: string;
         name: string;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
@@ -33,9 +33,9 @@ export declare class InventoryController {
     }[]>;
     findOneItem(tenantId: string, id: string): Promise<{
         transactions: {
+            type: string;
             id: string;
             tenantId: string;
-            type: string;
             date: Date;
             notes: string | null;
             reference: string | null;
@@ -44,8 +44,8 @@ export declare class InventoryController {
             itemId: string;
         }[];
     } & {
-        id: string;
         name: string;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
@@ -58,8 +58,8 @@ export declare class InventoryController {
         minStock: number;
     }>;
     updateItem(tenantId: string, id: string, updateItemDto: UpdateItemDto): Promise<{
-        id: string;
         name: string;
+        id: string;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
@@ -72,9 +72,9 @@ export declare class InventoryController {
         minStock: number;
     }>;
     createTransaction(tenantId: string, itemId: string, dto: CreateInventoryTransactionDto, user: any): Promise<{
+        type: string;
         id: string;
         tenantId: string;
-        type: string;
         date: Date;
         notes: string | null;
         reference: string | null;
@@ -83,8 +83,8 @@ export declare class InventoryController {
         itemId: string;
     }>;
     createSupplier(tenantId: string, dto: CreateSupplierDto): Promise<{
-        id: string;
         name: string;
+        id: string;
         address: string | null;
         createdAt: Date;
         email: string | null;
@@ -92,8 +92,8 @@ export declare class InventoryController {
         contact: string | null;
     }>;
     findAllSuppliers(tenantId: string): Promise<{
-        id: string;
         name: string;
+        id: string;
         address: string | null;
         createdAt: Date;
         email: string | null;

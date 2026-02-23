@@ -44,7 +44,7 @@ let AuthService = AuthService_1 = class AuthService {
             where: { id: user.id },
             data: { lastLogin: new Date() },
         });
-        const { passwordHash: _, ...sanitizedUser } = user;
+        const { passwordHash, ...sanitizedUser } = user;
         return {
             accessToken,
             refreshToken,
@@ -81,7 +81,7 @@ let AuthService = AuthService_1 = class AuthService {
                     },
                 }),
             ]);
-            const { passwordHash: _, ...sanitizedUser } = savedToken.user;
+            const { passwordHash, ...sanitizedUser } = savedToken.user;
             return {
                 accessToken: newAccessToken,
                 newRefreshToken,
@@ -106,6 +106,31 @@ let AuthService = AuthService_1 = class AuthService {
         catch (error) {
             this.logger.error(`Logout error: ${error.message}`);
         }
+    }
+    async saveFcmToken(userId, token) {
+        const user = await this.prisma.user.findUnique({
+            where: { id: userId },
+        });
+        if (!user) {
+            throw new common_1.UnauthorizedException('User not found');
+        }
+        let tokens = [];
+        if (user.fcmTokens) {
+            try {
+                tokens = JSON.parse(user.fcmTokens);
+            }
+            catch (e) {
+                tokens = [];
+            }
+        }
+        if (!tokens.includes(token)) {
+            tokens.push(token);
+            await this.prisma.user.update({
+                where: { id: userId },
+                data: { fcmTokens: JSON.stringify(tokens) },
+            });
+        }
+        return { success: true };
     }
     generateAccessToken(user) {
         const payload = {

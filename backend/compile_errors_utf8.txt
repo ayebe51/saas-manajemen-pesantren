@@ -1,0 +1,8 @@
+﻿src/modules/ppdb/ppdb.service.ts(12,23): error TS1127: Invalid character.
+src/modules/ppdb/ppdb.service.ts(12,24): error TS1134: Variable declaration expected.
+src/modules/ppdb/ppdb.service.ts(82,1): error TS1005: '}' expected.
+src/modules/ppdb/ppdb.service.ts(82,1): error TS1160: Unterminated template literal.
+src/modules/report/report.controller.ts(29,42): error TS1127: Invalid character.
+src/modules/report/report.controller.ts(60,1): error TS1160: Unterminated template literal.
+src/modules/report/report.service.ts(19,41): error TS1127: Invalid character.
+src/modules/report/report.service.ts(105,1): error TS1160: Unterminated template literal.

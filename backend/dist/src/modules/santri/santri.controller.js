@@ -14,6 +14,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SantriController = void 0;
 const common_1 = require("@nestjs/common");
+const platform_express_1 = require("@nestjs/platform-express");
 const swagger_1 = require("@nestjs/swagger");
 const santri_service_1 = require("./santri.service");
 const santri_dto_1 = require("./dto/santri.dto");
@@ -28,6 +29,9 @@ let SantriController = class SantriController {
     }
     create(createSantriDto, tenantId) {
         return this.santriService.create(tenantId, createSantriDto);
+    }
+    async bulkImport(file, tenantId) {
+        return this.santriService.bulkImport(tenantId, file);
     }
     findAll(tenantId, kelas, room) {
         return this.santriService.findAll(tenantId, { kelas, room });
@@ -56,6 +60,29 @@ __decorate([
     __metadata("design:paramtypes", [santri_dto_1.CreateSantriDto, String]),
     __metadata("design:returntype", void 0)
 ], SantriController.prototype, "create", null);
+__decorate([
+    (0, common_1.Post)('import/bulk'),
+    (0, roles_decorator_1.Roles)('SUPERADMIN', 'TENANT_ADMIN'),
+    (0, swagger_1.ApiOperation)({ summary: 'Bulk Create/Import Santri via Excel File' }),
+    (0, swagger_1.ApiConsumes)('multipart/form-data'),
+    (0, swagger_1.ApiBody)({
+        schema: {
+            type: 'object',
+            properties: {
+                file: {
+                    type: 'string',
+                    format: 'binary',
+                },
+            },
+        },
+    }),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file')),
+    __param(0, (0, common_1.UploadedFile)()),
+    __param(1, (0, tenant_id_decorator_1.TenantId)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", Promise)
+], SantriController.prototype, "bulkImport", null);
 __decorate([
     (0, common_1.Get)(),
     (0, swagger_1.ApiOperation)({ summary: 'Get all santri for current tenant' }),

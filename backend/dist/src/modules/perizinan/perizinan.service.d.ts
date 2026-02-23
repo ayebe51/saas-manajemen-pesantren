@@ -5,12 +5,12 @@ export declare class PerizinanService {
     private readonly logger;
     constructor(prisma: PrismaService);
     create(tenantId: string, createIzinDto: CreateIzinDto, requestedBy: string): Promise<{
+        type: string;
         id: string;
         status: string;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
-        type: string;
         reason: string;
         startAt: Date;
         endAt: Date;
@@ -34,12 +34,12 @@ export declare class PerizinanService {
             room: string | null;
         };
     } & {
+        type: string;
         id: string;
         status: string;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
-        type: string;
         reason: string;
         startAt: Date;
         endAt: Date;
@@ -57,10 +57,10 @@ export declare class PerizinanService {
         santri: {
             walis: ({
                 wali: {
-                    id: string;
-                    name: string;
-                    address: string | null;
                     phone: string;
+                    name: string;
+                    id: string;
+                    address: string | null;
                     createdAt: Date;
                     updatedAt: Date;
                     email: string | null;
@@ -73,8 +73,8 @@ export declare class PerizinanService {
                 santriId: string;
             })[];
         } & {
-            id: string;
             name: string;
+            id: string;
             address: string | null;
             status: string;
             createdAt: Date;
@@ -89,12 +89,12 @@ export declare class PerizinanService {
             photo: string | null;
         };
     } & {
+        type: string;
         id: string;
         status: string;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
-        type: string;
         reason: string;
         startAt: Date;
         endAt: Date;
@@ -109,12 +109,12 @@ export declare class PerizinanService {
         santriId: string;
     }>;
     approve(id: string, approveIzinDto: ApproveIzinDto): Promise<{
+        type: string;
         id: string;
         status: string;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
-        type: string;
         reason: string;
         startAt: Date;
         endAt: Date;
@@ -129,12 +129,12 @@ export declare class PerizinanService {
         santriId: string;
     }>;
     checkout(id: string, tenantId: string, operatorId: string): Promise<{
+        type: string;
         id: string;
         status: string;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
-        type: string;
         reason: string;
         startAt: Date;
         endAt: Date;
@@ -149,12 +149,12 @@ export declare class PerizinanService {
         santriId: string;
     }>;
     checkin(id: string, tenantId: string, operatorId: string): Promise<{
+        type: string;
         id: string;
         status: string;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
-        type: string;
         reason: string;
         startAt: Date;
         endAt: Date;

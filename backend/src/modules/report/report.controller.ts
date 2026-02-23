@@ -26,7 +26,7 @@ export class ReportController {
     const buffer = await this.reportService.generateExcelReport(tenantId, module);
 
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', \`attachment; filename=Laporan-\${module}-\${Date.now()}.xlsx\`);
+    res.setHeader('Content-Disposition', `attachment; filename=Laporan-${module}-${Date.now()}.xlsx`);
 
     return res.end(buffer);
   }
@@ -41,18 +41,18 @@ export class ReportController {
   ) {
     // Dummy Data for Preview based on module parameter
     const dummyData = [
-      { description: \`Item 1 for \${module}\`, value: '100' },
-      { description: \`Item 2 for \${module}\`, value: '250' },
+      { description: `Item 1 for ${module}`, value: '100' },
+      { description: `Item 2 for ${module}`, value: '250' },
     ];
 
     const buffer = await this.reportService.generatePdfReport(
         tenantId, 
-        \`Cetak Laporan - \${module.toUpperCase()}\`, 
+        `Cetak Laporan - ${module.toUpperCase()}`, 
         dummyData
     );
 
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', \`attachment; filename=Laporan-\${module}-\${Date.now()}.pdf\`);
+    res.setHeader('Content-Disposition', `attachment; filename=Laporan-${module}-${Date.now()}.pdf`);
 
     return res.end(buffer);
   }

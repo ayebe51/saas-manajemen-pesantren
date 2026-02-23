@@ -5,10 +5,10 @@ export declare class EmployeeService {
     private readonly logger;
     constructor(prisma: PrismaService);
     createEmployee(tenantId: string, dto: CreateEmployeeDto): Promise<{
-        id: string;
-        name: string;
-        address: string | null;
         phone: string | null;
+        name: string;
+        id: string;
+        address: string | null;
         status: string;
         createdAt: Date;
         updatedAt: Date;
@@ -19,10 +19,10 @@ export declare class EmployeeService {
         joinDate: Date | null;
     }>;
     getEmployees(tenantId: string): Promise<{
-        id: string;
-        name: string;
-        address: string | null;
         phone: string | null;
+        name: string;
+        id: string;
+        address: string | null;
         status: string;
         createdAt: Date;
         updatedAt: Date;

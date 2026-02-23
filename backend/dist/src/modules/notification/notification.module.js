@@ -12,6 +12,8 @@ const notification_gateway_1 = require("./notification.gateway");
 const bullmq_1 = require("@nestjs/bullmq");
 const notification_processor_1 = require("./queue/notification.processor");
 const external_notification_module_1 = require("../external-notification/external-notification.module");
+const whatsapp_webhook_service_1 = require("./whatsapp-webhook.service");
+const prisma_module_1 = require("../../common/prisma/prisma.module");
 let NotificationModule = class NotificationModule {
 };
 exports.NotificationModule = NotificationModule;
@@ -19,12 +21,13 @@ exports.NotificationModule = NotificationModule = __decorate([
     (0, common_1.Module)({
         imports: [
             external_notification_module_1.ExternalNotificationModule,
+            prisma_module_1.PrismaModule,
             bullmq_1.BullModule.registerQueue({
                 name: 'notifications',
             }),
         ],
-        providers: [notification_gateway_1.NotificationGateway, notification_processor_1.NotificationProcessor],
-        exports: [notification_gateway_1.NotificationGateway, bullmq_1.BullModule],
+        providers: [notification_gateway_1.NotificationGateway, notification_processor_1.NotificationProcessor, whatsapp_webhook_service_1.WhatsappWebhookService],
+        exports: [notification_gateway_1.NotificationGateway, bullmq_1.BullModule, whatsapp_webhook_service_1.WhatsappWebhookService],
     })
 ], NotificationModule);
 //# sourceMappingURL=notification.module.js.map
