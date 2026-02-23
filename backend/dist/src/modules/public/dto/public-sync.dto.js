@@ -9,62 +9,75 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BulkSyncSantriDto = void 0;
-const class_validator_1 = require("class-validator");
-const class_transformer_1 = require("class-transformer");
+exports.BulkSyncSantriDto = exports.SyncSantriItemDto = void 0;
 const swagger_1 = require("@nestjs/swagger");
-class SyncSantriObj {
+const class_transformer_1 = require("class-transformer");
+const class_validator_1 = require("class-validator");
+class SyncSantriItemDto {
 }
+exports.SyncSantriItemDto = SyncSantriItemDto;
 __decorate([
     (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
-], SyncSantriObj.prototype, "nisn", void 0);
+], SyncSantriItemDto.prototype, "nisn", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
-], SyncSantriObj.prototype, "name", void 0);
+], SyncSantriItemDto.prototype, "name", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
-], SyncSantriObj.prototype, "gender", void 0);
+], SyncSantriItemDto.prototype, "gender", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], SyncSantriItemDto.prototype, "birthDate", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], SyncSantriItemDto.prototype, "birthPlace", void 0);
 __decorate([
     (0, swagger_1.ApiPropertyOptional)(),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
-], SyncSantriObj.prototype, "kelas", void 0);
+], SyncSantriItemDto.prototype, "address", void 0);
 __decorate([
     (0, swagger_1.ApiPropertyOptional)(),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
-], SyncSantriObj.prototype, "waliName", void 0);
+], SyncSantriItemDto.prototype, "waliName", void 0);
 __decorate([
     (0, swagger_1.ApiPropertyOptional)(),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
-], SyncSantriObj.prototype, "waliPhone", void 0);
+], SyncSantriItemDto.prototype, "waliPhone", void 0);
 __decorate([
     (0, swagger_1.ApiPropertyOptional)(),
     (0, class_validator_1.IsEmail)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
-], SyncSantriObj.prototype, "waliEmail", void 0);
+], SyncSantriItemDto.prototype, "waliEmail", void 0);
 class BulkSyncSantriDto {
 }
 exports.BulkSyncSantriDto = BulkSyncSantriDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ type: [SyncSantriObj] }),
+    (0, swagger_1.ApiProperty)({ type: [SyncSantriItemDto] }),
     (0, class_validator_1.IsArray)(),
     (0, class_validator_1.ValidateNested)({ each: true }),
-    (0, class_transformer_1.Type)(() => SyncSantriObj),
+    (0, class_transformer_1.Type)(() => SyncSantriItemDto),
     __metadata("design:type", Array)
-], BulkSyncSantriDto.prototype, "santri", void 0);
-//# sourceMappingURL=public.dto.js.map
+], BulkSyncSantriDto.prototype, "data", void 0);
+//# sourceMappingURL=public-sync.dto.js.map

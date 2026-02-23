@@ -1,8 +1,8 @@
-import { IsString, IsNotEmpty, IsArray, ValidateNested, IsOptional, IsEmail } from 'class-validator';
-import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { IsArray, IsEmail, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
 
-class SyncSantriObj {
+export class SyncSantriItemDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
@@ -18,10 +18,20 @@ class SyncSantriObj {
   @IsNotEmpty()
   gender: string;
 
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  birthDate: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  birthPlace: string;
+
   @ApiPropertyOptional()
   @IsString()
   @IsOptional()
-  kelas?: string;
+  address?: string;
 
   @ApiPropertyOptional()
   @IsString()
@@ -40,9 +50,9 @@ class SyncSantriObj {
 }
 
 export class BulkSyncSantriDto {
-  @ApiProperty({ type: [SyncSantriObj] })
+  @ApiProperty({ type: [SyncSantriItemDto] })
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => SyncSantriObj)
-  santri: SyncSantriObj[];
+  @Type(() => SyncSantriItemDto)
+  data: SyncSantriItemDto[];
 }
