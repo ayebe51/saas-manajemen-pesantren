@@ -11,6 +11,7 @@ const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const core_1 = require("@nestjs/core");
 const throttler_1 = require("@nestjs/throttler");
+const bullmq_1 = require("@nestjs/bullmq");
 const prisma_module_1 = require("./common/prisma/prisma.module");
 const tenant_middleware_1 = require("./common/middleware/tenant.middleware");
 const tenant_guard_1 = require("./common/guards/tenant.guard");
@@ -27,6 +28,8 @@ const dashboard_module_1 = require("./modules/dashboard/dashboard.module");
 const public_module_1 = require("./modules/public/public.module");
 const notification_module_1 = require("./modules/notification/notification.module");
 const jobs_module_1 = require("./jobs/jobs.module");
+const upload_module_1 = require("./modules/upload/upload.module");
+const external_notification_module_1 = require("./modules/external-notification/external-notification.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer
@@ -47,6 +50,16 @@ exports.AppModule = AppModule = __decorate([
                     ttl: 60000,
                     limit: 100,
                 }]),
+            bullmq_1.BullModule.forRootAsync({
+                imports: [config_1.ConfigModule],
+                useFactory: async (configService) => ({
+                    connection: {
+                        host: configService.get('REDIS_HOST') || 'localhost',
+                        port: configService.get('REDIS_PORT') || 6379,
+                    },
+                }),
+                inject: [config_1.ConfigService],
+            }),
             prisma_module_1.PrismaModule,
             auth_module_1.AuthModule,
             tenant_module_1.TenantModule,
@@ -61,6 +74,8 @@ exports.AppModule = AppModule = __decorate([
             public_module_1.PublicModule,
             notification_module_1.NotificationModule,
             jobs_module_1.JobsModule,
+            upload_module_1.UploadModule,
+            external_notification_module_1.ExternalNotificationModule,
         ],
         providers: [
             {

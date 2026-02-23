@@ -2,19 +2,18 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { NotificationGateway } from './notification.gateway';
+import { BullModule } from '@nestjs/bullmq';
+import { NotificationProcessor } from './queue/notification.processor';
+import { ExternalNotificationModule } from '../external-notification/external-notification.module';
 
 @Module({
   imports: [
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET') || 'dev_secret_key',
-      }),
+    ExternalNotificationModule,
+    BullModule.registerQueue({
+      name: 'notifications', // Queue name
     }),
-    ConfigModule,
   ],
-  providers: [NotificationGateway],
-  exports: [NotificationGateway],
+  providers: [NotificationGateway, NotificationProcessor],
+  exports: [NotificationGateway, BullModule],
 })
 export class NotificationModule {}

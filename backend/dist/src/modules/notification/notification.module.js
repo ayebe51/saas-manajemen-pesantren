@@ -8,26 +8,23 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NotificationModule = void 0;
 const common_1 = require("@nestjs/common");
-const jwt_1 = require("@nestjs/jwt");
-const config_1 = require("@nestjs/config");
 const notification_gateway_1 = require("./notification.gateway");
+const bullmq_1 = require("@nestjs/bullmq");
+const notification_processor_1 = require("./queue/notification.processor");
+const external_notification_module_1 = require("../external-notification/external-notification.module");
 let NotificationModule = class NotificationModule {
 };
 exports.NotificationModule = NotificationModule;
 exports.NotificationModule = NotificationModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            jwt_1.JwtModule.registerAsync({
-                imports: [config_1.ConfigModule],
-                inject: [config_1.ConfigService],
-                useFactory: async (configService) => ({
-                    secret: configService.get('JWT_SECRET') || 'dev_secret_key',
-                }),
+            external_notification_module_1.ExternalNotificationModule,
+            bullmq_1.BullModule.registerQueue({
+                name: 'notifications',
             }),
-            config_1.ConfigModule,
         ],
-        providers: [notification_gateway_1.NotificationGateway],
-        exports: [notification_gateway_1.NotificationGateway],
+        providers: [notification_gateway_1.NotificationGateway, notification_processor_1.NotificationProcessor],
+        exports: [notification_gateway_1.NotificationGateway, bullmq_1.BullModule],
     })
 ], NotificationModule);
 //# sourceMappingURL=notification.module.js.map

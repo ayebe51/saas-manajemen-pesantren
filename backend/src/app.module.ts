@@ -1,7 +1,8 @@
 import { Module, MiddlewareConsumer, NestModule, RequestMethod } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { BullModule } from '@nestjs/bullmq';
 
 // Core
 import { PrismaModule } from './common/prisma/prisma.module';
@@ -22,17 +23,29 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { PublicModule } from './modules/public/public.module';
 import { NotificationModule } from './modules/notification/notification.module';
 import { JobsModule } from './jobs/jobs.module';
+import { UploadModule } from './modules/upload/upload.module';
+import { ExternalNotificationModule } from './modules/external-notification/external-notification.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true,      
-      envFilePath: '.env', 
+      isGlobal: true,
+      envFilePath: '.env',
     }),
     ThrottlerModule.forRoot([{
-      ttl: 60000, 
-      limit: 100, // 100 requests per minute  
+      ttl: 60000,
+      limit: 100, // 100 requests per minute
     }]),
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        connection: {
+          host: configService.get('REDIS_HOST') || 'localhost',
+          port: configService.get('REDIS_PORT') || 6379,
+        },
+      }),
+      inject: [ConfigService],
+    }),
     PrismaModule,
     AuthModule,
     TenantModule,
@@ -47,17 +60,19 @@ import { JobsModule } from './jobs/jobs.module';
     PublicModule,
     NotificationModule,
     JobsModule,
+    UploadModule,
+    ExternalNotificationModule,
   ],
   providers: [
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
     },
-    // We register the TenantGuard globally to enforce data isolation explicitly. 
+    // We register the TenantGuard globally to enforce data isolation explicitly.
     // Superadmins bypass this implicitly within the guard logic, public endpoints explicitly using @Public().
     {
       provide: APP_GUARD,
-      useClass: TenantGuard, 
+      useClass: TenantGuard,
     },
   ],
 })
