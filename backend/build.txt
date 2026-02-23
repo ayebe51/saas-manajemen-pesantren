@@ -1,0 +1,377 @@
+﻿
+> pesantren-saas-api@1.0.0 build
+> nest build
+
+npm : [96mprisma/seed
+/seed.ts[0m:[93m2[0
+m:[93m25[0m - [91me
+rror[0m[90m TS2307: 
+[0mCannot find module
+ 'bcryptjs' or its cor
+responding type declar
+ations.
+At line:1 char:1
++ npm run build > buil
+d.log 2>&1
++ ~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~
+    + CategoryInfo    
+          : NotSpeci  
+  fied: ([96mprism   
+ a/see...e declara    
+tions.:String) []    ,
+ RemoteException
+    + FullyQualifiedE 
+   rrorId : NativeCo  
+  mmandError
+ 
+
+[7m2[0m import * as 
+bcrypt from 'bcryptjs'
+;
+[7m [0m [91m       
+                 ~~~~~
+~~~~~[0m
+[96msrc/common/guards
+/api-key.guard.ts[0m:
+[93m31[0m:[93m17[0
+m - [91merror[0m[90
+m TS2353: [0mObject l
+iteral may only specif
+y known properties, an
+d 'string_contains' do
+es not exist in type '
+StringNullableFilter<"
+Tenant">'.
+
+[7m31[0m            
+     string_contains: 
+apiKey // Poor man's J
+SON search for SQLite,
+ in PG use Json lookup
+[7m  [0m [91m      
+          ~~~~~~~~~~~~
+~~~[0m
+[96msrc/common/guards
+/jwt-auth.guard.ts[0m
+:[93m10[0m:[93m17[
+0m - [91merror[0m[9
+0m TS7006: [0mParamet
+er 'err' implicitly ha
+s an 'any' type.
+
+[7m10[0m   handleReq
+uest(err, user, info) 
+{
+[7m  [0m [91m      
+          ~~~[0m
+[96msrc/common/guards
+/jwt-auth.guard.ts[0m
+:[93m10[0m:[93m22[
+0m - [91merror[0m[9
+0m TS7006: [0mParamet
+er 'user' implicitly h
+as an 'any' type.
+
+[7m10[0m   handleReq
+uest(err, user, info) 
+{
+[7m  [0m [91m      
+               ~~~~[0
+m
+[96msrc/common/guards
+/jwt-auth.guard.ts[0m
+:[93m10[0m:[93m28[
+0m - [91merror[0m[9
+0m TS7006: [0mParamet
+er 'info' implicitly h
+as an 'any' type.
+
+[7m10[0m   handleReq
+uest(err, user, info) 
+{
+[7m  [0m [91m      
+                     ~
+~~~[0m
+[96msrc/common/middle
+ware/tenant.middleware
+.ts[0m:[93m36[0m:[
+93m7[0m - [91merror
+[0m[90m TS7053: [0mE
+lement implicitly has 
+an 'any' type because 
+expression of type '"t
+enantId"' can't be use
+d to index type 'Reque
+st<ParamsDictionary, a
+ny, any, ParsedQs, Rec
+ord<string, any>>'.
+  Property 'tenantId' 
+does not exist on type
+ 'Request<ParamsDictio
+nary, any, any, Parsed
+Qs, Record<string, any
+>>'.
+
+[7m36[0m       req['
+tenantId'] = tenantIdH
+eader;
+[7m  [0m [91m      
+~~~~~~~~~~~~~~~[0m
+[96msrc/modules/dashb
+oard/dashboard.service
+.ts[0m:[93m119[0m:
+[93m9[0m - [91merror
+[0m[90m TS7053: [0m
+Element implicitly has
+ an 'any' type because
+ expression of type 's
+tring' can't be used t
+o index type '{}'.
+  No index signature w
+ith a parameter of typ
+e 'string' was found o
+n type '{}'.
+
+[7m119[0m         re
+sult[d.toISOString().s
+plit('T')[0]] = 0;
+[7m   [0m [91m     
+   ~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~[0m
+[96msrc/modules/dashb
+oard/dashboard.service
+.ts[0m:[93m124[0m:
+[93m11[0m - [91merro
+r[0m[90m TS7053: [0
+mElement implicitly ha
+s an 'any' type becaus
+e expression of type '
+string' can't be used 
+to index type '{}'.
+  No index signature w
+ith a parameter of typ
+e 'string' was found o
+n type '{}'.
+
+[7m124[0m       if (
+result[dateStr] !== un
+defined) {
+[7m   [0m [91m     
+     ~~~~~~~~~~~~~~~[
+0m
+[96msrc/modules/dashb
+oard/dashboard.service
+.ts[0m:[93m125[0m:
+[93m9[0m - [91merror
+[0m[90m TS7053: [0m
+Element implicitly has
+ an 'any' type because
+ expression of type 's
+tring' can't be used t
+o index type '{}'.
+  No index signature w
+ith a parameter of typ
+e 'string' was found o
+n type '{}'.
+
+[7m125[0m         re
+sult[dateStr]++;
+[7m   [0m [91m     
+   ~~~~~~~~~~~~~~~[0m
+[96msrc/modules/dashb
+oard/dashboard.service
+.ts[0m:[93m131[0m:
+[93m14[0m - [91merro
+r[0m[90m TS7053: [0
+mElement implicitly ha
+s an 'any' type becaus
+e expression of type '
+string' can't be used 
+to index type '{}'.
+  No index signature w
+ith a parameter of typ
+e 'string' was found o
+n type '{}'.
+
+[7m131[0m       coun
+t: result[date]
+[7m   [0m [91m     
+        ~~~~~~~~~~~~[
+0m
+[96msrc/modules/dashb
+oard/dashboard.service
+.ts[0m:[93m143[0m:
+[93m9[0m - [91merror
+[0m[90m TS7053: [0m
+Element implicitly has
+ an 'any' type because
+ expression of type 's
+tring' can't be used t
+o index type '{}'.
+  No index signature w
+ith a parameter of typ
+e 'string' was found o
+n type '{}'.
+
+[7m143[0m         re
+sult[d.toISOString().s
+plit('T')[0]] = 0;
+[7m   [0m [91m     
+   ~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~[0m
+[96msrc/modules/dashb
+oard/dashboard.service
+.ts[0m:[93m148[0m:
+[93m11[0m - [91merro
+r[0m[90m TS7053: [0
+mElement implicitly ha
+s an 'any' type becaus
+e expression of type '
+string' can't be used 
+to index type '{}'.
+  No index signature w
+ith a parameter of typ
+e 'string' was found o
+n type '{}'.
+
+[7m148[0m       if (
+result[dateStr] !== un
+defined) {
+[7m   [0m [91m     
+     ~~~~~~~~~~~~~~~[
+0m
+[96msrc/modules/dashb
+oard/dashboard.service
+.ts[0m:[93m149[0m:
+[93m9[0m - [91merror
+[0m[90m TS7053: [0m
+Element implicitly has
+ an 'any' type because
+ expression of type 's
+tring' can't be used t
+o index type '{}'.
+  No index signature w
+ith a parameter of typ
+e 'string' was found o
+n type '{}'.
+
+[7m149[0m         re
+sult[dateStr] += item.
+amount;
+[7m   [0m [91m     
+   ~~~~~~~~~~~~~~~[0m
+[96msrc/modules/dashb
+oard/dashboard.service
+.ts[0m:[93m155[0m:
+[93m20[0m - [91merro
+r[0m[90m TS7053: [0
+mElement implicitly ha
+s an 'any' type becaus
+e expression of type '
+string' can't be used 
+to index type '{}'.
+  No index signature w
+ith a parameter of typ
+e 'string' was found o
+n type '{}'.
+
+[7m155[0m       tota
+lAmount: result[date]
+[7m   [0m [91m     
+              ~~~~~~~~
+~~~~[0m
+[96msrc/modules/pelan
+ggaran/pelanggaran.ser
+vice.ts[0m:[93m20[0
+m:[93m20[0m - [91me
+rror[0m[90m TS7053: 
+[0mElement implicitly
+ has an 'any' type bec
+ause expression of typ
+e 'number' can't be us
+ed to index type '{ 1:
+ number; 2: number; 3:
+ number; 4: number; 5:
+ number; }'.
+  No index signature w
+ith a parameter of typ
+e 'number' was found o
+n type '{ 1: number; 2
+: number; 3: number; 4
+: number; 5: number; }
+'.
+
+[7m20[0m     const p
+oints = pointsMap[dto.
+severity] || 0;
+[7m  [0m [91m      
+             ~~~~~~~~~
+~~~~~~~~~~~~~~[0m
+[96msrc/modules/pemba
+yaran/pembayaran.servi
+ce.ts[0m:[93m160[0m
+:[93m24[0m - [91mer
+ror[0m[90m TS18047: 
+[0m'invoice' is possi
+bly 'null'.
+
+[7m160[0m       if (
+totalPaid >= invoice.a
+mountDue) {
+[7m   [0m [91m     
+                  ~~~~
+~~~[0m
+[96msrc/modules/pemba
+yaran/stripe.service.t
+s[0m:[93m16[0m:[93
+m7[0m - [91merror[0
+m[90m TS2322: [0mTyp
+e 'null' is not assign
+able to type 'Stripe'.
+
+[7m16[0m       this.
+stripe = null;
+[7m  [0m [91m      
+~~~~~~~~~~~[0m
+[96msrc/modules/pemba
+yaran/stripe.service.t
+s[0m:[93m59[0m:[93
+m68[0m - [91merror[
+0m[90m TS2345: [0mAr
+gument of type 'string
+ | undefined' is not a
+ssignable to parameter
+ of type 'string'.
+  Type 'undefined' is 
+not assignable to type
+ 'string'.
+
+[7m59[0m     return 
+this.stripe.webhooks.c
+onstructEvent(payload,
+ signature, webhookSec
+ret);
+[7m  [0m [91m      
+                      
+                      
+                 ~~~~~
+~~~~~~~~[0m
+[96msrc/modules/tenan
+t/tenant.service.ts[0
+m:[93m64[0m:[93m21
+[0m - [91merror[0m[
+90m TS2339: [0mProper
+ty 'plan' does not exi
+st on type 'UpdateTena
+ntDto'.
+
+[7m64[0m     const {
+ status, plan, setting
+s, ...rest } = updateT
+enantDto;
+[7m  [0m [91m      
+              ~~~~[0m
+
+Found 19 error(s).
+

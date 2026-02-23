@@ -1,0 +1,464 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// -----------------------------------------------------------------------------
+// CORE & MULTI-TENANT
+// -----------------------------------------------------------------------------
+
+model Tenant {
+  id             String   @id @default(uuid())
+  name           String
+  address        String?
+  phone          String?
+  adminUserId    String? 
+  timezone       String   @default("Asia/Jakarta")
+  plan           String   @default("BASIC") // BASIC, PRO, ENTERPRISE
+  billingContact String?
+  status         String   @default("ACTIVE") // ACTIVE, SUSPENDED, INACTIVE
+  settings       String?  // JSON string
+  
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  users          User[]
+  santri         Santri[]
+  wali           Wali[]
+  izin           Izin[]
+  catatanHarian  CatatanHarian[]
+  pengumuman     Pengumuman[]
+  invoices       Invoice[]
+  pelanggaran    Pelanggaran[]
+  pembinaan      Pembinaan[]
+  kunjungan      Kunjungan[]
+  healthRecords  HealthRecord[]
+  auditLogs      AuditLog[]
+  notifications  Notification[]
+  webhookEvents  WebhookEvent[]
+
+  @@map("tenants")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  tenantId      String?   
+  tenant        Tenant?   @relation(fields: [tenantId], references: [id])
+  
+  email         String    @unique
+  passwordHash  String
+  role          String    @default("PENGURUS") // SUPERADMIN, TENANT_ADMIN, PENGURUS, MUSYRIF, GURU, KESEHATAN
+  name          String
+  phone         String?
+  
+  isActive      Boolean   @default(true)
+  lastLogin     DateTime?
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  refreshTokens RefreshToken[]
+  auditLogs     AuditLog[]
+  notifications Notification[]
+
+  @@index([tenantId])
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  revoked   Boolean  @default(false)
+  
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+model Santri {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  nisn      String?
+  name      String
+  gender    String   // L or P
+  dob       DateTime?
+  kelas     String?
+  room      String?
+  contact   String?
+  address   String?
+  photo     String?
+  status    String   @default("AKTIF") // AKTIF, LULUS, MUTASI, NONAKTIF
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  walis           SantriWali[]
+  izin            Izin[]
+  catatanHarian   CatatanHarian[]
+  invoices        Invoice[]
+  pelanggaran     Pelanggaran[]
+  pembinaan       Pembinaan[]
+  kunjungan       Kunjungan[]
+  healthRecords   HealthRecord[]
+  medications     Medication[]
+
+  @@index([tenantId])
+  @@map("santri")
+}
+
+model Wali {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  name      String
+  relation  String   
+  phone     String
+  email     String?
+  address   String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  santris   SantriWali[]
+
+  @@index([tenantId])
+  @@map("wali")
+}
+
+model SantriWali {
+  santriId    String
+  santri      Santri  @relation(fields: [santriId], references: [id], onDelete: Cascade)
+  
+  waliId      String
+  wali        Wali    @relation(fields: [waliId], references: [id], onDelete: Cascade)
+  
+  isPrimary   Boolean @default(false)
+
+  @@id([santriId, waliId])
+  @@map("santri_wali")
+}
+
+model Izin {
+  id          String     @id @default(uuid())
+  tenantId    String
+  tenant      Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  santriId    String
+  santri      Santri     @relation(fields: [santriId], references: [id], onDelete: Cascade)
+  
+  type        String     // KELUAR, SAKIT, PULANG
+  reason      String
+  startAt     DateTime
+  endAt       DateTime
+  
+  status      String     @default("PENDING") // PENDING, APPROVED, REJECTED, CHECKED_OUT, CHECKED_IN, EXPIRED
+  
+  requestedBy String     
+  approvedBy  String?    
+  approvedAt  DateTime?
+  
+  qrCodeData  String?    @unique
+  
+  checkoutAt  DateTime?
+  checkoutBy  String?    
+  checkinAt   DateTime?
+  checkinBy   String?    
+  
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([tenantId])
+  @@index([santriId])
+  @@map("izin")
+}
+
+model CatatanHarian {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  santriId    String
+  santri      Santri   @relation(fields: [santriId], references: [id], onDelete: Cascade)
+  
+  authorId    String   
+  date        DateTime @default(now())
+  
+  content     String   
+  category    String   
+  attachments String?  // JSON string
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([tenantId])
+  @@index([santriId])
+  @@map("catatan_harian")
+}
+
+model Pengumuman {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  title       String
+  content     String   
+  audience    String   
+  pinnedUntil DateTime?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([tenantId])
+  @@map("pengumuman")
+}
+
+model Invoice {
+  id          String         @id @default(uuid())
+  tenantId    String
+  tenant      Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  santriId    String
+  santri      Santri         @relation(fields: [santriId], references: [id], onDelete: Cascade)
+  
+  amountDue   Float          
+  dueDate     DateTime
+  status      String         @default("UNPAID") // UNPAID, PARTIAL, PAID, CANCELLED
+  
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  lines       InvoiceLine[]
+  payments    Payment[]
+
+  @@index([tenantId])
+  @@index([santriId])
+  @@map("invoices")
+}
+
+model InvoiceLine {
+  id          String   @id @default(uuid())
+  invoiceId   String
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  
+  description String
+  amount      Float    
+  type        String   
+  
+  @@index([invoiceId])
+  @@map("invoice_lines")
+}
+
+model Payment {
+  id             String        @id @default(uuid())
+  invoiceId      String
+  invoice        Invoice       @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  
+  method         String        
+  amount         Float       
+  status         String        @default("PENDING") // PENDING, SUCCESS, FAILED, REFUNDED
+  transactionRef String?       
+  paidAt         DateTime?
+  
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([invoiceId])
+  @@map("payments")
+}
+
+model Pelanggaran {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  santriId    String
+  santri      Santri   @relation(fields: [santriId], references: [id], onDelete: Cascade)
+  
+  recordedBy  String   
+  category    String   
+  severity    Int      
+  points      Int      @default(0)
+  description String   
+  date        DateTime @default(now())
+  resolved    Boolean  @default(false)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([tenantId])
+  @@index([santriId])
+  @@map("pelanggaran")
+}
+
+model Pembinaan {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  santriId    String
+  santri      Santri   @relation(fields: [santriId], references: [id], onDelete: Cascade)
+  
+  plan        String   
+  targetDate  DateTime
+  status      String   @default("ONGOING") // ONGOING, COMPLETED, FAILED
+  assignedTo  String   
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([tenantId])
+  @@index([santriId])
+  @@map("pembinaan")
+}
+
+model Kunjungan {
+  id           String    @id @default(uuid())
+  tenantId     String
+  tenant       Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  santriId     String
+  santri       Santri    @relation(fields: [santriId], references: [id], onDelete: Cascade)
+  
+  scheduledAt  DateTime
+  slot         String    
+  visitorLimit Int       @default(2)
+  status       String    @default("SCHEDULED") // SCHEDULED, CHECKED_IN, COMPLETED, CANCELLED
+  
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  tamu         Tamu[]
+
+  @@index([tenantId])
+  @@index([santriId])
+  @@map("kunjungan")
+}
+
+model Tamu {
+  id          String    @id @default(uuid())
+  kunjunganId String
+  kunjungan   Kunjungan @relation(fields: [kunjunganId], references: [id], onDelete: Cascade)
+  
+  name        String
+  phone       String?
+  idNumber    String?
+  checkinAt   DateTime?
+  
+  createdAt   DateTime  @default(now())
+
+  @@index([kunjunganId])
+  @@map("tamu")
+}
+
+model HealthRecord {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  santriId    String
+  santri      Santri   @relation(fields: [santriId], references: [id], onDelete: Cascade)
+  
+  recordedBy  String   
+  symptoms    String   
+  diagnosis   String?  
+  actionTaken String?  
+  referred    Boolean  @default(false)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([tenantId])
+  @@index([santriId])
+  @@map("health_records")
+}
+
+model Medication {
+  id          String   @id @default(uuid())
+  santriId    String
+  santri      Santri   @relation(fields: [santriId], references: [id], onDelete: Cascade)
+  
+  medicineName String
+  dose        String
+  schedule    String   
+  givenBy     String?  
+  givenAt     DateTime?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([santriId])
+  @@map("medications")
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  tenantId    String?
+  tenant      Tenant?  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  
+  action      String   
+  entity      String   
+  entityId    String
+  
+  oldValue    String?  // JSON string
+  newValue    String?  // JSON string
+  
+  ip          String?
+  
+  createdAt   DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([entity, entityId])
+  @@map("audit_logs")
+}
+
+model Notification {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  userId      String   
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  type        String   
+  title       String
+  body        String   
+  read        Boolean  @default(false)
+  
+  createdAt   DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([userId])
+  @@map("notifications")
+}
+
+model WebhookEvent {
+  id          String   @id @default(uuid())
+  tenantId    String?
+  tenant      Tenant?  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  eventType   String   
+  payload     String   // JSON string
+  status      String   @default("PENDING") // PENDING, SUCCESS, FAILED
+  error       String?  
+  
+  createdAt   DateTime @default(now())
+  processedAt DateTime?
+
+  @@index([tenantId])
+  @@index([status])
+  @@map("webhook_events")
+}

@@ -1,0 +1,72 @@
+import { PrismaService } from '../../common/prisma/prisma.service';
+import { CreateKunjunganDto } from './dto/kunjungan.dto';
+export declare class KunjunganService {
+    private readonly prisma;
+    constructor(prisma: PrismaService);
+    create(tenantId: string, dto: CreateKunjunganDto): Promise<{
+        id: string;
+        status: string;
+        createdAt: Date;
+        updatedAt: Date;
+        tenantId: string;
+        santriId: string;
+        scheduledAt: Date;
+        slot: string;
+        visitorLimit: number;
+    }>;
+    findAll(tenantId: string, filters: {
+        date?: string;
+        santriId?: string;
+    }): Promise<({
+        santri: {
+            name: string;
+            room: string | null;
+        };
+        tamu: {
+            id: string;
+            name: string;
+            phone: string | null;
+            createdAt: Date;
+            checkinAt: Date | null;
+            kunjunganId: string;
+            idNumber: string | null;
+        }[];
+    } & {
+        id: string;
+        status: string;
+        createdAt: Date;
+        updatedAt: Date;
+        tenantId: string;
+        santriId: string;
+        scheduledAt: Date;
+        slot: string;
+        visitorLimit: number;
+    })[]>;
+    getAvailableSlots(tenantId: string, dateStr: string): Promise<{
+        slot: string;
+        booked: number;
+        available: number;
+        isFull: boolean;
+    }[]>;
+    checkin(id: string, tenantId: string, visitorName?: string): Promise<{
+        tamu: {
+            id: string;
+            name: string;
+            phone: string | null;
+            createdAt: Date;
+            checkinAt: Date | null;
+            kunjunganId: string;
+            idNumber: string | null;
+        }[];
+    } & {
+        id: string;
+        status: string;
+        createdAt: Date;
+        updatedAt: Date;
+        tenantId: string;
+        santriId: string;
+        scheduledAt: Date;
+        slot: string;
+        visitorLimit: number;
+    }>;
+}
