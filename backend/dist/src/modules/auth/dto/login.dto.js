@@ -28,7 +28,10 @@ __decorate([
     __metadata("design:type", String)
 ], LoginDto.prototype, "password", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: 'tenant-uuid-here', description: 'Required for tenant users, leave empty for superadmin' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        example: 'tenant-uuid-here',
+        description: 'Required for tenant users, leave empty for superadmin',
+    }),
     (0, class_validator_1.IsUUID)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)

@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Param, Query, UseGuards, UseInterceptors, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+  UseInterceptors,
+  Req,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { PelanggaranService } from './pelanggaran.service';
 import { CreatePelanggaranDto, CreatePembinaanDto } from './dto/pelanggaran.dto';
@@ -22,7 +32,7 @@ export class PelanggaranController {
   createPelanggaran(
     @Body() dto: CreatePelanggaranDto,
     @TenantId() tenantId: string,
-    @Req() req: any
+    @Req() req: any,
   ) {
     return this.pelanggaranService.createPelanggaran(tenantId, dto, req.user.id);
   }
@@ -30,10 +40,7 @@ export class PelanggaranController {
   @Get('pelanggaran')
   @ApiOperation({ summary: 'List violations' })
   @ApiQuery({ name: 'santriId', required: false })
-  findAllPelanggaran(
-    @TenantId() tenantId: string,
-    @Query('santriId') santriId?: string,
-  ) {
+  findAllPelanggaran(@TenantId() tenantId: string, @Query('santriId') santriId?: string) {
     return this.pelanggaranService.findAllPelanggaran(tenantId, santriId);
   }
 
@@ -41,20 +48,14 @@ export class PelanggaranController {
   @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS', 'MUSYRIF')
   @UseInterceptors(AuditLogInterceptor)
   @ApiOperation({ summary: 'Create a coaching/mentoring plan' })
-  createPembinaan(
-    @Body() dto: CreatePembinaanDto,
-    @TenantId() tenantId: string,
-  ) {
+  createPembinaan(@Body() dto: CreatePembinaanDto, @TenantId() tenantId: string) {
     return this.pelanggaranService.createPembinaan(tenantId, dto);
   }
 
   @Get('pembinaan')
   @ApiOperation({ summary: 'List coaching plans' })
   @ApiQuery({ name: 'santriId', required: false })
-  findAllPembinaan(
-    @TenantId() tenantId: string,
-    @Query('santriId') santriId?: string,
-  ) {
+  findAllPembinaan(@TenantId() tenantId: string, @Query('santriId') santriId?: string) {
     return this.pelanggaranService.findAllPembinaan(tenantId, santriId);
   }
 }

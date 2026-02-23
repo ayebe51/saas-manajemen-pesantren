@@ -9,7 +9,7 @@ export class StripeService {
 
   constructor(private configService: ConfigService) {
     const secretKey = this.configService.get<string>('STRIPE_SECRET_KEY');
-    
+
     // Initialize with mock mode if no key is provided (for local dev)
     if (!secretKey || secretKey.startsWith('mock_')) {
       this.logger.warn('Stripe is running in mock mode. No real transactions will occur.');
@@ -27,7 +27,7 @@ export class StripeService {
       return {
         id: `pi_mock_${Date.now()}`,
         client_secret: `client_secret_mock_${Date.now()}`,
-        status: 'requires_payment_method'
+        status: 'requires_payment_method',
       };
     }
 
@@ -51,7 +51,7 @@ export class StripeService {
       return {
         id: parsed.id || 'evt_mock',
         type: parsed.type || 'payment_intent.succeeded',
-        data: parsed.data || {}
+        data: parsed.data || {},
       } as any;
     }
 

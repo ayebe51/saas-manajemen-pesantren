@@ -4,10 +4,7 @@ import { PrismaModule } from '../common/prisma/prisma.module';
 import { ScheduledTasksService } from './scheduled.service';
 
 @Module({
-  imports: [
-    PrismaModule,
-    ScheduleModule.forRoot()
-  ],
+  imports: [PrismaModule, ScheduleModule.forRoot()],
   providers: [ScheduledTasksService],
 })
 export class JobsModule {}

@@ -34,7 +34,7 @@ let StripeService = StripeService_1 = class StripeService {
             return {
                 id: `pi_mock_${Date.now()}`,
                 client_secret: `client_secret_mock_${Date.now()}`,
-                status: 'requires_payment_method'
+                status: 'requires_payment_method',
             };
         }
         try {
@@ -56,7 +56,7 @@ let StripeService = StripeService_1 = class StripeService {
             return {
                 id: parsed.id || 'evt_mock',
                 type: parsed.type || 'payment_intent.succeeded',
-                data: parsed.data || {}
+                data: parsed.data || {},
             };
         }
         const webhookSecret = this.configService.get('STRIPE_WEBHOOK_SECRET') || '';

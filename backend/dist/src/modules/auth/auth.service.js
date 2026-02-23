@@ -42,7 +42,7 @@ let AuthService = AuthService_1 = class AuthService {
         await this.saveRefreshToken(user.id, refreshToken);
         await this.prisma.user.update({
             where: { id: user.id },
-            data: { lastLogin: new Date() }
+            data: { lastLogin: new Date() },
         });
         const { passwordHash: _, ...sanitizedUser } = user;
         return {
@@ -61,7 +61,7 @@ let AuthService = AuthService_1 = class AuthService {
             });
             const savedToken = await this.prisma.refreshToken.findUnique({
                 where: { token },
-                include: { user: true }
+                include: { user: true },
             });
             if (!savedToken || savedToken.revoked) {
                 throw new common_1.UnauthorizedException('Refresh token is invalid or has been revoked');
@@ -77,9 +77,9 @@ let AuthService = AuthService_1 = class AuthService {
                     data: {
                         userId: savedToken.user.id,
                         token: newRefreshToken,
-                        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-                    }
-                })
+                        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+                    },
+                }),
             ]);
             const { passwordHash: _, ...sanitizedUser } = savedToken.user;
             return {
@@ -98,9 +98,9 @@ let AuthService = AuthService_1 = class AuthService {
             await this.prisma.refreshToken.updateMany({
                 where: {
                     userId,
-                    token: refreshToken
+                    token: refreshToken,
                 },
-                data: { revoked: true }
+                data: { revoked: true },
             });
         }
         catch (error) {
@@ -123,7 +123,7 @@ let AuthService = AuthService_1 = class AuthService {
         const payload = {
             sub: user.id,
             email: user.email,
-            tokenType: 'refresh'
+            tokenType: 'refresh',
         };
         return this.jwtService.sign(payload, {
             secret: this.configService.get('JWT_REFRESH_SECRET') || 'dev_refresh_secret',

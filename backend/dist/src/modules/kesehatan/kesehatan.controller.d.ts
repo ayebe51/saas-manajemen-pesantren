@@ -5,9 +5,9 @@ export declare class KesehatanController {
     constructor(kesehatanService: KesehatanService);
     createRecord(dto: CreateHealthRecordDto, tenantId: string, req: any): Promise<{
         id: string;
-        tenantId: string;
         createdAt: Date;
         updatedAt: Date;
+        tenantId: string;
         santriId: string;
         recordedBy: string;
         symptoms: string;
@@ -22,9 +22,9 @@ export declare class KesehatanController {
         };
     } & {
         id: string;
-        tenantId: string;
         createdAt: Date;
         updatedAt: Date;
+        tenantId: string;
         santriId: string;
         recordedBy: string;
         symptoms: string;

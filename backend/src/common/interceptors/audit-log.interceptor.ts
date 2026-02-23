@@ -19,7 +19,7 @@ export class AuditLogInterceptor implements NestInterceptor {
             // Extract entity name from URL, e.g. /api/v1/santri -> Santri
             const pathParts = url.split('?')[0].split('/');
             const entityPart = pathParts[3] || 'unknown';
-            
+
             // Map common actions
             let action = method;
             if (method === 'POST') action = 'CREATE';
@@ -43,7 +43,7 @@ export class AuditLogInterceptor implements NestInterceptor {
                 entityId,
                 newValue: JSON.stringify(method !== 'DELETE' ? body : {}),
                 ip: request.ip || request.connection.remoteAddress,
-              }
+              },
             });
           } catch (e) {
             console.error('Audit Log failed', e);

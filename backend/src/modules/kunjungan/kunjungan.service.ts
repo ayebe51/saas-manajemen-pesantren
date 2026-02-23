@@ -8,7 +8,7 @@ export class KunjunganService {
 
   async create(tenantId: string, dto: CreateKunjunganDto) {
     const santri = await this.prisma.santri.findFirst({
-      where: { id: dto.santriId, tenantId }
+      where: { id: dto.santriId, tenantId },
     });
 
     if (!santri) {
@@ -17,7 +17,7 @@ export class KunjunganService {
 
     // Check quota for that date and slot
     const targetDate = new Date(dto.scheduledAt);
-    targetDate.setHours(0,0,0,0);
+    targetDate.setHours(0, 0, 0, 0);
     const nextDay = new Date(targetDate);
     nextDay.setDate(nextDay.getDate() + 1);
 
@@ -27,15 +27,15 @@ export class KunjunganService {
         slot: dto.slot,
         scheduledAt: {
           gte: targetDate,
-          lt: nextDay
+          lt: nextDay,
         },
-        status: { not: 'CANCELLED' }
-      }
+        status: { not: 'CANCELLED' },
+      },
     });
 
     // In a real app, this limit would come from Tenant settings
-    const MAX_VISITS_PER_SLOT = 50; 
-    
+    const MAX_VISITS_PER_SLOT = 50;
+
     if (existingVisits >= MAX_VISITS_PER_SLOT) {
       throw new BadRequestException('Slot kuota kunjungan sudah penuh untuk hari dan sesi ini.');
     }
@@ -47,25 +47,25 @@ export class KunjunganService {
         scheduledAt: new Date(dto.scheduledAt),
         slot: dto.slot,
         visitorLimit: dto.visitorLimit || 2,
-        status: 'SCHEDULED'
-      }
+        status: 'SCHEDULED',
+      },
     });
   }
 
   async findAll(tenantId: string, filters: { date?: string; santriId?: string }) {
     const whereClause: any = { tenantId };
-    
+
     if (filters.santriId) whereClause.santriId = filters.santriId;
-    
+
     if (filters.date) {
       const targetDate = new Date(filters.date);
-      targetDate.setHours(0,0,0,0);
+      targetDate.setHours(0, 0, 0, 0);
       const nextDay = new Date(targetDate);
       nextDay.setDate(nextDay.getDate() + 1);
 
       whereClause.scheduledAt = {
         gte: targetDate,
-        lt: nextDay
+        lt: nextDay,
       };
     }
 
@@ -73,15 +73,15 @@ export class KunjunganService {
       where: whereClause,
       include: {
         santri: { select: { name: true, room: true } },
-        tamu: true
+        tamu: true,
       },
-      orderBy: { scheduledAt: 'asc' }
+      orderBy: { scheduledAt: 'asc' },
     });
   }
 
   async getAvailableSlots(tenantId: string, dateStr: string) {
     const targetDate = new Date(dateStr);
-    targetDate.setHours(0,0,0,0);
+    targetDate.setHours(0, 0, 0, 0);
     const nextDay = new Date(targetDate);
     nextDay.setDate(nextDay.getDate() + 1);
 
@@ -91,25 +91,25 @@ export class KunjunganService {
         tenantId,
         scheduledAt: {
           gte: targetDate,
-          lt: nextDay
+          lt: nextDay,
         },
-        status: { not: 'CANCELLED' }
+        status: { not: 'CANCELLED' },
       },
       _count: {
-        id: true
-      }
+        id: true,
+      },
     });
 
     const MAX_VISITS_PER_SLOT = 50;
     const slots = ['MORNING', 'AFTERNOON'];
-    
-    return slots.map(slot => {
-      const booked = visits.find(v => v.slot === slot)?._count.id || 0;
+
+    return slots.map((slot) => {
+      const booked = visits.find((v) => v.slot === slot)?._count.id || 0;
       return {
         slot,
         booked,
         available: MAX_VISITS_PER_SLOT - booked,
-        isFull: booked >= MAX_VISITS_PER_SLOT
+        isFull: booked >= MAX_VISITS_PER_SLOT,
       };
     });
   }
@@ -117,7 +117,7 @@ export class KunjunganService {
   async checkin(id: string, tenantId: string, visitorName?: string) {
     const visit = await this.prisma.kunjungan.findFirst({
       where: { id, tenantId },
-      include: { tamu: true }
+      include: { tamu: true },
     });
 
     if (!visit) {
@@ -125,7 +125,7 @@ export class KunjunganService {
     }
 
     if (visit.status === 'CANCELLED' || visit.status === 'COMPLETED') {
-        throw new BadRequestException(`Cannot check in. Status is ${visit.status}`);
+      throw new BadRequestException(`Cannot check in. Status is ${visit.status}`);
     }
 
     if (visit.tamu.length >= visit.visitorLimit) {
@@ -139,15 +139,15 @@ export class KunjunganService {
         data: {
           kunjunganId: id,
           name: guestName,
-          checkinAt: new Date()
-        }
+          checkinAt: new Date(),
+        },
       });
 
       // Update visit status
       return prisma.kunjungan.update({
         where: { id },
         data: { status: 'CHECKED_IN' },
-        include: { tamu: true }
+        include: { tamu: true },
       });
     });
   }

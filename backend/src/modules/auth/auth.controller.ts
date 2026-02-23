@@ -15,12 +15,9 @@ export class AuthController {
   @ApiOperation({ summary: 'Login user and get access token' })
   @ApiResponse({ status: 200, description: 'Login successful' })
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
-  async login(
-    @Body() loginDto: LoginDto,
-    @Res({ passthrough: true }) response: Response,
-  ) {
+  async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) response: Response) {
     const { accessToken, refreshToken, user } = await this.authService.login(loginDto);
-    
+
     // Set refresh token in secure httpOnly cookie
     response.cookie('refresh_token', refreshToken, {
       httpOnly: true,
@@ -41,14 +38,12 @@ export class AuthController {
   @ApiOperation({ summary: 'Refresh access token using cookie' })
   @ApiResponse({ status: 200, description: 'Token refreshed successfully' })
   @ApiResponse({ status: 401, description: 'Invalid or missing refresh token' })
-  async refresh(
-    @Req() request: Request,
-    @Res({ passthrough: true }) response: Response,
-  ) {
+  async refresh(@Req() request: Request, @Res({ passthrough: true }) response: Response) {
     const refreshToken = request.cookies['refresh_token'];
-    
-    const { accessToken, newRefreshToken, user } = await this.authService.refreshToken(refreshToken);
-    
+
+    const { accessToken, newRefreshToken, user } =
+      await this.authService.refreshToken(refreshToken);
+
     // Set new refresh token in cookie
     response.cookie('refresh_token', newRefreshToken, {
       httpOnly: true,
@@ -69,18 +64,15 @@ export class AuthController {
   @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Logout user and revoke refresh token' })
-  async logout(
-    @Req() request: any,
-    @Res({ passthrough: true }) response: Response,
-  ) {
+  async logout(@Req() request: any, @Res({ passthrough: true }) response: Response) {
     const refreshToken = request.cookies['refresh_token'];
-    
+
     if (refreshToken) {
       await this.authService.logout(request.user.id, refreshToken);
     }
-    
+
     response.clearCookie('refresh_token');
-    
+
     return {
       message: 'Logged out successfully',
     };

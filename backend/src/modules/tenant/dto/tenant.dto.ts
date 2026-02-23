@@ -16,7 +16,7 @@ export class CreateTenantDto {
   @IsString()
   @IsOptional()
   phone?: string;
-  
+
   @ApiPropertyOptional()
   @IsString()
   @IsOptional()
@@ -43,12 +43,12 @@ export class UpdateTenantDto {
   @IsString()
   @IsOptional()
   phone?: string;
-  
+
   @ApiPropertyOptional()
   @IsString()
   @IsOptional()
   billingContact?: string;
-  
+
   @ApiPropertyOptional({ enum: ['ACTIVE', 'SUSPENDED', 'INACTIVE'] })
   @IsString()
   @IsOptional()

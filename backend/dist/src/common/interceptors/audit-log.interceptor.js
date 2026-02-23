@@ -48,7 +48,7 @@ let AuditLogInterceptor = class AuditLogInterceptor {
                             entityId,
                             newValue: JSON.stringify(method !== 'DELETE' ? body : {}),
                             ip: request.ip || request.connection.remoteAddress,
-                        }
+                        },
                     });
                 }
                 catch (e) {

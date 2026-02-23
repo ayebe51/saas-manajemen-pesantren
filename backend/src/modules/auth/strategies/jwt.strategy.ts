@@ -21,16 +21,16 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const user = await this.prisma.user.findUnique({
       where: { id: payload.sub },
     });
-    
+
     if (!user || user.tenantId !== payload.tenantId) {
       throw new UnauthorizedException('Invalid token or user does not exist');
     }
-    
-    return { 
-      id: payload.sub, 
-      email: payload.email, 
+
+    return {
+      id: payload.sub,
+      email: payload.email,
       role: payload.role,
-      tenantId: payload.tenantId 
+      tenantId: payload.tenantId,
     };
   }
 }

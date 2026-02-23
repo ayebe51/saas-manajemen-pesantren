@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Param, Put, Query, UseGuards, UseInterceptors, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Put,
+  Query,
+  UseGuards,
+  UseInterceptors,
+  Req,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { PerizinanService } from './perizinan.service';
 import { CreateIzinDto, ApproveIzinDto } from './dto/izin.dto';
@@ -20,11 +31,7 @@ export class PerizinanController {
   @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS', 'MUSYRIF')
   @UseInterceptors(AuditLogInterceptor)
   @ApiOperation({ summary: 'Submit a new leave permit (Izin)' })
-  create(
-    @Body() createIzinDto: CreateIzinDto, 
-    @TenantId() tenantId: string,
-    @Req() req: any
-  ) {
+  create(@Body() createIzinDto: CreateIzinDto, @TenantId() tenantId: string, @Req() req: any) {
     return this.perizinanService.create(tenantId, createIzinDto, req.user.id);
   }
 
@@ -32,7 +39,11 @@ export class PerizinanController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiOperation({ summary: 'Get all permits' })
-  @ApiQuery({ name: 'status', required: false, enum: ['PENDING', 'APPROVED', 'REJECTED', 'CHECKED_OUT', 'CHECKED_IN', 'EXPIRED'] })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    enum: ['PENDING', 'APPROVED', 'REJECTED', 'CHECKED_OUT', 'CHECKED_IN', 'EXPIRED'],
+  })
   @ApiQuery({ name: 'santriId', required: false })
   findAll(
     @TenantId() tenantId: string,
@@ -53,10 +64,7 @@ export class PerizinanController {
   @Post(':id/approve')
   @Public() // Public so Wali can approve via link from WA without login
   @ApiOperation({ summary: 'Approve or Reject permit (Wali)' })
-  approve(
-    @Param('id') id: string,
-    @Body() approveIzinDto: ApproveIzinDto,
-  ) {
+  approve(@Param('id') id: string, @Body() approveIzinDto: ApproveIzinDto) {
     // In a real app, we'd verify the token provided in DTO
     return this.perizinanService.approve(id, approveIzinDto);
   }

@@ -31,17 +31,17 @@ let ScheduledTasksService = ScheduledTasksService_1 = class ScheduledTasksServic
                 status: { in: ['UNPAID', 'PARTIAL'] },
                 dueDate: {
                     gte: targetDate,
-                    lt: nextDay
-                }
+                    lt: nextDay,
+                },
             },
             include: {
                 santri: {
                     include: {
-                        walis: { include: { wali: true } }
-                    }
+                        walis: { include: { wali: true } },
+                    },
                 },
-                tenant: true
-            }
+                tenant: true,
+            },
         });
         this.logger.log(`Found ${dueSoon.length} invoices due in 3 days.`);
         for (const invoice of dueSoon) {
@@ -56,11 +56,11 @@ let ScheduledTasksService = ScheduledTasksService_1 = class ScheduledTasksServic
         const expired = await this.prisma.izin.updateMany({
             where: {
                 status: 'PENDING',
-                startAt: { lt: now }
+                startAt: { lt: now },
             },
             data: {
-                status: 'EXPIRED'
-            }
+                status: 'EXPIRED',
+            },
         });
         this.logger.log(`Marked ${expired.count} izin requests as expired.`);
     }

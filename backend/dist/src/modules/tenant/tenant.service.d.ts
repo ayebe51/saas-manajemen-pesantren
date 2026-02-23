@@ -6,16 +6,16 @@ export declare class TenantService {
     create(createTenantDto: CreateTenantDto, adminUserId: string): Promise<{
         id: string;
         name: string;
-        phone: string | null;
-        createdAt: Date;
-        updatedAt: Date;
         address: string | null;
+        phone: string | null;
         adminUserId: string | null;
         timezone: string;
         plan: string;
         billingContact: string | null;
         status: string;
         settings: string | null;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     findAll(): Promise<({
         _count: {
@@ -25,16 +25,16 @@ export declare class TenantService {
     } & {
         id: string;
         name: string;
-        phone: string | null;
-        createdAt: Date;
-        updatedAt: Date;
         address: string | null;
+        phone: string | null;
         adminUserId: string | null;
         timezone: string;
         plan: string;
         billingContact: string | null;
         status: string;
         settings: string | null;
+        createdAt: Date;
+        updatedAt: Date;
     })[]>;
     findOne(id: string): Promise<{
         _count: {
@@ -44,29 +44,43 @@ export declare class TenantService {
     } & {
         id: string;
         name: string;
-        phone: string | null;
-        createdAt: Date;
-        updatedAt: Date;
         address: string | null;
+        phone: string | null;
         adminUserId: string | null;
         timezone: string;
         plan: string;
         billingContact: string | null;
         status: string;
         settings: string | null;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     update(id: string, updateTenantDto: UpdateTenantDto): Promise<{
         id: string;
         name: string;
-        phone: string | null;
-        createdAt: Date;
-        updatedAt: Date;
         address: string | null;
+        phone: string | null;
         adminUserId: string | null;
         timezone: string;
         plan: string;
         billingContact: string | null;
         status: string;
         settings: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    remove(id: string): Promise<{
+        id: string;
+        name: string;
+        address: string | null;
+        phone: string | null;
+        adminUserId: string | null;
+        timezone: string;
+        plan: string;
+        billingContact: string | null;
+        status: string;
+        settings: string | null;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
 }

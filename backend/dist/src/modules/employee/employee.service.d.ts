@@ -1,0 +1,80 @@
+import { PrismaService } from '../../common/prisma/prisma.service';
+import { CreateEmployeeDto, CreatePayrollDto } from './dto/employee.dto';
+export declare class EmployeeService {
+    private readonly prisma;
+    private readonly logger;
+    constructor(prisma: PrismaService);
+    createEmployee(tenantId: string, dto: CreateEmployeeDto): Promise<{
+        id: string;
+        name: string;
+        address: string | null;
+        phone: string | null;
+        status: string;
+        createdAt: Date;
+        updatedAt: Date;
+        tenantId: string;
+        userId: string | null;
+        nip: string | null;
+        position: string;
+        joinDate: Date | null;
+    }>;
+    getEmployees(tenantId: string): Promise<{
+        id: string;
+        name: string;
+        address: string | null;
+        phone: string | null;
+        status: string;
+        createdAt: Date;
+        updatedAt: Date;
+        tenantId: string;
+        userId: string | null;
+        nip: string | null;
+        position: string;
+        joinDate: Date | null;
+    }[]>;
+    createPayroll(tenantId: string, dto: CreatePayrollDto): Promise<{
+        id: string;
+        status: string;
+        createdAt: Date;
+        updatedAt: Date;
+        tenantId: string;
+        paidAt: Date | null;
+        employeeId: string;
+        month: number;
+        year: number;
+        baseSalary: number;
+        allowances: number;
+        deductions: number;
+        netAmount: number;
+    }>;
+    executePayrollPayment(tenantId: string, payrollId: string): Promise<{
+        id: string;
+        status: string;
+        createdAt: Date;
+        updatedAt: Date;
+        tenantId: string;
+        paidAt: Date | null;
+        employeeId: string;
+        month: number;
+        year: number;
+        baseSalary: number;
+        allowances: number;
+        deductions: number;
+        netAmount: number;
+    }>;
+    getEmployeePayrollHistory(tenantId: string, employeeId: string): Promise<{
+        id: string;
+        status: string;
+        createdAt: Date;
+        updatedAt: Date;
+        tenantId: string;
+        paidAt: Date | null;
+        employeeId: string;
+        month: number;
+        year: number;
+        baseSalary: number;
+        allowances: number;
+        deductions: number;
+        netAmount: number;
+    }[]>;
+}

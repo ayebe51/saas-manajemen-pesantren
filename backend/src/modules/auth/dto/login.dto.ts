@@ -12,7 +12,10 @@ export class LoginDto {
   @IsNotEmpty()
   password: string;
 
-  @ApiPropertyOptional({ example: 'tenant-uuid-here', description: 'Required for tenant users, leave empty for superadmin' })
+  @ApiPropertyOptional({
+    example: 'tenant-uuid-here',
+    description: 'Required for tenant users, leave empty for superadmin',
+  })
   @IsUUID()
   @IsOptional()
   tenantId?: string;

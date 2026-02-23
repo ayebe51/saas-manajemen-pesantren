@@ -21,34 +21,34 @@ let DashboardService = class DashboardService {
         today.setHours(0, 0, 0, 0);
         const tomorrow = new Date(today);
         tomorrow.setDate(tomorrow.getDate() + 1);
-        const [totalSantri, santriAktif, izinActive, pelanggaranWeek, outstandingInvoices, kunjunganToday] = await Promise.all([
+        const [totalSantri, santriAktif, izinActive, pelanggaranWeek, outstandingInvoices, kunjunganToday,] = await Promise.all([
             this.prisma.santri.count({ where: { tenantId } }),
             this.prisma.santri.count({ where: { tenantId, status: 'AKTIF' } }),
             this.prisma.izin.count({
                 where: {
                     tenantId,
                     status: { in: ['APPROVED', 'CHECKED_OUT'] },
-                }
+                },
             }),
             this.prisma.pelanggaran.count({
                 where: {
                     tenantId,
-                    date: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }
-                }
+                    date: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
+                },
             }),
             this.prisma.invoice.count({
                 where: {
                     tenantId,
-                    status: { in: ['UNPAID', 'PARTIAL'] }
-                }
+                    status: { in: ['UNPAID', 'PARTIAL'] },
+                },
             }),
             this.prisma.kunjungan.count({
                 where: {
                     tenantId,
                     scheduledAt: { gte: today, lt: tomorrow },
-                    status: { not: 'CANCELLED' }
-                }
-            })
+                    status: { not: 'CANCELLED' },
+                },
+            }),
         ]);
         return {
             totalSantri,
@@ -56,7 +56,7 @@ let DashboardService = class DashboardService {
             izinActive,
             pelanggaranWeek,
             outstandingInvoices,
-            kunjunganToday
+            kunjunganToday,
         };
     }
     async getTrends(tenantId, metric, range) {
@@ -67,14 +67,14 @@ let DashboardService = class DashboardService {
         if (metric === 'izin') {
             const data = await this.prisma.izin.findMany({
                 where: { tenantId, createdAt: { gte: startDate } },
-                select: { createdAt: true }
+                select: { createdAt: true },
             });
             return this.aggregateByDay(data, 'createdAt', days);
         }
         if (metric === 'pelanggaran') {
             const data = await this.prisma.pelanggaran.findMany({
                 where: { tenantId, date: { gte: startDate } },
-                select: { date: true, severity: true }
+                select: { date: true, severity: true },
             });
             return this.aggregateByDay(data, 'date', days);
         }
@@ -83,9 +83,9 @@ let DashboardService = class DashboardService {
                 where: {
                     invoice: { tenantId },
                     createdAt: { gte: startDate },
-                    status: 'SUCCESS'
+                    status: 'SUCCESS',
                 },
-                select: { createdAt: true, amount: true }
+                select: { createdAt: true, amount: true },
             });
             return this.aggregateAmountByDay(data, 'createdAt', days);
         }
@@ -100,15 +100,17 @@ let DashboardService = class DashboardService {
             d.setDate(d.getDate() - i);
             result[d.toISOString().split('T')[0]] = 0;
         }
-        data.forEach(item => {
+        data.forEach((item) => {
             const dateStr = new Date(item[dateField]).toISOString().split('T')[0];
             if (result[dateStr] !== undefined) {
                 result[dateStr]++;
             }
         });
-        return Object.keys(result).sort().map(date => ({
+        return Object.keys(result)
+            .sort()
+            .map((date) => ({
             date,
-            count: result[date]
+            count: result[date],
         }));
     }
     aggregateAmountByDay(data, dateField, days) {
@@ -120,15 +122,17 @@ let DashboardService = class DashboardService {
             d.setDate(d.getDate() - i);
             result[d.toISOString().split('T')[0]] = 0;
         }
-        data.forEach(item => {
+        data.forEach((item) => {
             const dateStr = new Date(item[dateField]).toISOString().split('T')[0];
             if (result[dateStr] !== undefined) {
                 result[dateStr] += item.amount;
             }
         });
-        return Object.keys(result).sort().map(date => ({
+        return Object.keys(result)
+            .sort()
+            .map((date) => ({
             date,
-            totalAmount: result[date]
+            totalAmount: result[date],
         }));
     }
 };

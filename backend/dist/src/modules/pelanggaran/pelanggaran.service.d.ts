@@ -5,15 +5,15 @@ export declare class PelanggaranService {
     constructor(prisma: PrismaService);
     createPelanggaran(tenantId: string, dto: CreatePelanggaranDto, recordedBy: string): Promise<{
         id: string;
-        tenantId: string;
         createdAt: Date;
         updatedAt: Date;
+        tenantId: string;
         santriId: string;
         description: string;
         date: Date;
         category: string;
-        recordedBy: string;
         severity: number;
+        recordedBy: string;
         points: number;
         resolved: boolean;
     }>;
@@ -24,25 +24,25 @@ export declare class PelanggaranService {
         };
     } & {
         id: string;
-        tenantId: string;
         createdAt: Date;
         updatedAt: Date;
+        tenantId: string;
         santriId: string;
         description: string;
         date: Date;
         category: string;
-        recordedBy: string;
         severity: number;
+        recordedBy: string;
         points: number;
         resolved: boolean;
     })[]>;
     createPembinaan(tenantId: string, dto: CreatePembinaanDto): Promise<{
         id: string;
-        tenantId: string;
-        createdAt: Date;
-        updatedAt: Date;
         plan: string;
         status: string;
+        createdAt: Date;
+        updatedAt: Date;
+        tenantId: string;
         santriId: string;
         targetDate: Date;
         assignedTo: string;
@@ -53,11 +53,11 @@ export declare class PelanggaranService {
         };
     } & {
         id: string;
-        tenantId: string;
-        createdAt: Date;
-        updatedAt: Date;
         plan: string;
         status: string;
+        createdAt: Date;
+        updatedAt: Date;
+        tenantId: string;
         santriId: string;
         targetDate: Date;
         assignedTo: string;

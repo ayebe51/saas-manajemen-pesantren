@@ -5,13 +5,13 @@ export declare class CatatanController {
     constructor(catatanService: CatatanService);
     createCatatan(createCatatanDto: CreateCatatanDto, tenantId: string, req: any): Promise<{
         id: string;
-        tenantId: string;
         createdAt: Date;
         updatedAt: Date;
+        tenantId: string;
         santriId: string;
-        content: string;
         authorId: string;
         date: Date;
+        content: string;
         category: string;
         attachments: string | null;
     }>;
@@ -22,21 +22,21 @@ export declare class CatatanController {
         };
     } & {
         id: string;
-        tenantId: string;
         createdAt: Date;
         updatedAt: Date;
+        tenantId: string;
         santriId: string;
-        content: string;
         authorId: string;
         date: Date;
+        content: string;
         category: string;
         attachments: string | null;
     })[]>;
     createPengumuman(createPengumumanDto: CreatePengumumanDto, tenantId: string): Promise<{
         id: string;
-        tenantId: string;
         createdAt: Date;
         updatedAt: Date;
+        tenantId: string;
         content: string;
         title: string;
         audience: string;
@@ -44,9 +44,9 @@ export declare class CatatanController {
     }>;
     findAllPengumuman(tenantId: string, audience?: string): Promise<{
         id: string;
-        tenantId: string;
         createdAt: Date;
         updatedAt: Date;
+        tenantId: string;
         content: string;
         title: string;
         audience: string;

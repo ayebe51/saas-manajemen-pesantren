@@ -25,9 +25,9 @@ let PerizinanService = PerizinanService_1 = class PerizinanService {
             include: {
                 walis: {
                     where: { isPrimary: true },
-                    include: { wali: true }
-                }
-            }
+                    include: { wali: true },
+                },
+            },
         });
         if (!santri) {
             throw new common_1.NotFoundException('Santri not found');
@@ -43,8 +43,8 @@ let PerizinanService = PerizinanService_1 = class PerizinanService {
                 endAt: new Date(createIzinDto.endAt),
                 status: 'PENDING',
                 requestedBy,
-                qrCodeData
-            }
+                qrCodeData,
+            },
         });
         if (santri.walis.length > 0) {
             this.logger.log(`[Job Trigger] Send WA approval link to Wali: ${santri.walis[0].wali.phone} for Izin ${izin.id}`);
@@ -60,9 +60,9 @@ let PerizinanService = PerizinanService_1 = class PerizinanService {
         return this.prisma.izin.findMany({
             where: whereClause,
             include: {
-                santri: { select: { name: true, kelas: true, room: true } }
+                santri: { select: { name: true, kelas: true, room: true } },
             },
-            orderBy: { createdAt: 'desc' }
+            orderBy: { createdAt: 'desc' },
         });
     }
     async findOne(id, tenantId) {
@@ -71,10 +71,10 @@ let PerizinanService = PerizinanService_1 = class PerizinanService {
             include: {
                 santri: {
                     include: {
-                        walis: { include: { wali: true } }
-                    }
-                }
-            }
+                        walis: { include: { wali: true } },
+                    },
+                },
+            },
         });
         if (!izin) {
             throw new common_1.NotFoundException(`Izin with ID ${id} not found`);
@@ -83,7 +83,7 @@ let PerizinanService = PerizinanService_1 = class PerizinanService {
     }
     async approve(id, approveIzinDto) {
         const izin = await this.prisma.izin.findUnique({
-            where: { id }
+            where: { id },
         });
         if (!izin) {
             throw new common_1.NotFoundException('Izin request not found');
@@ -95,9 +95,9 @@ let PerizinanService = PerizinanService_1 = class PerizinanService {
             where: {
                 santriId_waliId: {
                     santriId: izin.santriId,
-                    waliId: approveIzinDto.waliId
-                }
-            }
+                    waliId: approveIzinDto.waliId,
+                },
+            },
         });
         if (!waliLink) {
             throw new common_1.BadRequestException('Wali is not linked to this Santri');
@@ -107,8 +107,8 @@ let PerizinanService = PerizinanService_1 = class PerizinanService {
             data: {
                 status: approveIzinDto.status,
                 approvedBy: approveIzinDto.waliId,
-                approvedAt: new Date()
-            }
+                approvedAt: new Date(),
+            },
         });
     }
     async checkout(id, tenantId, operatorId) {
@@ -122,8 +122,8 @@ let PerizinanService = PerizinanService_1 = class PerizinanService {
             data: {
                 status: 'CHECKED_OUT',
                 checkoutAt: now,
-                checkoutBy: operatorId
-            }
+                checkoutBy: operatorId,
+            },
         });
     }
     async checkin(id, tenantId, operatorId) {
@@ -137,8 +137,8 @@ let PerizinanService = PerizinanService_1 = class PerizinanService {
             data: {
                 status: 'CHECKED_IN',
                 checkinAt: now,
-                checkinBy: operatorId
-            }
+                checkinBy: operatorId,
+            },
         });
     }
 };

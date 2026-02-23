@@ -35,7 +35,7 @@ let TenantService = class TenantService {
                 _count: {
                     select: { users: true, santri: true },
                 },
-            }
+            },
         });
     }
     async findOne(id) {
@@ -45,7 +45,7 @@ let TenantService = class TenantService {
                 _count: {
                     select: { users: true, santri: true },
                 },
-            }
+            },
         });
         if (!tenant) {
             throw new common_1.NotFoundException(`Tenant with ID ${id} not found`);
@@ -79,6 +79,12 @@ let TenantService = class TenantService {
             catch (e) { }
         }
         return updatedTenant;
+    }
+    async remove(id) {
+        await this.findOne(id);
+        return this.prisma.tenant.delete({
+            where: { id },
+        });
     }
 };
 exports.TenantService = TenantService;

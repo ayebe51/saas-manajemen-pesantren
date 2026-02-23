@@ -5,7 +5,7 @@ import {
   OnGatewayConnection,
   OnGatewayDisconnect,
   MessageBody,
-  ConnectedSocket
+  ConnectedSocket,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { Logger, UseGuards } from '@nestjs/common';
@@ -26,13 +26,14 @@ export class NotificationGateway implements OnGatewayConnection, OnGatewayDiscon
 
   constructor(
     private jwtService: JwtService,
-    private configService: ConfigService
+    private configService: ConfigService,
   ) {}
 
   async handleConnection(client: Socket) {
     try {
-      const token = client.handshake.auth.token || client.handshake.headers.authorization?.split(' ')[1];
-      
+      const token =
+        client.handshake.auth.token || client.handshake.headers.authorization?.split(' ')[1];
+
       if (!token) {
         client.disconnect();
         return;
@@ -44,7 +45,7 @@ export class NotificationGateway implements OnGatewayConnection, OnGatewayDiscon
 
       // Join a room specifically for this user to receive direct notifications
       client.join(`user_${payload.sub}`);
-      
+
       // Join a room for tenant-wide broadcasts
       if (payload.tenantId) {
         client.join(`tenant_${payload.tenantId}`);
@@ -52,7 +53,6 @@ export class NotificationGateway implements OnGatewayConnection, OnGatewayDiscon
 
       this.connectedClients.set(client.id, payload.sub);
       this.logger.log(`Client connected: ${client.id} (User: ${payload.sub})`);
-
     } catch (err) {
       this.logger.error(`Connection error: ${err.message}`);
       client.disconnect();

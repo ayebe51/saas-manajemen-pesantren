@@ -5,15 +5,15 @@ export declare class PelanggaranController {
     constructor(pelanggaranService: PelanggaranService);
     createPelanggaran(dto: CreatePelanggaranDto, tenantId: string, req: any): Promise<{
         id: string;
-        tenantId: string;
         createdAt: Date;
         updatedAt: Date;
+        tenantId: string;
         santriId: string;
         description: string;
         date: Date;
         category: string;
-        recordedBy: string;
         severity: number;
+        recordedBy: string;
         points: number;
         resolved: boolean;
     }>;
@@ -24,25 +24,25 @@ export declare class PelanggaranController {
         };
     } & {
         id: string;
-        tenantId: string;
         createdAt: Date;
         updatedAt: Date;
+        tenantId: string;
         santriId: string;
         description: string;
         date: Date;
         category: string;
-        recordedBy: string;
         severity: number;
+        recordedBy: string;
         points: number;
         resolved: boolean;
     })[]>;
     createPembinaan(dto: CreatePembinaanDto, tenantId: string): Promise<{
         id: string;
-        tenantId: string;
-        createdAt: Date;
-        updatedAt: Date;
         plan: string;
         status: string;
+        createdAt: Date;
+        updatedAt: Date;
+        tenantId: string;
         santriId: string;
         targetDate: Date;
         assignedTo: string;
@@ -53,11 +53,11 @@ export declare class PelanggaranController {
         };
     } & {
         id: string;
-        tenantId: string;
-        createdAt: Date;
-        updatedAt: Date;
         plan: string;
         status: string;
+        createdAt: Date;
+        updatedAt: Date;
+        tenantId: string;
         santriId: string;
         targetDate: Date;
         assignedTo: string;

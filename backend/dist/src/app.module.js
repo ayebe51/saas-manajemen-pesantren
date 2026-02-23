@@ -30,6 +30,15 @@ const notification_module_1 = require("./modules/notification/notification.modul
 const jobs_module_1 = require("./jobs/jobs.module");
 const upload_module_1 = require("./modules/upload/upload.module");
 const external_notification_module_1 = require("./modules/external-notification/external-notification.module");
+const tahfidz_module_1 = require("./modules/tahfidz/tahfidz.module");
+const wallet_module_1 = require("./modules/wallet/wallet.module");
+const academic_module_1 = require("./modules/academic/academic.module");
+const employee_module_1 = require("./modules/employee/employee.module");
+const audit_log_module_1 = require("./modules/audit-log/audit-log.module");
+const ppdb_module_1 = require("./modules/ppdb/ppdb.module");
+const inventory_module_1 = require("./modules/inventory/inventory.module");
+const dormitory_module_1 = require("./modules/dormitory/dormitory.module");
+const report_module_1 = require("./modules/report/report.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer
@@ -46,10 +55,12 @@ exports.AppModule = AppModule = __decorate([
                 isGlobal: true,
                 envFilePath: '.env',
             }),
-            throttler_1.ThrottlerModule.forRoot([{
+            throttler_1.ThrottlerModule.forRoot([
+                {
                     ttl: 60000,
                     limit: 100,
-                }]),
+                },
+            ]),
             bullmq_1.BullModule.forRootAsync({
                 imports: [config_1.ConfigModule],
                 useFactory: async (configService) => ({
@@ -76,6 +87,15 @@ exports.AppModule = AppModule = __decorate([
             jobs_module_1.JobsModule,
             upload_module_1.UploadModule,
             external_notification_module_1.ExternalNotificationModule,
+            tahfidz_module_1.TahfidzModule,
+            wallet_module_1.WalletModule,
+            academic_module_1.AcademicModule,
+            employee_module_1.EmployeeModule,
+            audit_log_module_1.AuditLogModule,
+            ppdb_module_1.PpdbModule,
+            inventory_module_1.InventoryModule,
+            dormitory_module_1.DormitoryModule,
+            report_module_1.ReportModule,
         ],
         providers: [
             {

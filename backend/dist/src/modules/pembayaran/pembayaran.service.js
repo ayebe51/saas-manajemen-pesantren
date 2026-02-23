@@ -30,9 +30,9 @@ let PembayaranService = PembayaranService_1 = class PembayaranService {
             where: whereClause,
             include: {
                 lines: true,
-                santri: { select: { name: true, nisn: true } }
+                santri: { select: { name: true, nisn: true } },
             },
-            orderBy: { dueDate: 'asc' }
+            orderBy: { dueDate: 'asc' },
         });
     }
     async generateInvoice(tenantId, dto) {
@@ -45,22 +45,22 @@ let PembayaranService = PembayaranService_1 = class PembayaranService {
                 dueDate: new Date(dto.dueDate),
                 status: 'UNPAID',
                 lines: {
-                    create: dto.lines.map(line => ({
+                    create: dto.lines.map((line) => ({
                         description: line.description,
                         amount: line.amount,
-                        type: line.type
-                    }))
-                }
+                        type: line.type,
+                    })),
+                },
             },
-            include: { lines: true }
+            include: { lines: true },
         });
     }
     async createPaymentIntent(tenantId, dto) {
         const invoice = await this.prisma.invoice.findFirst({
             where: { id: dto.invoiceId, tenantId },
             include: {
-                payments: true
-            }
+                payments: true,
+            },
         });
         if (!invoice) {
             throw new common_1.NotFoundException('Invoice not found');
@@ -69,7 +69,7 @@ let PembayaranService = PembayaranService_1 = class PembayaranService {
             throw new common_1.BadRequestException('Invoice is already paid fully');
         }
         const paidAmount = invoice.payments
-            .filter(p => p.status === 'SUCCESS')
+            .filter((p) => p.status === 'SUCCESS')
             .reduce((sum, p) => sum + p.amount, 0);
         const remainingBalance = invoice.amountDue - paidAmount;
         const amountToPay = dto.amount || remainingBalance;
@@ -79,7 +79,7 @@ let PembayaranService = PembayaranService_1 = class PembayaranService {
         const intent = await this.stripeService.createPaymentIntent(amountToPay, 'idr', {
             invoiceId: invoice.id,
             tenantId,
-            santriId: invoice.santriId
+            santriId: invoice.santriId,
         });
         await this.prisma.payment.create({
             data: {
@@ -87,27 +87,27 @@ let PembayaranService = PembayaranService_1 = class PembayaranService {
                 method: 'STRIPE',
                 amount: amountToPay,
                 status: 'PENDING',
-                transactionRef: intent.id
-            }
+                transactionRef: intent.id,
+            },
         });
         return {
             clientSecret: intent.client_secret,
             amount: amountToPay,
-            currency: 'idr'
+            currency: 'idr',
         };
     }
     async handleSuccessfulPayment(transactionRef, invoiceId, amount, tenantId) {
         this.logger.log(`Handling successful payment webhook: ${transactionRef} for invoice ${invoiceId}`);
         return this.prisma.$transaction(async (prisma) => {
             const existingPayment = await prisma.payment.findFirst({
-                where: { transactionRef }
+                where: { transactionRef },
             });
             if (existingPayment) {
                 if (existingPayment.status === 'SUCCESS')
                     return;
                 await prisma.payment.update({
                     where: { id: existingPayment.id },
-                    data: { status: 'SUCCESS', paidAt: new Date() }
+                    data: { status: 'SUCCESS', paidAt: new Date() },
                 });
             }
             else {
@@ -118,16 +118,16 @@ let PembayaranService = PembayaranService_1 = class PembayaranService {
                         amount,
                         status: 'SUCCESS',
                         transactionRef,
-                        paidAt: new Date()
-                    }
+                        paidAt: new Date(),
+                    },
                 });
             }
             const invoice = await prisma.invoice.findUnique({
                 where: { id: invoiceId },
-                include: { payments: { where: { status: 'SUCCESS' } } }
+                include: { payments: { where: { status: 'SUCCESS' } } },
             });
             const allPayments = await prisma.payment.findMany({
-                where: { invoiceId, status: 'SUCCESS' }
+                where: { invoiceId, status: 'SUCCESS' },
             });
             const totalPaid = allPayments.reduce((sum, p) => sum + p.amount, 0);
             let newStatus = 'PARTIAL';
@@ -136,7 +136,7 @@ let PembayaranService = PembayaranService_1 = class PembayaranService {
             }
             await prisma.invoice.update({
                 where: { id: invoiceId },
-                data: { status: newStatus }
+                data: { status: newStatus },
             });
             this.logger.log(`[Job Trigger] Generate Receipt PDF for invoice: ${invoiceId}`);
         });

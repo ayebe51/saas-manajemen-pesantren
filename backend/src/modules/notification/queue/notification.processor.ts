@@ -19,7 +19,7 @@ export class NotificationProcessor extends WorkerHost {
         const { phone, message } = job.data;
         await this.externalNotification.sendWhatsApp(phone, message);
         break;
-      
+
       case 'send-email':
         const { to, subject, body } = job.data;
         await this.externalNotification.sendEmail(to, subject, body);

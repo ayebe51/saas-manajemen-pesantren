@@ -18,7 +18,7 @@ let KunjunganService = class KunjunganService {
     }
     async create(tenantId, dto) {
         const santri = await this.prisma.santri.findFirst({
-            where: { id: dto.santriId, tenantId }
+            where: { id: dto.santriId, tenantId },
         });
         if (!santri) {
             throw new common_1.NotFoundException('Santri not found');
@@ -33,10 +33,10 @@ let KunjunganService = class KunjunganService {
                 slot: dto.slot,
                 scheduledAt: {
                     gte: targetDate,
-                    lt: nextDay
+                    lt: nextDay,
                 },
-                status: { not: 'CANCELLED' }
-            }
+                status: { not: 'CANCELLED' },
+            },
         });
         const MAX_VISITS_PER_SLOT = 50;
         if (existingVisits >= MAX_VISITS_PER_SLOT) {
@@ -49,8 +49,8 @@ let KunjunganService = class KunjunganService {
                 scheduledAt: new Date(dto.scheduledAt),
                 slot: dto.slot,
                 visitorLimit: dto.visitorLimit || 2,
-                status: 'SCHEDULED'
-            }
+                status: 'SCHEDULED',
+            },
         });
     }
     async findAll(tenantId, filters) {
@@ -64,16 +64,16 @@ let KunjunganService = class KunjunganService {
             nextDay.setDate(nextDay.getDate() + 1);
             whereClause.scheduledAt = {
                 gte: targetDate,
-                lt: nextDay
+                lt: nextDay,
             };
         }
         return this.prisma.kunjungan.findMany({
             where: whereClause,
             include: {
                 santri: { select: { name: true, room: true } },
-                tamu: true
+                tamu: true,
             },
-            orderBy: { scheduledAt: 'asc' }
+            orderBy: { scheduledAt: 'asc' },
         });
     }
     async getAvailableSlots(tenantId, dateStr) {
@@ -87,30 +87,30 @@ let KunjunganService = class KunjunganService {
                 tenantId,
                 scheduledAt: {
                     gte: targetDate,
-                    lt: nextDay
+                    lt: nextDay,
                 },
-                status: { not: 'CANCELLED' }
+                status: { not: 'CANCELLED' },
             },
             _count: {
-                id: true
-            }
+                id: true,
+            },
         });
         const MAX_VISITS_PER_SLOT = 50;
         const slots = ['MORNING', 'AFTERNOON'];
-        return slots.map(slot => {
-            const booked = visits.find(v => v.slot === slot)?._count.id || 0;
+        return slots.map((slot) => {
+            const booked = visits.find((v) => v.slot === slot)?._count.id || 0;
             return {
                 slot,
                 booked,
                 available: MAX_VISITS_PER_SLOT - booked,
-                isFull: booked >= MAX_VISITS_PER_SLOT
+                isFull: booked >= MAX_VISITS_PER_SLOT,
             };
         });
     }
     async checkin(id, tenantId, visitorName) {
         const visit = await this.prisma.kunjungan.findFirst({
             where: { id, tenantId },
-            include: { tamu: true }
+            include: { tamu: true },
         });
         if (!visit) {
             throw new common_1.NotFoundException('Visit not found');
@@ -127,13 +127,13 @@ let KunjunganService = class KunjunganService {
                 data: {
                     kunjunganId: id,
                     name: guestName,
-                    checkinAt: new Date()
-                }
+                    checkinAt: new Date(),
+                },
             });
             return prisma.kunjungan.update({
                 where: { id },
                 data: { status: 'CHECKED_IN' },
-                include: { tamu: true }
+                include: { tamu: true },
             });
         });
     }

@@ -23,9 +23,9 @@ export class PembayaranService {
       where: whereClause,
       include: {
         lines: true,
-        santri: { select: { name: true, nisn: true } }
+        santri: { select: { name: true, nisn: true } },
       },
-      orderBy: { dueDate: 'asc' }
+      orderBy: { dueDate: 'asc' },
     });
   }
 
@@ -41,14 +41,14 @@ export class PembayaranService {
         dueDate: new Date(dto.dueDate),
         status: 'UNPAID',
         lines: {
-          create: dto.lines.map(line => ({
+          create: dto.lines.map((line) => ({
             description: line.description,
             amount: line.amount,
-            type: line.type
-          }))
-        }
+            type: line.type,
+          })),
+        },
       },
-      include: { lines: true }
+      include: { lines: true },
     });
   }
 
@@ -58,8 +58,8 @@ export class PembayaranService {
     const invoice = await this.prisma.invoice.findFirst({
       where: { id: dto.invoiceId, tenantId },
       include: {
-        payments: true
-      }
+        payments: true,
+      },
     });
 
     if (!invoice) {
@@ -72,11 +72,11 @@ export class PembayaranService {
 
     // Calculate remaining balance
     const paidAmount = invoice.payments
-      .filter(p => p.status === 'SUCCESS')
+      .filter((p) => p.status === 'SUCCESS')
       .reduce((sum, p) => sum + p.amount, 0);
-      
+
     const remainingBalance = invoice.amountDue - paidAmount;
-    
+
     // Validate requested amount
     const amountToPay = dto.amount || remainingBalance;
     if (amountToPay > remainingBalance) {
@@ -90,8 +90,8 @@ export class PembayaranService {
       {
         invoiceId: invoice.id,
         tenantId,
-        santriId: invoice.santriId
-      }
+        santriId: invoice.santriId,
+      },
     );
 
     // Initial log of pending payment
@@ -101,32 +101,39 @@ export class PembayaranService {
         method: 'STRIPE',
         amount: amountToPay,
         status: 'PENDING',
-        transactionRef: intent.id
-      }
+        transactionRef: intent.id,
+      },
     });
 
     return {
       clientSecret: intent.client_secret,
       amount: amountToPay,
-      currency: 'idr'
+      currency: 'idr',
     };
   }
 
-  async handleSuccessfulPayment(transactionRef: string, invoiceId: string, amount: number, tenantId: string) {
-    this.logger.log(`Handling successful payment webhook: ${transactionRef} for invoice ${invoiceId}`);
+  async handleSuccessfulPayment(
+    transactionRef: string,
+    invoiceId: string,
+    amount: number,
+    tenantId: string,
+  ) {
+    this.logger.log(
+      `Handling successful payment webhook: ${transactionRef} for invoice ${invoiceId}`,
+    );
 
     return this.prisma.$transaction(async (prisma) => {
       // 1. Update the pending payment record, or create it if not exists yet
       const existingPayment = await prisma.payment.findFirst({
-        where: { transactionRef }
+        where: { transactionRef },
       });
 
       if (existingPayment) {
-        if (existingPayment.status === 'SUCCESS') return; // Idempotent 
-        
+        if (existingPayment.status === 'SUCCESS') return; // Idempotent
+
         await prisma.payment.update({
           where: { id: existingPayment.id },
-          data: { status: 'SUCCESS', paidAt: new Date() }
+          data: { status: 'SUCCESS', paidAt: new Date() },
         });
       } else {
         await prisma.payment.create({
@@ -136,24 +143,24 @@ export class PembayaranService {
             amount,
             status: 'SUCCESS',
             transactionRef,
-            paidAt: new Date()
-          }
+            paidAt: new Date(),
+          },
         });
       }
 
       // 2. Re-calculate invoice status
       const invoice = await prisma.invoice.findUnique({
         where: { id: invoiceId },
-        include: { payments: { where: { status: 'SUCCESS' } } }
+        include: { payments: { where: { status: 'SUCCESS' } } },
       });
 
       // Recalc based on the updated state + current webhook amount
-      // (The payment record should be included above since we updated it in TX, 
+      // (The payment record should be included above since we updated it in TX,
       // but just to be safe we sum it)
       const allPayments = await prisma.payment.findMany({
-          where: { invoiceId, status: 'SUCCESS' }
+        where: { invoiceId, status: 'SUCCESS' },
       });
-      
+
       const totalPaid = allPayments.reduce((sum, p) => sum + p.amount, 0);
 
       let newStatus = 'PARTIAL';
@@ -163,12 +170,11 @@ export class PembayaranService {
 
       await prisma.invoice.update({
         where: { id: invoiceId },
-        data: { status: newStatus }
+        data: { status: newStatus },
       });
 
       // Generate Invoice PDF Job trigger goes here
       this.logger.log(`[Job Trigger] Generate Receipt PDF for invoice: ${invoiceId}`);
-
     });
   }
 }

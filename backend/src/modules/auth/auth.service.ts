@@ -17,7 +17,7 @@ export class AuthService {
 
   async login(loginDto: LoginDto) {
     const { email, password, tenantId } = loginDto;
-    
+
     // Find user by email
     const user = await this.prisma.user.findUnique({
       where: { email },
@@ -46,12 +46,12 @@ export class AuthService {
     // Update last login
     await this.prisma.user.update({
       where: { id: user.id },
-      data: { lastLogin: new Date() }
+      data: { lastLogin: new Date() },
     });
 
     // Return sanitized user data
     const { passwordHash: _, ...sanitizedUser } = user;
-    
+
     return {
       accessToken,
       refreshToken,
@@ -73,7 +73,7 @@ export class AuthService {
       // Find token in database to check if it's revoked
       const savedToken = await this.prisma.refreshToken.findUnique({
         where: { token },
-        include: { user: true }
+        include: { user: true },
       });
 
       if (!savedToken || savedToken.revoked) {
@@ -95,9 +95,9 @@ export class AuthService {
           data: {
             userId: savedToken.user.id,
             token: newRefreshToken,
-            expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-          }
-        })
+            expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+          },
+        }),
       ]);
 
       const { passwordHash: _, ...sanitizedUser } = savedToken.user;
@@ -107,7 +107,6 @@ export class AuthService {
         newRefreshToken,
         user: sanitizedUser,
       };
-
     } catch (error) {
       this.logger.error(`Refresh token error: ${error.message}`);
       throw new UnauthorizedException('Invalid refresh token');
@@ -117,11 +116,11 @@ export class AuthService {
   async logout(userId: string, refreshToken: string) {
     try {
       await this.prisma.refreshToken.updateMany({
-        where: { 
-          userId, 
-          token: refreshToken 
+        where: {
+          userId,
+          token: refreshToken,
         },
-        data: { revoked: true }
+        data: { revoked: true },
       });
     } catch (error) {
       this.logger.error(`Logout error: ${error.message}`);
@@ -146,7 +145,7 @@ export class AuthService {
     const payload = {
       sub: user.id,
       email: user.email,
-      tokenType: 'refresh'
+      tokenType: 'refresh',
     };
 
     return this.jwtService.sign(payload, {

@@ -39,6 +39,9 @@ let TenantController = class TenantController {
         const updateId = req.user.role === 'SUPERADMIN' ? id : tenantId;
         return this.tenantService.update(updateId, updateTenantDto);
     }
+    remove(id) {
+        return this.tenantService.remove(id);
+    }
 };
 exports.TenantController = TenantController;
 __decorate([
@@ -82,6 +85,15 @@ __decorate([
     __metadata("design:paramtypes", [String, tenant_dto_1.UpdateTenantDto, String, Object]),
     __metadata("design:returntype", void 0)
 ], TenantController.prototype, "update", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    (0, roles_decorator_1.Roles)('SUPERADMIN'),
+    (0, swagger_1.ApiOperation)({ summary: 'Delete a tenant and all its data (Superadmin only)' }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], TenantController.prototype, "remove", null);
 exports.TenantController = TenantController = __decorate([
     (0, swagger_1.ApiTags)('Tenants'),
     (0, swagger_1.ApiBearerAuth)(),

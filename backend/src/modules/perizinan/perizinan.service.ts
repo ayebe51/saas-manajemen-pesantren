@@ -16,9 +16,9 @@ export class PerizinanService {
       include: {
         walis: {
           where: { isPrimary: true },
-          include: { wali: true }
-        }
-      }
+          include: { wali: true },
+        },
+      },
     });
 
     if (!santri) {
@@ -26,7 +26,7 @@ export class PerizinanService {
     }
 
     // Generate unique QR code data
-    const qrCodeData = `IZIN-${tenantId.substring(0,8)}-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`;
+    const qrCodeData = `IZIN-${tenantId.substring(0, 8)}-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`;
 
     const izin = await this.prisma.izin.create({
       data: {
@@ -38,13 +38,15 @@ export class PerizinanService {
         endAt: new Date(createIzinDto.endAt),
         status: 'PENDING',
         requestedBy,
-        qrCodeData
-      }
+        qrCodeData,
+      },
     });
 
     // Background Job triggering would happen here (e.g., Send WA to Wali via BullMQ)
     if (santri.walis.length > 0) {
-       this.logger.log(`[Job Trigger] Send WA approval link to Wali: ${santri.walis[0].wali.phone} for Izin ${izin.id}`);
+      this.logger.log(
+        `[Job Trigger] Send WA approval link to Wali: ${santri.walis[0].wali.phone} for Izin ${izin.id}`,
+      );
     }
 
     return izin;
@@ -52,16 +54,16 @@ export class PerizinanService {
 
   async findAll(tenantId: string, filters: { status?: string; santriId?: string }) {
     const whereClause: any = { tenantId };
-    
+
     if (filters.status) whereClause.status = filters.status;
     if (filters.santriId) whereClause.santriId = filters.santriId;
 
     return this.prisma.izin.findMany({
       where: whereClause,
       include: {
-        santri: { select: { name: true, kelas: true, room: true } }
+        santri: { select: { name: true, kelas: true, room: true } },
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     });
   }
 
@@ -71,10 +73,10 @@ export class PerizinanService {
       include: {
         santri: {
           include: {
-            walis: { include: { wali: true } }
-          }
-        }
-      }
+            walis: { include: { wali: true } },
+          },
+        },
+      },
     });
 
     if (!izin) {
@@ -88,7 +90,7 @@ export class PerizinanService {
     // In a public endpoint, we wouldn't have tenantId from the user context,
     // so we find by ID only. In reality, we'd verify the token.
     const izin = await this.prisma.izin.findUnique({
-      where: { id }
+      where: { id },
     });
 
     if (!izin) {
@@ -104,9 +106,9 @@ export class PerizinanService {
       where: {
         santriId_waliId: {
           santriId: izin.santriId,
-          waliId: approveIzinDto.waliId
-        }
-      }
+          waliId: approveIzinDto.waliId,
+        },
+      },
     });
 
     if (!waliLink) {
@@ -118,8 +120,8 @@ export class PerizinanService {
       data: {
         status: approveIzinDto.status, // APPROVED or REJECTED
         approvedBy: approveIzinDto.waliId,
-        approvedAt: new Date()
-      }
+        approvedAt: new Date(),
+      },
     });
   }
 
@@ -132,14 +134,14 @@ export class PerizinanService {
 
     // Ensure start time is valid (allow slightly early checkout in reality)
     const now = new Date();
-    
+
     return this.prisma.izin.update({
       where: { id },
       data: {
         status: 'CHECKED_OUT',
         checkoutAt: now,
-        checkoutBy: operatorId
-      }
+        checkoutBy: operatorId,
+      },
     });
   }
 
@@ -157,8 +159,8 @@ export class PerizinanService {
       data: {
         status: 'CHECKED_IN',
         checkinAt: now,
-        checkinBy: operatorId
-      }
+        checkinBy: operatorId,
+      },
     });
   }
 }

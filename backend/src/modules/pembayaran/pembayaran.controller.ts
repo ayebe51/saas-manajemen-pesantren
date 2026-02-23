@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Body, Param, Query, UseGuards, UseInterceptors, Req, BadRequestException, RawBodyRequest } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+  UseInterceptors,
+  Req,
+  BadRequestException,
+  RawBodyRequest,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { Request } from 'express';
 import { PembayaranService } from './pembayaran.service';
@@ -41,13 +53,9 @@ export class PembayaranController {
   @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS')
   @UseInterceptors(AuditLogInterceptor)
   @ApiOperation({ summary: 'Generate a new invoice manually' })
-  generateInvoice(
-    @Body() dto: GenerateInvoiceDto,
-    @TenantId() tenantId: string,
-  ) {
+  generateInvoice(@Body() dto: GenerateInvoiceDto, @TenantId() tenantId: string) {
     return this.pembayaranService.generateInvoice(tenantId, dto);
   }
-
 
   // --- PAYMENTS ---
 
@@ -55,10 +63,7 @@ export class PembayaranController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Create Stripe Payment Intent for an invoice' })
-  createPaymentIntent(
-    @Body() dto: CreatePaymentIntentDto,
-    @TenantId() tenantId: string,
-  ) {
+  createPaymentIntent(@Body() dto: CreatePaymentIntentDto, @TenantId() tenantId: string) {
     return this.pembayaranService.createPaymentIntent(tenantId, dto);
   }
 
@@ -67,7 +72,7 @@ export class PembayaranController {
   @ApiOperation({ summary: 'Stripe webhook endpoint for payment confirmation' })
   async handleStripeWebhook(@Req() request: RawBodyRequest<Request>) {
     const signature = request.headers['stripe-signature'];
-    
+
     if (!signature && process.env.NODE_ENV === 'production') {
       throw new BadRequestException('Missing stripe-signature header');
     }
@@ -78,8 +83,8 @@ export class PembayaranController {
       // but for simplicity in this boiler plate, we'll assume it's handled or use the parsed body format
       // as our mock StripeService can handle it.
       event = this.stripeService.constructEvent(
-        request.rawBody || JSON.stringify(request.body), 
-        signature as string
+        request.rawBody || JSON.stringify(request.body),
+        signature as string,
       );
     } catch (err) {
       throw new BadRequestException(`Webhook Error: ${err.message}`);
@@ -91,7 +96,7 @@ export class PembayaranController {
         paymentIntent.id,
         paymentIntent.metadata.invoiceId,
         paymentIntent.amount,
-        paymentIntent.metadata.tenantId
+        paymentIntent.metadata.tenantId,
       );
     }
 

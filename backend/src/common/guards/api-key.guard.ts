@@ -6,7 +6,7 @@ import { PrismaService } from '../prisma/prisma.service';
 export class ApiKeyGuard implements CanActivate {
   constructor(
     private configService: ConfigService,
-    private prisma: PrismaService  
+    private prisma: PrismaService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -20,20 +20,21 @@ export class ApiKeyGuard implements CanActivate {
     // Example Simple Implementation: Master API Key from ENV
     const masterKey = this.configService.get<string>('MASTER_API_KEY');
     if (masterKey && apiKey === masterKey) {
-        // Master key bypasses tenant restriction, or requires tenantId in header/body
-        return true;
+      // Master key bypasses tenant restriction, or requires tenantId in header/body
+      return true;
     }
 
     // Advanced Implementation: Look up API Key in database
     // Simplified since SQLite doesn't easily support JSON filtering natively in Prisma without specific schema
     const tenant = await this.prisma.tenant.findFirst();
     if (tenant && tenant.settings) {
-       // Validate inside logic rather than db query for this boilerplate
-       const settingsObj = typeof tenant.settings === 'string' ? JSON.parse(tenant.settings) : tenant.settings;
-       if (settingsObj && settingsObj.apiKey === apiKey) {
-         request['tenantId'] = tenant.id;
-         return true;
-       }
+      // Validate inside logic rather than db query for this boilerplate
+      const settingsObj =
+        typeof tenant.settings === 'string' ? JSON.parse(tenant.settings) : tenant.settings;
+      if (settingsObj && settingsObj.apiKey === apiKey) {
+        request['tenantId'] = tenant.id;
+        return true;
+      }
     }
 
     if (!tenant) {

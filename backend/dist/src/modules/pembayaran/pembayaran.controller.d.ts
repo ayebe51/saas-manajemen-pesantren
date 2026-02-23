@@ -16,15 +16,15 @@ export declare class PembayaranController {
             id: string;
             type: string;
             description: string;
-            invoiceId: string;
             amount: number;
+            invoiceId: string;
         }[];
     } & {
         id: string;
-        tenantId: string;
+        status: string;
         createdAt: Date;
         updatedAt: Date;
-        status: string;
+        tenantId: string;
         santriId: string;
         amountDue: number;
         dueDate: Date;
@@ -34,15 +34,15 @@ export declare class PembayaranController {
             id: string;
             type: string;
             description: string;
-            invoiceId: string;
             amount: number;
+            invoiceId: string;
         }[];
     } & {
         id: string;
-        tenantId: string;
+        status: string;
         createdAt: Date;
         updatedAt: Date;
-        status: string;
+        tenantId: string;
         santriId: string;
         amountDue: number;
         dueDate: Date;

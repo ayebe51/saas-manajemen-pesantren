@@ -34,10 +34,10 @@ let SantriService = class SantriService {
             where: whereClause,
             include: {
                 walis: {
-                    include: { wali: true }
-                }
+                    include: { wali: true },
+                },
             },
-            orderBy: { name: 'asc' }
+            orderBy: { name: 'asc' },
         });
     }
     async findOne(id, tenantId) {
@@ -45,12 +45,12 @@ let SantriService = class SantriService {
             where: { id, tenantId },
             include: {
                 walis: {
-                    include: { wali: true }
+                    include: { wali: true },
                 },
                 _count: {
-                    select: { izin: true, pelanggaran: true, invoices: true }
-                }
-            }
+                    select: { izin: true, pelanggaran: true, invoices: true },
+                },
+            },
         });
         if (!santri) {
             throw new common_1.NotFoundException(`Santri with ID ${id} not found`);
@@ -67,7 +67,7 @@ let SantriService = class SantriService {
     async addWali(santriId, tenantId, createWaliDto) {
         await this.findOne(santriId, tenantId);
         const existingLinks = await this.prisma.santriWali.count({
-            where: { santriId }
+            where: { santriId },
         });
         const isPrimary = existingLinks === 0;
         return this.prisma.$transaction(async (prisma) => {
@@ -75,14 +75,14 @@ let SantriService = class SantriService {
                 data: {
                     ...createWaliDto,
                     tenantId,
-                }
+                },
             });
             await prisma.santriWali.create({
                 data: {
                     santriId,
                     waliId: wali.id,
-                    isPrimary
-                }
+                    isPrimary,
+                },
             });
             return wali;
         });
@@ -90,26 +90,26 @@ let SantriService = class SantriService {
     async linkWali(santriId, waliId, tenantId) {
         await this.findOne(santriId, tenantId);
         const wali = await this.prisma.wali.findFirst({
-            where: { id: waliId, tenantId }
+            where: { id: waliId, tenantId },
         });
         if (!wali) {
             throw new common_1.NotFoundException(`Wali with ID ${waliId} not found`);
         }
         const existingLink = await this.prisma.santriWali.findUnique({
-            where: { santriId_waliId: { santriId, waliId } }
+            where: { santriId_waliId: { santriId, waliId } },
         });
         if (existingLink) {
             return existingLink;
         }
         const existingLinksCount = await this.prisma.santriWali.count({
-            where: { santriId }
+            where: { santriId },
         });
         return this.prisma.santriWali.create({
             data: {
                 santriId,
                 waliId,
-                isPrimary: existingLinksCount === 0
-            }
+                isPrimary: existingLinksCount === 0,
+            },
         });
     }
 };

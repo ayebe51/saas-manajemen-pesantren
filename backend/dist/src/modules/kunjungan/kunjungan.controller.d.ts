@@ -5,10 +5,10 @@ export declare class KunjunganController {
     constructor(kunjunganService: KunjunganService);
     create(dto: CreateKunjunganDto, tenantId: string): Promise<{
         id: string;
-        tenantId: string;
+        status: string;
         createdAt: Date;
         updatedAt: Date;
-        status: string;
+        tenantId: string;
         santriId: string;
         scheduledAt: Date;
         slot: string;
@@ -30,10 +30,10 @@ export declare class KunjunganController {
         }[];
     } & {
         id: string;
-        tenantId: string;
+        status: string;
         createdAt: Date;
         updatedAt: Date;
-        status: string;
+        tenantId: string;
         santriId: string;
         scheduledAt: Date;
         slot: string;
@@ -57,10 +57,10 @@ export declare class KunjunganController {
         }[];
     } & {
         id: string;
-        tenantId: string;
+        status: string;
         createdAt: Date;
         updatedAt: Date;
-        status: string;
+        tenantId: string;
         santriId: string;
         scheduledAt: Date;
         slot: string;

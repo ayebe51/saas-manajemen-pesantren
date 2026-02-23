@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Param, Query, UseGuards, UseInterceptors, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+  UseInterceptors,
+  Req,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { KunjunganService } from './kunjungan.service';
 import { CreateKunjunganDto } from './dto/kunjungan.dto';
@@ -19,10 +29,7 @@ export class KunjunganController {
   @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS') // Assuming Wali has an app, they would have a restricted role or a public endpoint with API key
   @UseInterceptors(AuditLogInterceptor)
   @ApiOperation({ summary: 'Book a new visit' })
-  create(
-    @Body() dto: CreateKunjunganDto,
-    @TenantId() tenantId: string,
-  ) {
+  create(@Body() dto: CreateKunjunganDto, @TenantId() tenantId: string) {
     return this.kunjunganService.create(tenantId, dto);
   }
 
@@ -41,10 +48,7 @@ export class KunjunganController {
   @Get('slots')
   @ApiOperation({ summary: 'Get available slots for a specific date' })
   @ApiQuery({ name: 'date', required: true, description: 'YYYY-MM-DD' })
-  getSlots(
-    @TenantId() tenantId: string,
-    @Query('date') date: string,
-  ) {
+  getSlots(@TenantId() tenantId: string, @Query('date') date: string) {
     return this.kunjunganService.getAvailableSlots(tenantId, date);
   }
 

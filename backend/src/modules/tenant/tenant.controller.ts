@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Req } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { TenantService } from './tenant.service';
 import { CreateTenantDto, UpdateTenantDto } from './dto/tenant.dto';
@@ -43,9 +43,16 @@ export class TenantController {
     @Param('id') id: string,
     @Body() updateTenantDto: UpdateTenantDto,
     @TenantId() tenantId: string,
-    @Req() req: any
+    @Req() req: any,
   ) {
     const updateId = req.user.role === 'SUPERADMIN' ? id : tenantId;
     return this.tenantService.update(updateId, updateTenantDto);
+  }
+
+  @Delete(':id')
+  @Roles('SUPERADMIN')
+  @ApiOperation({ summary: 'Delete a tenant and all its data (Superadmin only)' })
+  remove(@Param('id') id: string) {
+    return this.tenantService.remove(id);
   }
 }

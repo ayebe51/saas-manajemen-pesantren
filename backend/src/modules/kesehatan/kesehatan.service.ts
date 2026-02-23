@@ -14,9 +14,9 @@ export class KesehatanService {
       include: {
         walis: {
           where: { isPrimary: true },
-          include: { wali: true }
-        }
-      }
+          include: { wali: true },
+        },
+      },
     });
 
     if (!santri) {
@@ -32,12 +32,14 @@ export class KesehatanService {
         diagnosis: dto.diagnosis,
         actionTaken: dto.actionTaken,
         referred: dto.referred || false,
-      }
+      },
     });
 
     if (dto.referred && santri.walis.length > 0) {
       // Trigger notification if referred to hospital/clinic
-      this.logger.log(`[Job Trigger] Send WA Alert Health Referral to Wali: ${santri.walis[0].wali.phone} for Santri ${santri.name}`);
+      this.logger.log(
+        `[Job Trigger] Send WA Alert Health Referral to Wali: ${santri.walis[0].wali.phone} for Santri ${santri.name}`,
+      );
     }
 
     return record;
@@ -50,15 +52,15 @@ export class KesehatanService {
     return this.prisma.healthRecord.findMany({
       where: whereClause,
       include: {
-        santri: { select: { name: true, room: true } }
+        santri: { select: { name: true, room: true } },
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     });
   }
 
   async createMedication(tenantId: string, dto: CreateMedicationDto) {
     const santri = await this.prisma.santri.findFirst({
-      where: { id: dto.santriId, tenantId }
+      where: { id: dto.santriId, tenantId },
     });
 
     if (!santri) {
@@ -71,14 +73,14 @@ export class KesehatanService {
         medicineName: dto.medicineName,
         dose: dto.dose,
         schedule: dto.schedule,
-      }
+      },
     });
   }
 
   async markMedicationGiven(medicationId: string, tenantId: string, userId: string) {
     const med = await this.prisma.medication.findUnique({
       where: { id: medicationId },
-      include: { santri: true }
+      include: { santri: true },
     });
 
     if (!med || med.santri.tenantId !== tenantId) {
@@ -90,7 +92,7 @@ export class KesehatanService {
       data: {
         givenBy: userId,
         givenAt: new Date(),
-      }
+      },
     });
   }
 }

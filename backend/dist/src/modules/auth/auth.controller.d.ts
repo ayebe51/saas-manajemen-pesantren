@@ -9,15 +9,15 @@ export declare class AuthController {
         accessToken: string;
         user: {
             id: string;
-            email: string;
-            tenantId: string | null;
-            role: string;
             name: string;
             phone: string | null;
-            isActive: boolean;
-            lastLogin: Date | null;
             createdAt: Date;
             updatedAt: Date;
+            email: string;
+            role: string;
+            isActive: boolean;
+            lastLogin: Date | null;
+            tenantId: string | null;
         };
     }>;
     refresh(request: Request, response: Response): Promise<{
@@ -25,15 +25,15 @@ export declare class AuthController {
         accessToken: string;
         user: {
             id: string;
-            email: string;
-            tenantId: string | null;
-            role: string;
             name: string;
             phone: string | null;
-            isActive: boolean;
-            lastLogin: Date | null;
             createdAt: Date;
             updatedAt: Date;
+            email: string;
+            role: string;
+            isActive: boolean;
+            lastLogin: Date | null;
+            tenantId: string | null;
         };
     }>;
     logout(request: any, response: Response): Promise<{

@@ -10,7 +10,7 @@ export class CatatanService {
 
   async createCatatan(tenantId: string, createCatatanDto: CreateCatatanDto, authorId: string) {
     const santri = await this.prisma.santri.findFirst({
-      where: { id: createCatatanDto.santriId, tenantId }
+      where: { id: createCatatanDto.santriId, tenantId },
     });
 
     if (!santri) {
@@ -22,13 +22,13 @@ export class CatatanService {
         tenantId,
         authorId,
         ...createCatatanDto,
-      }
+      },
     });
   }
 
   async findAllCatatan(tenantId: string, santriId?: string) {
     const whereClause: any = { tenantId };
-    
+
     if (santriId) {
       whereClause.santriId = santriId;
     }
@@ -36,9 +36,9 @@ export class CatatanService {
     return this.prisma.catatanHarian.findMany({
       where: whereClause,
       include: {
-        santri: { select: { name: true, kelas: true } }
+        santri: { select: { name: true, kelas: true } },
       },
-      orderBy: { date: 'desc' }
+      orderBy: { date: 'desc' },
     });
   }
 
@@ -49,13 +49,13 @@ export class CatatanService {
       data: {
         tenantId,
         ...createPengumumanDto,
-      }
+      },
     });
   }
 
   async findAllPengumuman(tenantId: string, audience?: string) {
     const whereClause: any = { tenantId };
-    
+
     if (audience) {
       // Logic for filtering audience can be expanded (e.g. ALL + specific audience)
       whereClause.audience = audience;
@@ -63,7 +63,7 @@ export class CatatanService {
 
     return this.prisma.pengumuman.findMany({
       where: whereClause,
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
     });
   }
 }

@@ -18,7 +18,7 @@ let PelanggaranService = class PelanggaranService {
     }
     async createPelanggaran(tenantId, dto, recordedBy) {
         const santri = await this.prisma.santri.findFirst({
-            where: { id: dto.santriId, tenantId }
+            where: { id: dto.santriId, tenantId },
         });
         if (!santri) {
             throw new common_1.NotFoundException('Santri not found');
@@ -33,8 +33,8 @@ let PelanggaranService = class PelanggaranService {
                 category: dto.category,
                 severity: dto.severity,
                 points,
-                description: dto.description
-            }
+                description: dto.description,
+            },
         });
     }
     async findAllPelanggaran(tenantId, santriId) {
@@ -44,14 +44,14 @@ let PelanggaranService = class PelanggaranService {
         return this.prisma.pelanggaran.findMany({
             where: whereClause,
             include: {
-                santri: { select: { name: true, kelas: true } }
+                santri: { select: { name: true, kelas: true } },
             },
-            orderBy: { date: 'desc' }
+            orderBy: { date: 'desc' },
         });
     }
     async createPembinaan(tenantId, dto) {
         const santri = await this.prisma.santri.findFirst({
-            where: { id: dto.santriId, tenantId }
+            where: { id: dto.santriId, tenantId },
         });
         if (!santri) {
             throw new common_1.NotFoundException('Santri not found');
@@ -63,8 +63,8 @@ let PelanggaranService = class PelanggaranService {
                 plan: dto.plan,
                 targetDate: new Date(dto.targetDate),
                 assignedTo: dto.assignedTo,
-                status: 'ONGOING'
-            }
+                status: 'ONGOING',
+            },
         });
     }
     async findAllPembinaan(tenantId, santriId) {
@@ -74,9 +74,9 @@ let PelanggaranService = class PelanggaranService {
         return this.prisma.pembinaan.findMany({
             where: whereClause,
             include: {
-                santri: { select: { name: true } }
+                santri: { select: { name: true } },
             },
-            orderBy: { targetDate: 'asc' }
+            orderBy: { targetDate: 'asc' },
         });
     }
 };

@@ -18,7 +18,7 @@ let CatatanService = class CatatanService {
     }
     async createCatatan(tenantId, createCatatanDto, authorId) {
         const santri = await this.prisma.santri.findFirst({
-            where: { id: createCatatanDto.santriId, tenantId }
+            where: { id: createCatatanDto.santriId, tenantId },
         });
         if (!santri) {
             throw new common_1.NotFoundException('Santri not found');
@@ -28,7 +28,7 @@ let CatatanService = class CatatanService {
                 tenantId,
                 authorId,
                 ...createCatatanDto,
-            }
+            },
         });
     }
     async findAllCatatan(tenantId, santriId) {
@@ -39,9 +39,9 @@ let CatatanService = class CatatanService {
         return this.prisma.catatanHarian.findMany({
             where: whereClause,
             include: {
-                santri: { select: { name: true, kelas: true } }
+                santri: { select: { name: true, kelas: true } },
             },
-            orderBy: { date: 'desc' }
+            orderBy: { date: 'desc' },
         });
     }
     async createPengumuman(tenantId, createPengumumanDto) {
@@ -49,7 +49,7 @@ let CatatanService = class CatatanService {
             data: {
                 tenantId,
                 ...createPengumumanDto,
-            }
+            },
         });
     }
     async findAllPengumuman(tenantId, audience) {
@@ -59,7 +59,7 @@ let CatatanService = class CatatanService {
         }
         return this.prisma.pengumuman.findMany({
             where: whereClause,
-            orderBy: { createdAt: 'desc' }
+            orderBy: { createdAt: 'desc' },
         });
     }
 };

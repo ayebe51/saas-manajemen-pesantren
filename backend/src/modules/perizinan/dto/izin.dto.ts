@@ -38,7 +38,7 @@ export class ApproveIzinDto {
   @IsString()
   @IsNotEmpty()
   status: string;
-  
+
   // A secure token sent to the wali's WA for approval without login
   @ApiPropertyOptional()
   @IsString()

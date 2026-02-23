@@ -4,7 +4,7 @@ import { PrismaService } from '../prisma/prisma.service';
 
 /**
  * Middleware to extract tenant_id from request headers
- * This is useful for public endpoints or when we want to 
+ * This is useful for public endpoints or when we want to
  * enforce tenant context before authentication.
  */
 @Injectable()

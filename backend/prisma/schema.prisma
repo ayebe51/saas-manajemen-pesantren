@@ -51,6 +51,19 @@ model Tenant {
   attendances    Attendance[]
   grades         Grade[]
 
+  // Tenants Relations for Phase 12 (Advanced ERP)
+  ppdbRegistrations     PpdbRegistration[]
+  ppdbDocuments         PpdbDocument[]
+  ppdbExams             PpdbExam[]
+  inventoryItems        Item[]
+  inventoryTransactions InventoryTransaction[]
+  suppliers             Supplier[]
+  purchaseOrders        PurchaseOrder[]
+  buildings             Building[]
+  rooms                 Room[]
+  roomAssignments       RoomAssignment[]
+  maintenanceTickets    MaintenanceTicket[]
+
   @@map("tenants")
 }
 
@@ -687,4 +700,243 @@ model Grade {
   @@index([tenantId])
   @@index([santriId])
   @@map("grades")
+}
+
+// -----------------------------------------------------------------------------
+// PHASE 12: PPDB, INVENTORY & COOPERATIVE, DORMITORY
+// -----------------------------------------------------------------------------
+
+// --- PPDB (Penerimaan Peserta Didik Baru) ---
+model PpdbRegistration {
+  id       String @id @default(uuid())
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  registrationNumber String @unique
+  fullName           String
+  gender             String // L or P
+  dob                DateTime?
+  previousSchool     String?
+  pathway             String @default("REGULER") // REGULER, PRESTASI, MUTASI
+
+  status   String @default("PENDING") // PENDING, DOCUMENTS_VERIFIED, EXAM_SCHEDULED, PASSED, FAILED, ACCEPTED
+  notes    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  documents PpdbDocument[]
+  exams     PpdbExam[]
+
+  @@index([tenantId])
+  @@map("ppdb_registrations")
+}
+
+model PpdbDocument {
+  id             String           @id @default(uuid())
+  tenantId       String
+  tenant         Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  registrationId String
+  registration   PpdbRegistration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+
+  documentType String // KK, AKTA, IJAZAH, PASFOTO
+  fileUrl      String // URL ke S3 atau lokal
+  isVerified   Boolean @default(false)
+  
+  createdAt    DateTime @default(now())
+
+  @@index([registrationId])
+  @@map("ppdb_documents")
+}
+
+model PpdbExam {
+  id             String           @id @default(uuid())
+  tenantId       String
+  tenant         Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  registrationId String
+  registration   PpdbRegistration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+
+  examType  String   // TES_TULIS, TES_WAWANCARA, TES_BACA_QURAN
+  examDate  DateTime
+  score     Float?
+  result    String?  // LULUS, TIDAK_LULUS
+  interviewer String? 
+  
+  createdAt DateTime @default(now())
+
+  @@index([registrationId])
+  @@map("ppdb_exams")
+}
+
+// --- Manajemen Inventori & Koperasi ---
+model Item {
+  id       String @id @default(uuid())
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  sku         String @unique
+  name        String
+  description String?
+  category    String // SERAGAM, BUKU, ALAT_TULIS, MAKANAN
+  
+  price       Float  // Harga Jual
+  costPrice   Float? // Harga Modal/Beli
+  stock       Int    @default(0)
+  minStock    Int    @default(5)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  transactions InventoryTransaction[]
+
+  @@index([tenantId])
+  @@map("items")
+}
+
+model InventoryTransaction {
+  id       String @id @default(uuid())
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  itemId String
+  item   Item   @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  type        String // IN, OUT, ADJUSTMENT
+  quantity    Int
+  reference   String? // e.g: "Pembelian dari Toko A", "Kasir #1234"
+  notes       String?
+  handledBy   String? // ID staff/admin
+
+  date        DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([itemId])
+  @@map("inventory_transactions")
+}
+
+model Supplier {
+  id       String @id @default(uuid())
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  name    String
+  contact String?
+  address String?
+  email   String?
+  
+  createdAt DateTime @default(now())
+
+  purchaseOrders PurchaseOrder[]
+
+  @@index([tenantId])
+  @@map("suppliers")
+}
+
+model PurchaseOrder {
+  id         String   @id @default(uuid())
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  supplierId String
+  supplier   Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+
+  poNumber   String   @unique
+  totalCost  Float
+  status     String   @default("DRAFT") // DRAFT, SENT, RECEIVED, PARTIAL, CANCELLED
+  orderDate  DateTime @default(now())
+  
+  notes      String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId])
+  @@map("purchase_orders")
+}
+
+// --- Manajemen Asrama (Dormitory) ---
+model Building {
+  id       String @id @default(uuid())
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  name        String
+  description String?
+  gender      String  // L or P (Asrama Putra/Putri)
+  capacity    Int     @default(0)
+
+  rooms       Room[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId])
+  @@map("buildings")
+}
+
+model Room {
+  id         String   @id @default(uuid())
+  tenantId   String
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  buildingId String
+  building   Building @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+
+  name        String
+  capacity    Int
+  picName     String? // Musyrif/Musyrifah Penanggung Jawab
+
+  assignments RoomAssignment[]
+  tickets     MaintenanceTicket[]
+
+  createdAt DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([buildingId])
+  @@map("rooms")
+}
+
+model RoomAssignment {
+  id       String @id @default(uuid())
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  roomId   String
+  room     Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  santriId String // Sengaja tidak hard-FK agar jika santri dihapus, riwayat kamarnya bisa tetap diakses jika butuh log, atau pakai string
+  
+  startDate DateTime @default(now())
+  endDate   DateTime?
+  status    String   @default("ACTIVE") // ACTIVE, MOVED, GRADUATED
+
+  @@index([tenantId])
+  @@index([roomId])
+  @@map("room_assignments")
+}
+
+model MaintenanceTicket {
+  id       String @id @default(uuid())
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  roomId   String
+  room     Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  title       String
+  description String
+  priority    String @default("MEDIUM") // LOW, MEDIUM, HIGH, CRITICAL
+  status      String @default("OPEN") // OPEN, IN_PROGRESS, RESOLVED, CLOSED
+  
+  reportedBy  String // UUID Pelapor
+  resolvedAt  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([tenantId])
+  @@index([roomId])
+  @@map("maintenance_tickets")
 }

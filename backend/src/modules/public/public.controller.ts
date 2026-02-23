@@ -16,11 +16,7 @@ export class PublicController {
 
   @Post('sync/santri')
   @ApiOperation({ summary: 'Bulk upsert Santri data from external SIM' })
-  async syncSantri(
-    @Body() dto: BulkSyncSantriDto,
-    @TenantId() tenantId: string,
-    @Req() req: any
-  ) {
+  async syncSantri(@Body() dto: BulkSyncSantriDto, @TenantId() tenantId: string, @Req() req: any) {
     this.logger.log(`Received bulk sync for ${dto.santri.length} santri at tenant ${tenantId}`);
     return this.publicService.bulkUpsertSantri(tenantId, dto);
   }

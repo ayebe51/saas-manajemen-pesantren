@@ -8,7 +8,7 @@ export class PelanggaranService {
 
   async createPelanggaran(tenantId: string, dto: CreatePelanggaranDto, recordedBy: string) {
     const santri = await this.prisma.santri.findFirst({
-      where: { id: dto.santriId, tenantId }
+      where: { id: dto.santriId, tenantId },
     });
 
     if (!santri) {
@@ -27,8 +27,8 @@ export class PelanggaranService {
         category: dto.category,
         severity: dto.severity,
         points,
-        description: dto.description
-      }
+        description: dto.description,
+      },
     });
   }
 
@@ -39,15 +39,15 @@ export class PelanggaranService {
     return this.prisma.pelanggaran.findMany({
       where: whereClause,
       include: {
-        santri: { select: { name: true, kelas: true } }
+        santri: { select: { name: true, kelas: true } },
       },
-      orderBy: { date: 'desc' }
+      orderBy: { date: 'desc' },
     });
   }
 
   async createPembinaan(tenantId: string, dto: CreatePembinaanDto) {
     const santri = await this.prisma.santri.findFirst({
-      where: { id: dto.santriId, tenantId }
+      where: { id: dto.santriId, tenantId },
     });
 
     if (!santri) {
@@ -61,8 +61,8 @@ export class PelanggaranService {
         plan: dto.plan,
         targetDate: new Date(dto.targetDate),
         assignedTo: dto.assignedTo,
-        status: 'ONGOING'
-      }
+        status: 'ONGOING',
+      },
     });
   }
 
@@ -73,9 +73,9 @@ export class PelanggaranService {
     return this.prisma.pembinaan.findMany({
       where: whereClause,
       include: {
-        santri: { select: { name: true } }
+        santri: { select: { name: true } },
       },
-      orderBy: { targetDate: 'asc' }
+      orderBy: { targetDate: 'asc' },
     });
   }
 }

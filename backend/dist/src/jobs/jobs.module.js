@@ -16,10 +16,7 @@ let JobsModule = class JobsModule {
 exports.JobsModule = JobsModule;
 exports.JobsModule = JobsModule = __decorate([
     (0, common_1.Module)({
-        imports: [
-            prisma_module_1.PrismaModule,
-            schedule_1.ScheduleModule.forRoot()
-        ],
+        imports: [prisma_module_1.PrismaModule, schedule_1.ScheduleModule.forRoot()],
         providers: [scheduled_service_1.ScheduledTasksService],
     })
 ], JobsModule);

@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Param, Put, Query, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Put,
+  Query,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { SantriService } from './santri.service';
 import { CreateSantriDto, UpdateSantriDto, CreateWaliDto } from './dto/santri.dto';

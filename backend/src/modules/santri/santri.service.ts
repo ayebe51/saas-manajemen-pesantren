@@ -17,7 +17,7 @@ export class SantriService {
 
   async findAll(tenantId: string, filters: { kelas?: string; room?: string }) {
     const whereClause: any = { tenantId };
-    
+
     if (filters.kelas) whereClause.kelas = filters.kelas;
     if (filters.room) whereClause.room = filters.room;
 
@@ -25,10 +25,10 @@ export class SantriService {
       where: whereClause,
       include: {
         walis: {
-          include: { wali: true }
-        }
+          include: { wali: true },
+        },
       },
-      orderBy: { name: 'asc' }
+      orderBy: { name: 'asc' },
     });
   }
 
@@ -37,12 +37,12 @@ export class SantriService {
       where: { id, tenantId },
       include: {
         walis: {
-          include: { wali: true }
+          include: { wali: true },
         },
         _count: {
-          select: { izin: true, pelanggaran: true, invoices: true }
-        }
-      }
+          select: { izin: true, pelanggaran: true, invoices: true },
+        },
+      },
     });
 
     if (!santri) {
@@ -68,7 +68,7 @@ export class SantriService {
 
     // Is this the first wali? Make it primary if so
     const existingLinks = await this.prisma.santriWali.count({
-      where: { santriId }
+      where: { santriId },
     });
     const isPrimary = existingLinks === 0;
 
@@ -78,15 +78,15 @@ export class SantriService {
         data: {
           ...createWaliDto,
           tenantId,
-        }
+        },
       });
 
       await prisma.santriWali.create({
         data: {
           santriId,
           waliId: wali.id,
-          isPrimary
-        }
+          isPrimary,
+        },
       });
 
       return wali;
@@ -99,7 +99,7 @@ export class SantriService {
 
     // Verify wali belongs to tenant
     const wali = await this.prisma.wali.findFirst({
-      where: { id: waliId, tenantId }
+      where: { id: waliId, tenantId },
     });
 
     if (!wali) {
@@ -108,7 +108,7 @@ export class SantriService {
 
     // Check if link already exists
     const existingLink = await this.prisma.santriWali.findUnique({
-      where: { santriId_waliId: { santriId, waliId } }
+      where: { santriId_waliId: { santriId, waliId } },
     });
 
     if (existingLink) {
@@ -116,15 +116,15 @@ export class SantriService {
     }
 
     const existingLinksCount = await this.prisma.santriWali.count({
-      where: { santriId }
+      where: { santriId },
     });
 
     return this.prisma.santriWali.create({
       data: {
         santriId,
         waliId,
-        isPrimary: existingLinksCount === 0
-      }
+        isPrimary: existingLinksCount === 0,
+      },
     });
   }
 }

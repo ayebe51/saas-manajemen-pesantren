@@ -25,6 +25,15 @@ import { NotificationModule } from './modules/notification/notification.module';
 import { JobsModule } from './jobs/jobs.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { ExternalNotificationModule } from './modules/external-notification/external-notification.module';
+import { TahfidzModule } from './modules/tahfidz/tahfidz.module';
+import { WalletModule } from './modules/wallet/wallet.module';
+import { AcademicModule } from './modules/academic/academic.module';
+import { EmployeeModule } from './modules/employee/employee.module';
+import { AuditLogModule } from './modules/audit-log/audit-log.module';
+import { PpdbModule } from './modules/ppdb/ppdb.module';
+import { InventoryModule } from './modules/inventory/inventory.module';
+import { DormitoryModule } from './modules/dormitory/dormitory.module';
+import { ReportModule } from './modules/report/report.module';
 
 @Module({
   imports: [
@@ -32,10 +41,12 @@ import { ExternalNotificationModule } from './modules/external-notification/exte
       isGlobal: true,
       envFilePath: '.env',
     }),
-    ThrottlerModule.forRoot([{
-      ttl: 60000,
-      limit: 100, // 100 requests per minute
-    }]),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 100, // 100 requests per minute
+      },
+    ]),
     BullModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -62,6 +73,15 @@ import { ExternalNotificationModule } from './modules/external-notification/exte
     JobsModule,
     UploadModule,
     ExternalNotificationModule,
+    TahfidzModule,
+    WalletModule,
+    AcademicModule,
+    EmployeeModule,
+    AuditLogModule,
+    PpdbModule,
+    InventoryModule,
+    DormitoryModule,
+    ReportModule,
   ],
   providers: [
     {
