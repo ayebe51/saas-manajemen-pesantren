@@ -31,7 +31,8 @@ let PublicService = PublicService_1 = class PublicService {
                         where: { nisn: item.nisn, tenantId },
                         include: { walis: { include: { wali: true } } },
                     });
-                    let targetWaliId = existingSantri?.walis?.find(w => w.isPrimary)?.waliId || existingSantri?.walis?.[0]?.waliId;
+                    let targetWaliId = existingSantri?.walis?.find((w) => w.isPrimary)?.waliId ||
+                        existingSantri?.walis?.[0]?.waliId;
                     if (item.waliName) {
                         if (existingSantri && existingSantri.walis?.[0]?.wali) {
                             await prisma.wali.update({
@@ -39,8 +40,8 @@ let PublicService = PublicService_1 = class PublicService {
                                 data: {
                                     name: item.waliName,
                                     phone: item.waliPhone || existingSantri.walis[0].wali.phone,
-                                    email: item.waliEmail || existingSantri.walis[0].wali.email,
-                                }
+                                    email: item.waliEmail || existingSantri.walis[0].wali.email || undefined,
+                                },
                             });
                         }
                         else {
@@ -50,8 +51,8 @@ let PublicService = PublicService_1 = class PublicService {
                                     name: item.waliName,
                                     relation: 'Ayah',
                                     phone: item.waliPhone || '0000',
-                                    email: item.waliEmail,
-                                }
+                                    email: item.waliEmail || undefined,
+                                },
                             });
                             targetWaliId = newWali.id;
                         }
@@ -86,17 +87,17 @@ let PublicService = PublicService_1 = class PublicService {
                             where: {
                                 santriId_waliId: {
                                     santriId: santriId,
-                                    waliId: targetWaliId
-                                }
-                            }
+                                    waliId: targetWaliId,
+                                },
+                            },
                         });
                         if (!existingLink) {
                             await prisma.santriWali.create({
                                 data: {
                                     santriId: santriId,
                                     waliId: targetWaliId,
-                                    isPrimary: true
-                                }
+                                    isPrimary: true,
+                                },
                             });
                         }
                     }
