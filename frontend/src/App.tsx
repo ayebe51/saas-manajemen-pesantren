@@ -6,6 +6,8 @@ import { AuthGuard } from '@/components/auth/AuthGuard';
 import { AuthProvider } from '@/components/auth/AuthProvider';
 import { DashboardPage } from '@/pages/dashboard/DashboardPage';
 import { SantriPage } from '@/pages/santri/SantriPage';
+import { WalletPage } from '@/pages/wallet/WalletPage';
+import { PerizinanPage } from '@/pages/perizinan/PerizinanPage';
 
 // Placeholder Pages
 const PlaceholderPage = ({ title }: { title: string }) => <div className="p-8"><h1>{title}</h1></div>;
