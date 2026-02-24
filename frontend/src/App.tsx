@@ -8,9 +8,13 @@ import { DashboardPage } from '@/pages/dashboard/DashboardPage';
 import { SantriPage } from '@/pages/santri/SantriPage';
 import { WalletPage } from '@/pages/wallet/WalletPage';
 import { PerizinanPage } from '@/pages/perizinan/PerizinanPage';
+import { AkademikPage } from '@/pages/akademik/AkademikPage';
+import { InventoryPage } from '@/pages/inventory/InventoryPage';
+import { HRPage } from '@/pages/hr/HRPage';
+import { LaporanPage } from '@/pages/laporan/LaporanPage';
+import { SettingsPage } from '@/pages/settings/SettingsPage';
 
-// Placeholder Pages
-const PlaceholderPage = ({ title }: { title: string }) => <div className="p-8"><h1>{title}</h1></div>;
+
 
 export default function App() {
   return (
@@ -32,9 +36,13 @@ export default function App() {
           {/* Index Route memuat Beranda Dasbor */}
           <Route index element={<DashboardPage />} />
           <Route path="santri" element={<SantriPage />} />
-          <Route path="akademik" element={<PlaceholderPage title="Modul Akademik" />} />
-          <Route path="finance" element={<PlaceholderPage title="Tabungan & Kasir" />} />
-          <Route path="laporan" element={<PlaceholderPage title="Laporan Pesantren" />} />
+          <Route path="akademik" element={<AkademikPage />} />
+          <Route path="finance" element={<WalletPage />} />
+          <Route path="inventory" element={<InventoryPage />} />
+          <Route path="laporan" element={<LaporanPage />} />
+          <Route path="asrama" element={<PerizinanPage />} />
+          <Route path="hr" element={<HRPage />} />
+          <Route path="settings" element={<SettingsPage />} />
         </Route>
 
         {/* Catch-all 404 */}
