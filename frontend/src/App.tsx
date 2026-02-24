@@ -3,15 +3,18 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { LoginPage } from '@/pages/auth/LoginPage';
 import { AuthGuard } from '@/components/auth/AuthGuard';
+import { AuthProvider } from '@/components/auth/AuthProvider';
+import { DashboardPage } from '@/pages/dashboard/DashboardPage';
+import { SantriPage } from '@/pages/santri/SantriPage';
 
 // Placeholder Pages
-const DashboardHome = () => <div className="p-8"><h1>Dashboard Home</h1><p>Selamat Datang di APSS Koperasi & ERP</p></div>;
 const PlaceholderPage = ({ title }: { title: string }) => <div className="p-8"><h1>{title}</h1></div>;
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
         {/* Rute Publik */}
         <Route path="/login" element={<LoginPage />} />
         
@@ -25,8 +28,8 @@ export default function App() {
           }
         >
           {/* Index Route memuat Beranda Dasbor */}
-          <Route index element={<DashboardHome />} />
-          <Route path="santri" element={<PlaceholderPage title="Manajemen Santri" />} />
+          <Route index element={<DashboardPage />} />
+          <Route path="santri" element={<SantriPage />} />
           <Route path="akademik" element={<PlaceholderPage title="Modul Akademik" />} />
           <Route path="finance" element={<PlaceholderPage title="Tabungan & Kasir" />} />
           <Route path="laporan" element={<PlaceholderPage title="Laporan Pesantren" />} />
@@ -36,5 +39,6 @@ export default function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
+    </AuthProvider>
   );
 }
