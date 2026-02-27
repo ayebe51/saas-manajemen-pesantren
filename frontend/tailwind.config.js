@@ -25,7 +25,16 @@ export default {
           DEFAULT: 'var(--color-danger)',
         },
         muted: 'var(--text-muted)',
+        main: 'var(--text-main)',
+        inverse: 'var(--text-inverse)',
+        app: 'var(--bg-app)',
+        surface: 'var(--bg-surface)',
+        'surface-glass': 'var(--bg-surface-glass)',
+        light: 'var(--border-light)',
       },
+      borderColor: {
+        DEFAULT: 'var(--border-light)',
+      }
     },
   },
   plugins: [],

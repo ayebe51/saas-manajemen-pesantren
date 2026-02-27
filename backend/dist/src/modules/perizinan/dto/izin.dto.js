@@ -49,17 +49,23 @@ class ApproveIzinDto {
 }
 exports.ApproveIzinDto = ApproveIzinDto;
 __decorate([
+    (0, swagger_1.ApiPropertyOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], ApproveIzinDto.prototype, "approverId", void 0);
+__decorate([
     (0, swagger_1.ApiProperty)(),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
-], ApproveIzinDto.prototype, "waliId", void 0);
-__decorate([
-    (0, swagger_1.ApiProperty)({ enum: ['APPROVED', 'REJECTED'] }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
-    __metadata("design:type", String)
 ], ApproveIzinDto.prototype, "status", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], ApproveIzinDto.prototype, "notes", void 0);
 __decorate([
     (0, swagger_1.ApiPropertyOptional)(),
     (0, class_validator_1.IsString)(),

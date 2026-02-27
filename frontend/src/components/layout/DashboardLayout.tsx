@@ -1,11 +1,10 @@
-import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 
 export function DashboardLayout() {
   return (
-    <div className="flex h-screen bg-app overflow-hidden" style={{ backgroundColor: 'var(--bg-app)' }}>
+    <div className="flex h-screen bg-app overflow-hidden bg-app">
       {/* Sidebar - Fixed di sisi kiri */}
       <Sidebar />
 

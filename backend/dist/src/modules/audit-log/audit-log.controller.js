@@ -65,7 +65,7 @@ exports.AuditLogController = AuditLogController = __decorate([
     (0, swagger_1.ApiTags)('Audit Logs'),
     (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, tenant_guard_1.TenantGuard, roles_guard_1.RolesGuard),
-    (0, common_1.Controller)('api/v1/audit-log'),
+    (0, common_1.Controller)('audit-log'),
     __metadata("design:paramtypes", [audit_log_service_1.AuditLogService])
 ], AuditLogController);
 //# sourceMappingURL=audit-log.controller.js.map

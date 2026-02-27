@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/lib/store/auth.store';
 import { api } from '@/lib/api/client';
@@ -23,7 +23,7 @@ export function LoginPage() {
     try {
       // Panggil backend login
       const response = await api.post('/auth/login', formData);
-      const { user, accessToken } = response.data.data;
+      const { user, accessToken } = response.data;
       
       // Simpan session
       localStorage.setItem('accessToken', accessToken);
@@ -40,14 +40,14 @@ export function LoginPage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-animated">
-      <div className="w-full max-w-md p-8 m-4 glass-panel relative overflow-hidden" style={{ zIndex: 10 }}>
+      <div className="w-full max-w-md p-8 m-4 glass-panel relative overflow-hidden z-10">
         
         {/* Dekorasi Cahaya Sphere */}
-        <div className="absolute -top-20 -right-20 w-40 h-40 rounded-full" style={{ background: 'var(--color-primary)', filter: 'blur(50px)', opacity: 0.3, zIndex: -1 }}></div>
-        <div className="absolute -bottom-20 -left-20 w-40 h-40 rounded-full" style={{ background: 'var(--color-accent)', filter: 'blur(50px)', opacity: 0.3, zIndex: -1 }}></div>
+        <div className="absolute -top-20 -right-20 w-40 h-40 rounded-full bg-primary blur-[50px] opacity-30 -z-10"></div>
+        <div className="absolute -bottom-20 -left-20 w-40 h-40 rounded-full bg-accent blur-[50px] opacity-30 -z-10"></div>
 
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-extrabold mb-2" style={{ color: 'var(--color-primary)' }}>APSS Portal</h1>
+          <h1 className="text-3xl font-extrabold mb-2 text-primary">APSS Portal</h1>
           <p className="text-muted">Manajemen Pesantren Terpadu</p>
         </div>
 
@@ -69,7 +69,7 @@ export function LoginPage() {
                 type="email"
                 required
                 className="input-base pl-10"
-                placeholder="admin@pesantren.id"
+                placeholder="admin@al-ikhlas.com"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               />

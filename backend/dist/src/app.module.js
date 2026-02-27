@@ -9,11 +9,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
+const event_emitter_1 = require("@nestjs/event-emitter");
 const core_1 = require("@nestjs/core");
 const throttler_1 = require("@nestjs/throttler");
-const bullmq_1 = require("@nestjs/bullmq");
 const cache_manager_1 = require("@nestjs/cache-manager");
-const redisStore = require("cache-manager-ioredis");
 const prisma_module_1 = require("./common/prisma/prisma.module");
 const tenant_middleware_1 = require("./common/middleware/tenant.middleware");
 const tenant_guard_1 = require("./common/guards/tenant.guard");
@@ -41,6 +40,8 @@ const ppdb_module_1 = require("./modules/ppdb/ppdb.module");
 const inventory_module_1 = require("./modules/inventory/inventory.module");
 const dormitory_module_1 = require("./modules/dormitory/dormitory.module");
 const report_module_1 = require("./modules/report/report.module");
+const analytics_module_1 = require("./modules/analytics/analytics.module");
+const payment_module_1 = require("./modules/payment/payment.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer
@@ -53,6 +54,7 @@ exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            event_emitter_1.EventEmitterModule.forRoot(),
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
                 envFilePath: '.env',
@@ -63,26 +65,9 @@ exports.AppModule = AppModule = __decorate([
                     limit: 100,
                 },
             ]),
-            bullmq_1.BullModule.forRootAsync({
-                imports: [config_1.ConfigModule],
-                useFactory: async (configService) => ({
-                    connection: {
-                        host: configService.get('REDIS_HOST') || 'localhost',
-                        port: configService.get('REDIS_PORT') || 6379,
-                    },
-                }),
-                inject: [config_1.ConfigService],
-            }),
-            cache_manager_1.CacheModule.registerAsync({
+            cache_manager_1.CacheModule.register({
                 isGlobal: true,
-                imports: [config_1.ConfigModule],
-                useFactory: async (configService) => ({
-                    store: redisStore,
-                    host: configService.get('REDIS_HOST') || 'localhost',
-                    port: configService.get('REDIS_PORT') || 6379,
-                    ttl: 300,
-                }),
-                inject: [config_1.ConfigService],
+                ttl: 300,
             }),
             prisma_module_1.PrismaModule,
             auth_module_1.AuthModule,
@@ -109,6 +94,8 @@ exports.AppModule = AppModule = __decorate([
             inventory_module_1.InventoryModule,
             dormitory_module_1.DormitoryModule,
             report_module_1.ReportModule,
+            analytics_module_1.AnalyticsModule,
+            payment_module_1.PaymentModule,
         ],
         providers: [
             {

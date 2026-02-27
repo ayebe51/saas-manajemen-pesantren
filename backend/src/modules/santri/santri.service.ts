@@ -144,7 +144,7 @@ export class SantriService {
       message: 'Impor data massal selesai diproses',
       successCount,
       failedCount,
-      errors
+      errors,
     };
   }
 

@@ -5,12 +5,13 @@ export declare class PerizinanService {
     private readonly logger;
     constructor(prisma: PrismaService);
     create(tenantId: string, createIzinDto: CreateIzinDto, requestedBy: string): Promise<{
-        type: string;
         id: string;
-        status: string;
+        tenantId: string;
         createdAt: Date;
         updatedAt: Date;
-        tenantId: string;
+        type: string;
+        status: string;
+        santriId: string;
         reason: string;
         startAt: Date;
         endAt: Date;
@@ -22,7 +23,6 @@ export declare class PerizinanService {
         checkoutBy: string | null;
         checkinAt: Date | null;
         checkinBy: string | null;
-        santriId: string;
     }>;
     findAll(tenantId: string, filters: {
         status?: string;
@@ -34,12 +34,13 @@ export declare class PerizinanService {
             room: string | null;
         };
     } & {
-        type: string;
         id: string;
-        status: string;
+        tenantId: string;
         createdAt: Date;
         updatedAt: Date;
-        tenantId: string;
+        type: string;
+        status: string;
+        santriId: string;
         reason: string;
         startAt: Date;
         endAt: Date;
@@ -51,50 +52,50 @@ export declare class PerizinanService {
         checkoutBy: string | null;
         checkinAt: Date | null;
         checkinBy: string | null;
-        santriId: string;
     })[]>;
     findOne(id: string, tenantId: string): Promise<{
         santri: {
             walis: ({
                 wali: {
-                    phone: string;
-                    name: string;
                     id: string;
-                    address: string | null;
-                    createdAt: Date;
-                    updatedAt: Date;
                     email: string | null;
                     tenantId: string;
+                    name: string;
+                    phone: string;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    address: string | null;
                     relation: string;
                 };
             } & {
-                isPrimary: boolean;
-                waliId: string;
                 santriId: string;
+                waliId: string;
+                isPrimary: boolean;
             })[];
         } & {
-            name: string;
             id: string;
-            address: string | null;
-            status: string;
+            tenantId: string;
+            name: string;
             createdAt: Date;
             updatedAt: Date;
-            tenantId: string;
             nisn: string | null;
             gender: string;
             dob: Date | null;
             kelas: string | null;
             room: string | null;
             contact: string | null;
+            address: string | null;
             photo: string | null;
+            status: string;
         };
     } & {
-        type: string;
         id: string;
-        status: string;
+        tenantId: string;
         createdAt: Date;
         updatedAt: Date;
-        tenantId: string;
+        type: string;
+        status: string;
+        santriId: string;
         reason: string;
         startAt: Date;
         endAt: Date;
@@ -106,15 +107,15 @@ export declare class PerizinanService {
         checkoutBy: string | null;
         checkinAt: Date | null;
         checkinBy: string | null;
-        santriId: string;
     }>;
     approve(id: string, approveIzinDto: ApproveIzinDto): Promise<{
-        type: string;
         id: string;
-        status: string;
+        tenantId: string;
         createdAt: Date;
         updatedAt: Date;
-        tenantId: string;
+        type: string;
+        status: string;
+        santriId: string;
         reason: string;
         startAt: Date;
         endAt: Date;
@@ -126,15 +127,15 @@ export declare class PerizinanService {
         checkoutBy: string | null;
         checkinAt: Date | null;
         checkinBy: string | null;
-        santriId: string;
     }>;
     checkout(id: string, tenantId: string, operatorId: string): Promise<{
-        type: string;
         id: string;
-        status: string;
+        tenantId: string;
         createdAt: Date;
         updatedAt: Date;
-        tenantId: string;
+        type: string;
+        status: string;
+        santriId: string;
         reason: string;
         startAt: Date;
         endAt: Date;
@@ -146,15 +147,15 @@ export declare class PerizinanService {
         checkoutBy: string | null;
         checkinAt: Date | null;
         checkinBy: string | null;
-        santriId: string;
     }>;
     checkin(id: string, tenantId: string, operatorId: string): Promise<{
-        type: string;
         id: string;
-        status: string;
+        tenantId: string;
         createdAt: Date;
         updatedAt: Date;
-        tenantId: string;
+        type: string;
+        status: string;
+        santriId: string;
         reason: string;
         startAt: Date;
         endAt: Date;
@@ -166,6 +167,5 @@ export declare class PerizinanService {
         checkoutBy: string | null;
         checkinAt: Date | null;
         checkinBy: string | null;
-        santriId: string;
     }>;
 }

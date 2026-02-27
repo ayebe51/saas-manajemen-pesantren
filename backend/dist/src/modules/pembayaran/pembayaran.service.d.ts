@@ -15,8 +15,8 @@ export declare class PembayaranService {
             nisn: string | null;
         };
         lines: {
-            type: string;
             id: string;
+            type: string;
             description: string;
             amount: number;
             invoiceId: string;
@@ -33,8 +33,8 @@ export declare class PembayaranService {
     })[]>;
     generateInvoice(tenantId: string, dto: GenerateInvoiceDto): Promise<{
         lines: {
-            type: string;
             id: string;
+            type: string;
             description: string;
             amount: number;
             invoiceId: string;

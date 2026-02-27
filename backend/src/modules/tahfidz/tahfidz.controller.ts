@@ -34,6 +34,13 @@ export class TahfidzController {
     return this.tahfidzService.getTahfidzBySantri(tenantId, santriId);
   }
 
+  @Get()
+  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS', 'GURU', 'MUSYRIF')
+  @ApiOperation({ summary: 'Melihat riwayat hafalan seluruh santri' })
+  async getAllTahfidzHistory(@TenantId() tenantId: string) {
+    return this.tahfidzService.getTahfidzAllSantri(tenantId);
+  }
+
   @Post('mutabaah')
   @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS', 'GURU', 'MUSYRIF')
   @ApiOperation({ summary: 'Mencatat kegiatan harian (mutabaah) santri' })

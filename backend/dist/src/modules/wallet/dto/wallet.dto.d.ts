@@ -19,3 +19,12 @@ export declare class MootaWebhookDto {
     amount: number;
     description?: string;
 }
+export declare class CooperativeCheckoutItemDto {
+    itemId: string;
+    quantity: number;
+}
+export declare class CooperativeCheckoutDto {
+    santriId: string;
+    items: CooperativeCheckoutItemDto[];
+    totalAmount: number;
+}

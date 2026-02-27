@@ -34,8 +34,10 @@ let AuthService = AuthService_1 = class AuthService {
         if (!user.isActive) {
             throw new common_1.UnauthorizedException('Account is disabled');
         }
-        if (user.role !== 'SUPERADMIN' && (!tenantId || user.tenantId !== tenantId)) {
-            throw new common_1.UnauthorizedException('Invalid tenant scope for this user');
+        if (user.role !== 'SUPERADMIN') {
+            if (tenantId && user.tenantId !== tenantId) {
+                throw new common_1.UnauthorizedException('Invalid tenant scope for this user');
+            }
         }
         const accessToken = this.generateAccessToken(user);
         const refreshToken = this.generateRefreshToken(user);

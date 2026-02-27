@@ -25,8 +25,14 @@ export class ReportController {
   ) {
     const buffer = await this.reportService.generateExcelReport(tenantId, module);
 
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', `attachment; filename=Laporan-${module}-${Date.now()}.xlsx`);
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    );
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename=Laporan-${module}-${Date.now()}.xlsx`,
+    );
 
     return res.end(buffer);
   }
@@ -46,13 +52,16 @@ export class ReportController {
     ];
 
     const buffer = await this.reportService.generatePdfReport(
-        tenantId, 
-        `Cetak Laporan - ${module.toUpperCase()}`, 
-        dummyData
+      tenantId,
+      `Cetak Laporan - ${module.toUpperCase()}`,
+      dummyData,
     );
 
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename=Laporan-${module}-${Date.now()}.pdf`);
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename=Laporan-${module}-${Date.now()}.pdf`,
+    );
 
     return res.end(buffer);
   }

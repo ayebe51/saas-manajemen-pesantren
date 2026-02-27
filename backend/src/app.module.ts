@@ -1,11 +1,9 @@
 import { Module, MiddlewareConsumer, NestModule, RequestMethod } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
-import { BullModule } from '@nestjs/bullmq';
 import { CacheModule } from '@nestjs/cache-manager';
-// @ts-ignore
-import * as redisStore from 'cache-manager-ioredis';
 
 // Core
 import { PrismaModule } from './common/prisma/prisma.module';
@@ -37,9 +35,12 @@ import { PpdbModule } from './modules/ppdb/ppdb.module';
 import { InventoryModule } from './modules/inventory/inventory.module';
 import { DormitoryModule } from './modules/dormitory/dormitory.module';
 import { ReportModule } from './modules/report/report.module';
+import { AnalyticsModule } from './modules/analytics/analytics.module';
+import { PaymentModule } from './modules/payment/payment.module';
 
 @Module({
   imports: [
+    EventEmitterModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
@@ -50,26 +51,9 @@ import { ReportModule } from './modules/report/report.module';
         limit: 100, // 100 requests per minute
       },
     ]),
-    BullModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        connection: {
-          host: configService.get('REDIS_HOST') || 'localhost',
-          port: configService.get('REDIS_PORT') || 6379,
-        },
-      }),
-      inject: [ConfigService],
-    }),
-    CacheModule.registerAsync({
+    CacheModule.register({
       isGlobal: true,
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        store: redisStore,
-        host: configService.get('REDIS_HOST') || 'localhost',
-        port: configService.get('REDIS_PORT') || 6379,
-        ttl: 300, // 5 menit default TTL
-      }),
-      inject: [ConfigService],
+      ttl: 300,
     }),
     PrismaModule,
     AuthModule,
@@ -96,6 +80,8 @@ import { ReportModule } from './modules/report/report.module';
     InventoryModule,
     DormitoryModule,
     ReportModule,
+    AnalyticsModule,
+    PaymentModule,
   ],
   providers: [
     {

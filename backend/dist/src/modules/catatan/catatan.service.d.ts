@@ -33,22 +33,22 @@ export declare class CatatanService {
         attachments: string | null;
     })[]>;
     createPengumuman(tenantId: string, createPengumumanDto: CreatePengumumanDto): Promise<{
-        title: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
         content: string;
+        title: string;
         audience: string;
         pinnedUntil: Date | null;
     }>;
     findAllPengumuman(tenantId: string, audience?: string): Promise<{
-        title: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
         content: string;
+        title: string;
         audience: string;
         pinnedUntil: Date | null;
     }[]>;

@@ -49,8 +49,8 @@ let ReportService = class ReportService {
                 normal: 'Helvetica',
                 bold: 'Helvetica-Bold',
                 italics: 'Helvetica-Oblique',
-                bolditalics: 'Helvetica-BoldOblique'
-            }
+                bolditalics: 'Helvetica-BoldOblique',
+            },
         };
         const printer = new PdfPrinter(fonts);
         const docDefinition = {
@@ -66,22 +66,22 @@ let ReportService = class ReportService {
                             ...contentData.map((item, index) => [
                                 index + 1,
                                 item.description || '-',
-                                item.value || '-'
-                            ])
-                        ]
-                    }
-                }
+                                item.value || '-',
+                            ]),
+                        ],
+                    },
+                },
             ],
             styles: {
                 header: {
                     fontSize: 18,
                     bold: true,
-                    margin: [0, 0, 0, 10]
-                }
+                    margin: [0, 0, 0, 10],
+                },
             },
             defaultStyle: {
-                font: 'Roboto'
-            }
+                font: 'Roboto',
+            },
         };
         const pdfDoc = printer.createPdfKitDocument(docDefinition);
         return new Promise((resolve, reject) => {

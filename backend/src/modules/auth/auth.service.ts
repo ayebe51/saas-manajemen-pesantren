@@ -32,8 +32,11 @@ export class AuthService {
     }
 
     // Tenant validation
-    if (user.role !== 'SUPERADMIN' && (!tenantId || user.tenantId !== tenantId)) {
-      throw new UnauthorizedException('Invalid tenant scope for this user');
+    if (user.role !== 'SUPERADMIN') {
+      // Jika tenantId dikirim, pastikan sama dengan tenant user
+      if (tenantId && user.tenantId !== tenantId) {
+        throw new UnauthorizedException('Invalid tenant scope for this user');
+      }
     }
 
     // Generate tokens
@@ -155,7 +158,7 @@ export class AuthService {
         data: { fcmTokens: JSON.stringify(tokens) },
       });
     }
-    
+
     return { success: true };
   }
 

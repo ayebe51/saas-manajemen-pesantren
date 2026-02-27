@@ -1,5 +1,15 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID, Min } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  IsArray,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Min,
+  ValidateNested,
+} from 'class-validator';
 
 export class RequestDepositDto {
   @ApiProperty({ description: 'Santri ID user account' })
@@ -73,4 +83,36 @@ export class MootaWebhookDto {
   @IsString()
   @IsOptional()
   description?: string;
+}
+
+export class CooperativeCheckoutItemDto {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  itemId: string;
+
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  @Min(1)
+  quantity: number;
+}
+
+export class CooperativeCheckoutDto {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  santriId: string;
+
+  @ApiProperty({ type: [CooperativeCheckoutItemDto] })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CooperativeCheckoutItemDto)
+  items: CooperativeCheckoutItemDto[];
+
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  @Min(1)
+  totalAmount: number;
 }

@@ -12,8 +12,8 @@ export declare class PelanggaranService {
         description: string;
         date: Date;
         category: string;
-        severity: number;
         recordedBy: string;
+        severity: number;
         points: number;
         resolved: boolean;
     }>;
@@ -31,8 +31,8 @@ export declare class PelanggaranService {
         description: string;
         date: Date;
         category: string;
-        severity: number;
         recordedBy: string;
+        severity: number;
         points: number;
         resolved: boolean;
     })[]>;

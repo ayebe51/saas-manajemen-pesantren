@@ -20,9 +20,9 @@ export declare class KunjunganController {
             room: string | null;
         };
         tamu: {
-            phone: string | null;
-            name: string;
             id: string;
+            name: string;
+            phone: string | null;
             createdAt: Date;
             checkinAt: Date | null;
             kunjunganId: string;
@@ -47,9 +47,9 @@ export declare class KunjunganController {
     }[]>;
     checkin(id: string, tenantId: string, visitorName: string): Promise<{
         tamu: {
-            phone: string | null;
-            name: string;
             id: string;
+            name: string;
+            phone: string | null;
             createdAt: Date;
             checkinAt: Date | null;
             kunjunganId: string;

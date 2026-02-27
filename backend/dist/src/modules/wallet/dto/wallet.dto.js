@@ -9,8 +9,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MootaWebhookDto = exports.CreatePaymentDto = exports.ManualResolveDepositDto = exports.RequestDepositDto = void 0;
+exports.CooperativeCheckoutDto = exports.CooperativeCheckoutItemDto = exports.MootaWebhookDto = exports.CreatePaymentDto = exports.ManualResolveDepositDto = exports.RequestDepositDto = void 0;
 const swagger_1 = require("@nestjs/swagger");
+const class_transformer_1 = require("class-transformer");
 const class_validator_1 = require("class-validator");
 class RequestDepositDto {
 }
@@ -102,4 +103,43 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], MootaWebhookDto.prototype, "description", void 0);
+class CooperativeCheckoutItemDto {
+}
+exports.CooperativeCheckoutItemDto = CooperativeCheckoutItemDto;
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CooperativeCheckoutItemDto.prototype, "itemId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.Min)(1),
+    __metadata("design:type", Number)
+], CooperativeCheckoutItemDto.prototype, "quantity", void 0);
+class CooperativeCheckoutDto {
+}
+exports.CooperativeCheckoutDto = CooperativeCheckoutDto;
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], CooperativeCheckoutDto.prototype, "santriId", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ type: [CooperativeCheckoutItemDto] }),
+    (0, class_validator_1.IsArray)(),
+    (0, class_validator_1.ValidateNested)({ each: true }),
+    (0, class_transformer_1.Type)(() => CooperativeCheckoutItemDto),
+    __metadata("design:type", Array)
+], CooperativeCheckoutDto.prototype, "items", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)(),
+    (0, class_validator_1.IsNumber)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.Min)(1),
+    __metadata("design:type", Number)
+], CooperativeCheckoutDto.prototype, "totalAmount", void 0);
 //# sourceMappingURL=wallet.dto.js.map

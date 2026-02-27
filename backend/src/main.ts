@@ -9,7 +9,9 @@ async function bootstrap() {
 
   // Security & Middleware
   app.enableCors({
-    origin: '*', // Define properly in production
+    origin: ['http://localhost:5173', 'http://127.0.0.1:5173'], // Allow Vite
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: 'Content-Type, Accept, Authorization, x-tenant-id',
     credentials: true,
   });
   app.use(cookieParser());

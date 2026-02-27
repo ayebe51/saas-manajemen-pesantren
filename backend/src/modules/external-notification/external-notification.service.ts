@@ -21,7 +21,9 @@ export class ExternalNotificationService implements OnModuleInit {
       const projectId = this.configService.get<string>('FIREBASE_PROJECT_ID');
       const clientEmail = this.configService.get<string>('FIREBASE_CLIENT_EMAIL');
       // Private key might contain escaped newlines '\n' which need to be unescaped
-      const privateKey = this.configService.get<string>('FIREBASE_PRIVATE_KEY')?.replace(/\\n/g, '\n');
+      const privateKey = this.configService
+        .get<string>('FIREBASE_PRIVATE_KEY')
+        ?.replace(/\\n/g, '\n');
 
       if (projectId && clientEmail && privateKey) {
         admin.initializeApp({
@@ -34,7 +36,9 @@ export class ExternalNotificationService implements OnModuleInit {
         this.isFirebaseInitialized = true;
         this.logger.log('Firebase Admin SDK initialized successfully for Push Notifications.');
       } else {
-         this.logger.warn('Firebase configuration missing in .env. FCM Push Notifications will be disabled.');
+        this.logger.warn(
+          'Firebase configuration missing in .env. FCM Push Notifications will be disabled.',
+        );
       }
     } catch (error) {
       this.logger.error(`Failed to initialize Firebase Admin: ${error.message}`);
@@ -44,10 +48,17 @@ export class ExternalNotificationService implements OnModuleInit {
   /**
    * Send Push Notification via Firebase Cloud Messaging (FCM)
    */
-  async sendPushNotification(deviceTokens: string[], title: string, body: string, data?: any): Promise<boolean> {
+  async sendPushNotification(
+    deviceTokens: string[],
+    title: string,
+    body: string,
+    data?: any,
+  ): Promise<boolean> {
     if (!this.isFirebaseInitialized) {
-       this.logger.debug(`[FCM Mock Output] To: ${deviceTokens.length} devices | Title: ${title} | Body: ${body}`);
-       return true;
+      this.logger.debug(
+        `[FCM Mock Output] To: ${deviceTokens.length} devices | Title: ${title} | Body: ${body}`,
+      );
+      return true;
     }
 
     if (!deviceTokens || deviceTokens.length === 0) return false;
@@ -63,9 +74,11 @@ export class ExternalNotificationService implements OnModuleInit {
       };
 
       const response = await admin.messaging().sendEachForMulticast(message);
-      
-      this.logger.log(`[FCM] Sent Push Notification: ${response.successCount} successful, ${response.failureCount} failed.`);
-      
+
+      this.logger.log(
+        `[FCM] Sent Push Notification: ${response.successCount} successful, ${response.failureCount} failed.`,
+      );
+
       // Handle failed tokens (e.g. cleanup old tokens from database)
       if (response.failureCount > 0) {
         const failedTokens: string[] = [];
@@ -80,8 +93,8 @@ export class ExternalNotificationService implements OnModuleInit {
 
       return response.successCount > 0;
     } catch (error) {
-       this.logger.error(`Failed to send push notification: ${error.message}`);
-       return false;
+      this.logger.error(`Failed to send push notification: ${error.message}`);
+      return false;
     }
   }
 
@@ -93,7 +106,9 @@ export class ExternalNotificationService implements OnModuleInit {
     const waToken = this.configService.get<string>('WA_PROVIDER_TOKEN');
 
     if (!waProviderUrl || !waToken) {
-      this.logger.warn(`[WA Missing Config] Cannot send message to ${to}. Provider URL or Token is not configured in .env`);
+      this.logger.warn(
+        `[WA Missing Config] Cannot send message to ${to}. Provider URL or Token is not configured in .env`,
+      );
       // Fallback to console debug if ENV is not set (Local Dev Mode)
       this.logger.debug(`[WA Local Debug Output]: To: ${to} | MSG: ${message}`);
       return true;
@@ -101,7 +116,7 @@ export class ExternalNotificationService implements OnModuleInit {
 
     try {
       this.logger.log(`[WA] Sending real message to ${to} via webhook provider...`);
-      
+
       // Standard HTTP POST Payload, adjust structure according to the specific provider (Fonnte in this example)
       const payload = {
         target: to,
@@ -117,7 +132,9 @@ export class ExternalNotificationService implements OnModuleInit {
         timeout: 10000, // 10s timeout
       });
 
-      this.logger.log(`[WA] Successfully sent message to ${to}. Provider response: ${JSON.stringify(response.data)}`);
+      this.logger.log(
+        `[WA] Successfully sent message to ${to}. Provider response: ${JSON.stringify(response.data)}`,
+      );
       return true;
     } catch (error) {
       this.logger.error(`Failed to send WhatsApp message to ${to}: ${error.message}`);

@@ -139,7 +139,7 @@ let SantriService = class SantriService {
             message: 'Impor data massal selesai diproses',
             successCount,
             failedCount,
-            errors
+            errors,
         };
     }
     async addWali(santriId, tenantId, createWaliDto) {

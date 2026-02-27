@@ -32,7 +32,7 @@ export class ReportService {
         sheet.addRow({ id: index + 1, nisn: row.nisn, name: row.name, gender: row.gender });
       });
     } else {
-       sheet.addRow([`Report module '${module}' is under construction`]);
+      sheet.addRow([`Report module '${module}' is under construction`]);
     }
 
     // Styling Header
@@ -47,18 +47,18 @@ export class ReportService {
    * Generates a PDF Document using PdfMake JSON Definition
    */
   async generatePdfReport(tenantId: string, title: string, contentData: any[]): Promise<Buffer> {
-    // Fonts are required for PDFMake Server-Side. 
+    // Fonts are required for PDFMake Server-Side.
     // Usually mapped to local TTF files. Using standard fonts (Roboto) built-in fallback.
     const fonts = {
       Roboto: {
         normal: 'Helvetica',
         bold: 'Helvetica-Bold',
         italics: 'Helvetica-Oblique',
-        bolditalics: 'Helvetica-BoldOblique'
-      }
+        bolditalics: 'Helvetica-BoldOblique',
+      },
     };
 
-    const printer = new PdfPrinter(fonts);
+    const printer = new (PdfPrinter as any)(fonts);
 
     const docDefinition: TDocumentDefinitions = {
       content: [
@@ -73,31 +73,31 @@ export class ReportService {
               ...contentData.map((item, index) => [
                 index + 1,
                 item.description || '-',
-                item.value || '-'
-              ])
-            ]
-          }
-        }
+                item.value || '-',
+              ]),
+            ],
+          },
+        },
       ],
       styles: {
         header: {
           fontSize: 18,
           bold: true,
-          margin: [0, 0, 0, 10]
-        }
+          margin: [0, 0, 0, 10],
+        },
       },
       defaultStyle: {
-        font: 'Roboto'
-      }
+        font: 'Roboto',
+      },
     };
 
     const pdfDoc = printer.createPdfKitDocument(docDefinition);
-    
+
     return new Promise((resolve, reject) => {
       const chunks: Buffer[] = [];
-      pdfDoc.on('data', (chunk) => chunks.push(chunk));
+      pdfDoc.on('data', (chunk: any) => chunks.push(chunk));
       pdfDoc.on('end', () => resolve(Buffer.concat(chunks)));
-      pdfDoc.on('error', (err) => reject(err));
+      pdfDoc.on('error', (err: any) => reject(err));
       pdfDoc.end();
     });
   }

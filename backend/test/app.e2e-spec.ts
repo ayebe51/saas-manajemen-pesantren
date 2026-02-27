@@ -22,7 +22,7 @@ describe('AppController (e2e)', () => {
   it('Layanan E2E dapat dijalankan dengan baik', () => {
     expect(true).toBe(true);
   });
-  
+
   // Contoh testing endpoint Auth, sesuaikan detail logic
   // it('/api/v1/auth/login (POST)', () => {
   //   return request(app.getHttpServer())

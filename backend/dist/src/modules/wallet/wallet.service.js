@@ -41,6 +41,25 @@ let WalletService = WalletService_1 = class WalletService {
         }
         return wallet;
     }
+    async getAllWallets(tenantId) {
+        return this.prisma.wallet.findMany({
+            where: { tenantId },
+            include: {
+                santri: { select: { name: true, nisn: true } },
+            },
+            orderBy: { updatedAt: 'desc' },
+        });
+    }
+    async getAllTransactions(tenantId) {
+        return this.prisma.walletTransaction.findMany({
+            where: { wallet: { tenantId } },
+            orderBy: { createdAt: 'desc' },
+            take: 50,
+            include: {
+                wallet: { include: { santri: { select: { name: true } } } },
+            },
+        });
+    }
     async requestDeposit(tenantId, dto) {
         const wallet = await this.getWallet(tenantId, dto.santriId);
         const uniqueCode = Math.floor(Math.random() * 999) + 1;
@@ -161,6 +180,67 @@ let WalletService = WalletService_1 = class WalletService {
             }
         }
         return results;
+    }
+    async processCooperativeCheckout(tenantId, cashierId, dto) {
+        return this.prisma.$transaction(async (tx) => {
+            const wallet = await tx.wallet.findUnique({
+                where: { santriId: dto.santriId },
+            });
+            if (!wallet || wallet.tenantId !== tenantId) {
+                throw new common_1.NotFoundException('Kartu/Dompet Santri tidak ditemukan');
+            }
+            if (!wallet.isActive) {
+                throw new common_1.BadRequestException('Dompet sedang tidak aktif');
+            }
+            if (wallet.balance < dto.totalAmount) {
+                throw new common_1.BadRequestException('Saldo Dompet tidak mencukupi untuk pembayaran ini');
+            }
+            const walletTrx = await tx.walletTransaction.create({
+                data: {
+                    walletId: wallet.id,
+                    amount: dto.totalAmount,
+                    type: 'PAYMENT',
+                    method: 'POS/CASHLESS',
+                    status: 'SUCCESS',
+                    description: `Pembelian Koperasi (${dto.items.length} item)`,
+                    handledBy: cashierId,
+                },
+            });
+            await tx.wallet.update({
+                where: { id: wallet.id },
+                data: { balance: { decrement: dto.totalAmount } },
+            });
+            for (const reqItem of dto.items) {
+                const item = await tx.item.findUnique({ where: { id: reqItem.itemId } });
+                if (!item || item.tenantId !== tenantId) {
+                    throw new common_1.NotFoundException(`Barang ID ${reqItem.itemId} tidak ditemukan`);
+                }
+                if (item.stock < reqItem.quantity) {
+                    throw new common_1.BadRequestException(`Stok ${item.name} tidak cukup (Sisa: ${item.stock})`);
+                }
+                await tx.item.update({
+                    where: { id: item.id },
+                    data: { stock: { decrement: reqItem.quantity } },
+                });
+                await tx.inventoryTransaction.create({
+                    data: {
+                        tenantId,
+                        itemId: item.id,
+                        type: 'OUT',
+                        quantity: reqItem.quantity,
+                        reference: `POS-${walletTrx.id.substring(0, 8)}`,
+                        notes: `Checkout Koperasi oleh Santri ${dto.santriId}`,
+                        handledBy: cashierId,
+                    },
+                });
+            }
+            return {
+                message: 'Checkout Berhasil!',
+                walletTransactionId: walletTrx.id,
+                deductedAmount: dto.totalAmount,
+                sisaSaldo: wallet.balance - dto.totalAmount,
+            };
+        });
     }
 };
 exports.WalletService = WalletService;

@@ -31,6 +31,12 @@ let WalletController = class WalletController {
     async getWallet(tenantId, santriId) {
         return this.walletService.getWallet(tenantId, santriId);
     }
+    async getAllWallets(tenantId) {
+        return this.walletService.getAllWallets(tenantId);
+    }
+    async getAllTransactions(tenantId) {
+        return this.walletService.getAllTransactions(tenantId);
+    }
     async requestDeposit(tenantId, dto) {
         return this.walletService.requestDeposit(tenantId, dto);
     }
@@ -39,6 +45,9 @@ let WalletController = class WalletController {
     }
     async makePayment(tenantId, userId, dto) {
         return this.walletService.makePayment(tenantId, userId, dto);
+    }
+    async processCooperativeCheckout(tenantId, userId, dto) {
+        return this.walletService.processCooperativeCheckout(tenantId, userId, dto);
     }
     async handleMootaWebhook(tenantId, payload) {
         return this.walletService.handleMootaWebhook(tenantId, payload);
@@ -57,6 +66,28 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], WalletController.prototype, "getWallet", null);
+__decorate([
+    (0, common_1.Get)(),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, tenant_guard_1.TenantGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS'),
+    (0, swagger_1.ApiOperation)({ summary: 'Melihat ikhtisar seluruh dompet santri' }),
+    __param(0, (0, tenant_id_decorator_1.TenantId)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], WalletController.prototype, "getAllWallets", null);
+__decorate([
+    (0, common_1.Get)('transactions'),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, tenant_guard_1.TenantGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS'),
+    (0, swagger_1.ApiOperation)({ summary: 'Melihat riwayat mutasi global' }),
+    __param(0, (0, tenant_id_decorator_1.TenantId)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], WalletController.prototype, "getAllTransactions", null);
 __decorate([
     (0, common_1.Post)('deposit/request'),
     (0, swagger_1.ApiBearerAuth)(),
@@ -95,6 +126,21 @@ __decorate([
     __metadata("design:paramtypes", [String, String, wallet_dto_1.CreatePaymentDto]),
     __metadata("design:returntype", Promise)
 ], WalletController.prototype, "makePayment", null);
+__decorate([
+    (0, common_1.Post)('cooperative/checkout'),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard, tenant_guard_1.TenantGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS'),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Kasir Koperasi memproses pembelian dengan memotong saldo dompet santri',
+    }),
+    __param(0, (0, tenant_id_decorator_1.TenantId)()),
+    __param(1, (0, current_user_decorator_1.CurrentUser)('userId')),
+    __param(2, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, wallet_dto_1.CooperativeCheckoutDto]),
+    __metadata("design:returntype", Promise)
+], WalletController.prototype, "processCooperativeCheckout", null);
 __decorate([
     (0, common_1.Post)('webhook/moota/:tenantId'),
     (0, common_1.UseGuards)(api_key_guard_1.ApiKeyGuard),

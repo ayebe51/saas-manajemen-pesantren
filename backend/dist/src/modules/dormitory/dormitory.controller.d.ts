@@ -4,8 +4,8 @@ export declare class DormitoryController {
     private readonly dormitoryService;
     constructor(dormitoryService: DormitoryService);
     createBuilding(tenantId: string, dto: CreateBuildingDto): Promise<{
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
@@ -18,8 +18,8 @@ export declare class DormitoryController {
             rooms: number;
         };
     } & {
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
@@ -28,8 +28,8 @@ export declare class DormitoryController {
         capacity: number;
     })[]>;
     updateBuilding(tenantId: string, id: string, dto: UpdateBuildingDto): Promise<{
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
@@ -38,8 +38,8 @@ export declare class DormitoryController {
         capacity: number;
     }>;
     createRoom(tenantId: string, dto: CreateRoomDto): Promise<{
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
         tenantId: string;
         capacity: number;
@@ -55,8 +55,8 @@ export declare class DormitoryController {
             assignments: number;
         };
     } & {
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
         tenantId: string;
         capacity: number;
@@ -64,8 +64,8 @@ export declare class DormitoryController {
         picName: string | null;
     })[]>;
     updateRoom(tenantId: string, id: string, dto: UpdateRoomDto): Promise<{
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
         tenantId: string;
         capacity: number;
@@ -91,13 +91,13 @@ export declare class DormitoryController {
         roomId: string;
     }>;
     createTicket(tenantId: string, dto: CreateMaintenanceTicketDto, user: any): Promise<{
-        title: string;
         id: string;
         status: string;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
         description: string;
+        title: string;
         roomId: string;
         priority: string;
         resolvedAt: Date | null;
@@ -111,26 +111,26 @@ export declare class DormitoryController {
             };
         };
     } & {
-        title: string;
         id: string;
         status: string;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
         description: string;
+        title: string;
         roomId: string;
         priority: string;
         resolvedAt: Date | null;
         reportedBy: string;
     })[]>;
     updateTicket(tenantId: string, id: string, dto: UpdateMaintenanceTicketDto): Promise<{
-        title: string;
         id: string;
         status: string;
         createdAt: Date;
         updatedAt: Date;
         tenantId: string;
         description: string;
+        title: string;
         roomId: string;
         priority: string;
         resolvedAt: Date | null;

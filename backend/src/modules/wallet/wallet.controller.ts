@@ -8,6 +8,7 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { TenantGuard } from '../../common/guards/tenant.guard';
 import {
+  CooperativeCheckoutDto,
   CreatePaymentDto,
   ManualResolveDepositDto,
   MootaWebhookDto,
@@ -27,6 +28,24 @@ export class WalletController {
   @ApiOperation({ summary: 'Melihat saldo dan riwayat mutasi dompet santri' })
   async getWallet(@TenantId() tenantId: string, @Param('santriId') santriId: string) {
     return this.walletService.getWallet(tenantId, santriId);
+  }
+
+  @Get()
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, TenantGuard, RolesGuard)
+  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS')
+  @ApiOperation({ summary: 'Melihat ikhtisar seluruh dompet santri' })
+  async getAllWallets(@TenantId() tenantId: string) {
+    return this.walletService.getAllWallets(tenantId);
+  }
+
+  @Get('transactions')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, TenantGuard, RolesGuard)
+  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS')
+  @ApiOperation({ summary: 'Melihat riwayat mutasi global' })
+  async getAllTransactions(@TenantId() tenantId: string) {
+    return this.walletService.getAllTransactions(tenantId);
   }
 
   @Post('deposit/request')
@@ -62,6 +81,21 @@ export class WalletController {
     @Body() dto: CreatePaymentDto,
   ) {
     return this.walletService.makePayment(tenantId, userId, dto);
+  }
+
+  @Post('cooperative/checkout')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, TenantGuard, RolesGuard)
+  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS')
+  @ApiOperation({
+    summary: 'Kasir Koperasi memproses pembelian dengan memotong saldo dompet santri',
+  })
+  async processCooperativeCheckout(
+    @TenantId() tenantId: string,
+    @CurrentUser('userId') userId: string,
+    @Body() dto: CooperativeCheckoutDto,
+  ) {
+    return this.walletService.processCooperativeCheckout(tenantId, userId, dto);
   }
 
   @Post('webhook/moota/:tenantId')

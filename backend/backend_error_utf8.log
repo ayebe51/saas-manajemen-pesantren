@@ -1,0 +1,46 @@
+﻿node : node:internal/m
+odules/cjs/loader:1210
+At line:1 char:1
++ node dist/main.js > 
+backend_error.log 2>&1
++ ~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo    
+          : NotSpeci  
+  fied: (node:inter   
+ nal/modules/cjs/l    
+oader:1210:String    )
+ [], RemoteExcep    ti
+on
+    + FullyQualifiedE 
+   rrorId : NativeCo  
+  mmandError
+ 
+  throw err;
+  ^
+
+Error: Cannot find mod
+ule 'D:\apss-source\Sa
+aS Manajemen Pesantren
+\backend\dist\main.js'
+    at Module._resolve
+Filename (node:interna
+l/modules/cjs/loader:1
+207:15)
+    at Module._load (n
+ode:internal/modules/c
+js/loader:1038:27)
+    at Function.execut
+eUserEntryPoint [as ru
+nMain] (node:internal/
+modules/run_main:164:1
+2)
+    at node:internal/m
+ain/run_main_module:28
+:49 {
+  code: 'MODULE_NOT_FO
+UND',
+  requireStack: []
+}
+
+Node.js v20.20.0

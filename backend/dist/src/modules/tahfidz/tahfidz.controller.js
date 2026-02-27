@@ -33,6 +33,9 @@ let TahfidzController = class TahfidzController {
     async getTahfidzHistory(tenantId, santriId) {
         return this.tahfidzService.getTahfidzBySantri(tenantId, santriId);
     }
+    async getAllTahfidzHistory(tenantId) {
+        return this.tahfidzService.getTahfidzAllSantri(tenantId);
+    }
     async createMutabaah(tenantId, userId, dto) {
         return this.tahfidzService.createOrUpdateMutabaah(tenantId, userId, dto);
     }
@@ -62,6 +65,15 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", Promise)
 ], TahfidzController.prototype, "getTahfidzHistory", null);
+__decorate([
+    (0, common_1.Get)(),
+    (0, roles_decorator_1.Roles)('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS', 'GURU', 'MUSYRIF'),
+    (0, swagger_1.ApiOperation)({ summary: 'Melihat riwayat hafalan seluruh santri' }),
+    __param(0, (0, tenant_id_decorator_1.TenantId)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], TahfidzController.prototype, "getAllTahfidzHistory", null);
 __decorate([
     (0, common_1.Post)('mutabaah'),
     (0, roles_decorator_1.Roles)('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS', 'GURU', 'MUSYRIF'),

@@ -29,7 +29,7 @@ let WhatsappWebhookService = WhatsappWebhookService_1 = class WhatsappWebhookSer
         this.logger.log(`Processing WA message from ${sender}: "${message}"`);
         const wali = await this.prisma.wali.findFirst({
             where: { phone: { contains: sender } },
-            include: { santris: { include: { santri: { include: { wallet: true } } } } }
+            include: { santris: { include: { santri: { include: { wallet: true } } } } },
         });
         if (message === 'PING') {
             await this.extNotificationService.sendWhatsApp(sender, 'PONG! Sistem APSS Pesantren terhubung. ✅');

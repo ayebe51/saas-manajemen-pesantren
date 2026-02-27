@@ -1,9 +1,9 @@
-import React from 'react';
+import type { ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '@/lib/store/auth.store';
 
 interface AuthGuardProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export function AuthGuard({ children }: AuthGuardProps) {

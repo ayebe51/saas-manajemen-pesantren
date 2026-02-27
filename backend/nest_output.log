@@ -1,0 +1,562 @@
+
+> pesantren-saas-api@1.0.0 start:dev
+> nest start --watch
+
+[2J[3J[H[[90m06.49.27[0m] Starting compilation in watch mode...
+
+[[90m06.49.34[0m] Found 0 errors. Watching for file changes.
+
+[32m[Nest] 20900  - [39m25/02/2026, 06.49.37 [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 20900  - [39m25/02/2026, 06.49.37 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +34ms[39m
+[32m[Nest] 20900  - [39m25/02/2026, 06.49.37 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPassportModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 20900  - [39m25/02/2026, 06.49.37 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mThrottlerModule dependencies initialized[39m[38;5;3m +6ms[39m
+[31m[Nest] 20900  - [39m25/02/2026, 06.49.37 [31m  ERROR[39m [38;5;3m[ExceptionHandler] [39m[31mNest can't resolve dependencies of the NotificationGateway (?, ConfigService). Please make sure that the argument JwtService at index [0] is available in the NotificationModule context.
+
+Potential solutions:
+- Is NotificationModule a valid NestJS module?
+- If JwtService is a provider, is it part of the current NotificationModule?
+- If JwtService is exported from a separate @Module, is that module imported within NotificationModule?
+  @Module({
+    imports: [ /* the Module containing JwtService */ ]
+  })
+[39m
+Error: Nest can't resolve dependencies of the NotificationGateway (?, ConfigService). Please make sure that the argument JwtService at index [0] is available in the NotificationModule context.
+
+Potential solutions:
+- Is NotificationModule a valid NestJS module?
+- If JwtService is a provider, is it part of the current NotificationModule?
+- If JwtService is exported from a separate @Module, is that module imported within NotificationModule?
+  @Module({
+    imports: [ /* the Module containing JwtService */ ]
+  })
+
+    at Injector.lookupComponentInParentModules (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:262:19)
+    at async Injector.resolveComponentInstance (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:215:33)
+    at async resolveParam (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:129:38)
+    at async Promise.all (index 0)
+    at async Injector.resolveConstructorParams (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:144:27)
+    at async Injector.loadInstance (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:70:13)
+    at async Injector.loadProvider (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:98:9)
+    at async D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\instance-loader.js:56:13
+    at async Promise.all (index 3)
+    at async InstanceLoader.createInstancesOfProviders (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\instance-loader.js:55:9)
+    at async D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\instance-loader.js:40:13
+    at async Promise.all (index 22)
+    at async InstanceLoader.createInstances (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\instance-loader.js:39:9)
+    at async InstanceLoader.createInstancesOfDependencies (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\instance-loader.js:22:13)
+    at async D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\nest-factory.js:108:17
+    at async ExceptionsZone.asyncRun (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\errors\exceptions-zone.js:22:13)
+[2J[3J[H[[90m06.49.57[0m] File change detected. Starting incremental compilation...
+
+[[90m06.49.59[0m] Found 0 errors. Watching for file changes.
+
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +74ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPassportModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mThrottlerModule dependencies initialized[39m[38;5;3m +10ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mJwtModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +2ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mDiscoveryModule dependencies initialized[39m[38;5;3m +2ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mJobsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +4ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mScheduleModule dependencies initialized[39m[38;5;3m +2ms[39m
+[33m[Nest] 21072  - [39m25/02/2026, 06.50.07 [33m   WARN[39m [38;5;3m[UploadService] [39m[33mAWS Credentials (Access Key & Secret Key) are MISSING in environment variables. Uploads will fail if attempted.[39m
+[33m[Nest] 21072  - [39m25/02/2026, 06.50.07 [33m   WARN[39m [38;5;3m[StripeService] [39m[33mStripe is running in mock mode. No real transactions will occur.[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +2ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mBullModule dependencies initialized[39m[38;5;3m +3ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mExternalNotificationModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mBullModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mJwtModule dependencies initialized[39m[38;5;3m +2ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mNotificationModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCacheModule dependencies initialized[39m[38;5;3m +5ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mTahfidzModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mWalletModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAcademicModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mEmployeeModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuditLogModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mTenantModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSantriModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPerizinanModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCatatanModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPelanggaranModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mKunjunganModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mKesehatanModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPpdbModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mInventoryModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mDormitoryModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mReportModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPublicModule dependencies initialized[39m[38;5;3m +12ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUploadModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mBullModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mDashboardModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPembayaranModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[WebSocketsController] [39m[32mNotificationGateway subscribed to the "ping" message[39m[38;5;3m +181ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAuthController {/api/v1/auth}:[39m[38;5;3m +14ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/auth/login, POST} route[39m[38;5;3m +3ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/auth/refresh, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/auth/logout, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/auth/fcm-token, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mTenantController {/api/v1/tenants}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/tenants, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/tenants, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/tenants/:id, GET} route[39m[38;5;3m +2ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/tenants/:id, PUT} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/tenants/:id, DELETE} route[39m[38;5;3m +2ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSantriController {/api/v1/santri}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/santri, POST} route[39m[38;5;3m +2ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/santri/import/bulk, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/santri, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/santri/:id, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/santri/:id, PUT} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/santri/:id/wali, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/santri/:id/wali/:waliId/link, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mPerizinanController {/api/v1/izin}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/izin, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/izin, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/izin/:id, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/izin/:id/approve, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/izin/:id/checkout, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/izin/:id/checkin, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mCatatanController {/api/v1}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/catatan, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/catatan, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/pengumuman, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/pengumuman, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mPembayaranController {/api/v1/payments}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/payments/invoices, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/payments/invoices, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/payments/create-intent, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/payments/webhook/stripe, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mPelanggaranController {/api/v1}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/pelanggaran, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/pelanggaran, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/pembinaan, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/pembinaan, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mKunjunganController {/api/v1/kunjungan}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/kunjungan, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/kunjungan, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/kunjungan/slots, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/kunjungan/:id/checkin, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mKesehatanController {/api/v1/kesehatan}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/kesehatan/records, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/kesehatan/records, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/kesehatan/medications, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/kesehatan/medications/:id/given, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mDashboardController {/api/v1/dashboard}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/dashboard/summary, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/dashboard/trends, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mPublicController {/api/v1/public}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/public/sync/santri, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mWebhookController {/api/v1/webhook}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/webhook/whatsapp, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mUploadController {/api/v1/upload}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/upload, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mTahfidzController {/api/v1/api/v1/tahfidz}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/tahfidz, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/tahfidz/santri/:santriId, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/tahfidz/mutabaah, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/tahfidz/mutabaah/santri/:santriId, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mWalletController {/api/v1/api/v1/wallet}:[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/wallet/santri/:santriId, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/wallet/deposit/request, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/wallet/deposit/resolve, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/wallet/pos/payment, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/wallet/webhook/moota/:tenantId, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAcademicController {/api/v1/api/v1/academic}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/academic/schedule, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/academic/schedule/kelas/:kelas, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/academic/attendance, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/academic/attendance/santri/:santriId, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/academic/grade, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/academic/grade/santri/:santriId, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mEmployeeController {/api/v1/api/v1/employee}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/employee, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/employee, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/employee/payroll, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/employee/:employeeId/payroll, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/employee/payroll/:payrollId/pay, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAuditLogController {/api/v1/api/v1/audit-log}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/audit-log, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/audit-log/:id, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mPpdbController {/api/v1/api/v1/ppdb}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/ppdb, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/ppdb, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/ppdb/:id, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/ppdb/:id, PUT} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/ppdb/:id/documents, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/ppdb/:id/exams, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mInventoryController {/api/v1/api/v1/inventory}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/inventory/items, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/inventory/items, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/inventory/items/:id, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/inventory/items/:id, PUT} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/inventory/items/:id/transactions, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/inventory/suppliers, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/inventory/suppliers, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/inventory/purchase-orders, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/inventory/purchase-orders/:id, PUT} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mDormitoryController {/api/v1/api/v1/dormitory}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/dormitory/buildings, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/dormitory/buildings, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/dormitory/buildings/:id, PUT} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/dormitory/rooms, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/dormitory/rooms, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/dormitory/rooms/:id, PUT} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/dormitory/rooms/:roomId/assign, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/dormitory/assignments/:assignmentId/checkout, PUT} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/dormitory/tickets, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/dormitory/tickets, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/dormitory/tickets/:id, PUT} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mReportController {/api/v1/api/v1/reports}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/reports/excel/:module, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/reports/pdf/:module, GET} route[39m[38;5;3m +1ms[39m
+[33m[Nest] 21072  - [39m25/02/2026, 06.50.07 [33m   WARN[39m [38;5;3m[ExternalNotificationService] [39m[33mFirebase configuration missing in .env. FCM Push Notifications will be disabled.[39m
+[32m[Nest] 21072  - [39m25/02/2026, 06.50.07 [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +39ms[39m
+[31m[Nest] 21072  - [39m25/02/2026, 06.50.07 [31m  ERROR[39m [38;5;3m[NestApplication] [39m[31mError: listen EADDRINUSE: address already in use :::3000[39m[38;5;3m +5ms[39m
+node:net:1908
+    const ex = new UVExceptionWithHostPort(err, 'listen', address, port);
+               ^
+
+Error: listen EADDRINUSE: address already in use :::3000
+    at Server.setupListenHandle [as _listen2] (node:net:1908:16)
+    at listenInCluster (node:net:1965:12)
+    at Server.listen (node:net:2067:7)
+    at ExpressAdapter.listen (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\platform-express\adapters\express-adapter.js:95:32)
+    at D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\nest-application.js:183:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\nest-application.js:173:16)
+    at async bootstrap (D:\apss-source\SaaS Manajemen Pesantren\backend\src\main.ts:40:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 3000
+}
+
+Node.js v20.20.0
+[2J[3J[H[[90m06.55.56[0m] File change detected. Starting incremental compilation...
+
+[[90m06.55.58[0m] Found 0 errors. Watching for file changes.
+
+[32m[Nest] 23804  - [39m25/02/2026, 06.56.06 [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 23804  - [39m25/02/2026, 06.56.06 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +87ms[39m
+[32m[Nest] 23804  - [39m25/02/2026, 06.56.06 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPassportModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 23804  - [39m25/02/2026, 06.56.06 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mThrottlerModule dependencies initialized[39m[38;5;3m +10ms[39m
+[32m[Nest] 23804  - [39m25/02/2026, 06.56.06 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mJwtModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 23804  - [39m25/02/2026, 06.56.06 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +2ms[39m
+[32m[Nest] 23804  - [39m25/02/2026, 06.56.06 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mDiscoveryModule dependencies initialized[39m[38;5;3m +2ms[39m
+[32m[Nest] 23804  - [39m25/02/2026, 06.56.06 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mJobsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 23804  - [39m25/02/2026, 06.56.06 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +11ms[39m
+[32m[Nest] 23804  - [39m25/02/2026, 06.56.06 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 23804  - [39m25/02/2026, 06.56.06 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mScheduleModule dependencies initialized[39m[38;5;3m +7ms[39m
+[33m[Nest] 23804  - [39m25/02/2026, 06.56.06 [33m   WARN[39m [38;5;3m[UploadService] [39m[33mAWS Credentials (Access Key & Secret Key) are MISSING in environment variables. Uploads will fail if attempted.[39m
+[33m[Nest] 23804  - [39m25/02/2026, 06.56.06 [33m   WARN[39m [38;5;3m[StripeService] [39m[33mStripe is running in mock mode. No real transactions will occur.[39m
+[32m[Nest] 23804  - [39m25/02/2026, 06.56.06 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +4ms[39m
+[31m[Nest] 23804  - [39m25/02/2026, 06.56.06 [31m  ERROR[39m [38;5;3m[ExceptionHandler] [39m[31mNest can't resolve dependencies of the TenantCacheInterceptor (?, Reflector). Please make sure that the argument "CACHE_MANAGER" at index [0] is available in the DashboardModule context.
+
+Potential solutions:
+- Is DashboardModule a valid NestJS module?
+- If "CACHE_MANAGER" is a provider, is it part of the current DashboardModule?
+- If "CACHE_MANAGER" is exported from a separate @Module, is that module imported within DashboardModule?
+  @Module({
+    imports: [ /* the Module containing "CACHE_MANAGER" */ ]
+  })
+[39m
+Error: Nest can't resolve dependencies of the TenantCacheInterceptor (?, Reflector). Please make sure that the argument "CACHE_MANAGER" at index [0] is available in the DashboardModule context.
+
+Potential solutions:
+- Is DashboardModule a valid NestJS module?
+- If "CACHE_MANAGER" is a provider, is it part of the current DashboardModule?
+- If "CACHE_MANAGER" is exported from a separate @Module, is that module imported within DashboardModule?
+  @Module({
+    imports: [ /* the Module containing "CACHE_MANAGER" */ ]
+  })
+
+    at Injector.lookupComponentInParentModules (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:262:19)
+    at async Injector.resolveComponentInstance (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:215:33)
+    at async resolveParam (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:129:38)
+    at async Promise.all (index 0)
+    at async Injector.resolveConstructorParams (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:144:27)
+    at async Injector.loadInstance (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:70:13)
+    at async Injector.loadInjectable (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:94:9)
+    at async D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\instance-loader.js:80:13
+    at async Promise.all (index 2)
+    at async InstanceLoader.createInstancesOfInjectables (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\instance-loader.js:79:9)
+    at async D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\instance-loader.js:41:13
+    at async Promise.all (index 18)
+    at async InstanceLoader.createInstances (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\instance-loader.js:39:9)
+    at async InstanceLoader.createInstancesOfDependencies (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\instance-loader.js:22:13)
+    at async D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\nest-factory.js:108:17
+    at async ExceptionsZone.asyncRun (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\errors\exceptions-zone.js:22:13)
+[2J[3J[H[[90m06.56.24[0m] File change detected. Starting incremental compilation...
+
+[[90m06.56.26[0m] Found 0 errors. Watching for file changes.
+
+[32m[Nest] 18044  - [39m25/02/2026, 06.56.32 [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 18044  - [39m25/02/2026, 06.56.32 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +96ms[39m
+[32m[Nest] 18044  - [39m25/02/2026, 06.56.32 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPassportModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 18044  - [39m25/02/2026, 06.56.32 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mThrottlerModule dependencies initialized[39m[38;5;3m +35ms[39m
+[32m[Nest] 18044  - [39m25/02/2026, 06.56.32 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mJwtModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 18044  - [39m25/02/2026, 06.56.32 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +2ms[39m
+[32m[Nest] 18044  - [39m25/02/2026, 06.56.32 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mDiscoveryModule dependencies initialized[39m[38;5;3m +3ms[39m
+[32m[Nest] 18044  - [39m25/02/2026, 06.56.32 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mJobsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 18044  - [39m25/02/2026, 06.56.32 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +6ms[39m
+[32m[Nest] 18044  - [39m25/02/2026, 06.56.32 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 18044  - [39m25/02/2026, 06.56.32 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mScheduleModule dependencies initialized[39m[38;5;3m +2ms[39m
+[33m[Nest] 18044  - [39m25/02/2026, 06.56.32 [33m   WARN[39m [38;5;3m[UploadService] [39m[33mAWS Credentials (Access Key & Secret Key) are MISSING in environment variables. Uploads will fail if attempted.[39m
+[33m[Nest] 18044  - [39m25/02/2026, 06.56.32 [33m   WARN[39m [38;5;3m[StripeService] [39m[33mStripe is running in mock mode. No real transactions will occur.[39m
+[32m[Nest] 18044  - [39m25/02/2026, 06.56.32 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +1ms[39m
+[31m[Nest] 18044  - [39m25/02/2026, 06.56.32 [31m  ERROR[39m [38;5;3m[ExceptionHandler] [39m[31mNest can't resolve dependencies of the TenantCacheInterceptor (?, Reflector). Please make sure that the argument "CACHE_MANAGER" at index [0] is available in the DashboardModule context.
+
+Potential solutions:
+- Is DashboardModule a valid NestJS module?
+- If "CACHE_MANAGER" is a provider, is it part of the current DashboardModule?
+- If "CACHE_MANAGER" is exported from a separate @Module, is that module imported within DashboardModule?
+  @Module({
+    imports: [ /* the Module containing "CACHE_MANAGER" */ ]
+  })
+[39m
+Error: Nest can't resolve dependencies of the TenantCacheInterceptor (?, Reflector). Please make sure that the argument "CACHE_MANAGER" at index [0] is available in the DashboardModule context.
+
+Potential solutions:
+- Is DashboardModule a valid NestJS module?
+- If "CACHE_MANAGER" is a provider, is it part of the current DashboardModule?
+- If "CACHE_MANAGER" is exported from a separate @Module, is that module imported within DashboardModule?
+  @Module({
+    imports: [ /* the Module containing "CACHE_MANAGER" */ ]
+  })
+
+    at Injector.lookupComponentInParentModules (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:262:19)
+    at async Injector.resolveComponentInstance (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:215:33)
+    at async resolveParam (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:129:38)
+    at async Promise.all (index 0)
+    at async Injector.resolveConstructorParams (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:144:27)
+    at async Injector.loadInstance (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:70:13)
+    at async Injector.loadInjectable (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:94:9)
+    at async D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\instance-loader.js:80:13
+    at async Promise.all (index 2)
+    at async InstanceLoader.createInstancesOfInjectables (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\instance-loader.js:79:9)
+    at async D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\instance-loader.js:41:13
+    at async Promise.all (index 18)
+    at async InstanceLoader.createInstances (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\instance-loader.js:39:9)
+    at async InstanceLoader.createInstancesOfDependencies (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\instance-loader.js:22:13)
+    at async D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\nest-factory.js:108:17
+    at async ExceptionsZone.asyncRun (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\errors\exceptions-zone.js:22:13)
+[2J[3J[H[[90m06.56.47[0m] File change detected. Starting incremental compilation...
+
+[[90m06.56.49[0m] Found 0 errors. Watching for file changes.
+
+[32m[Nest] 19184  - [39m25/02/2026, 06.56.54 [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 19184  - [39m25/02/2026, 06.56.55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +82ms[39m
+[32m[Nest] 19184  - [39m25/02/2026, 06.56.55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPassportModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 19184  - [39m25/02/2026, 06.56.55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mThrottlerModule dependencies initialized[39m[38;5;3m +11ms[39m
+[32m[Nest] 19184  - [39m25/02/2026, 06.56.55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mJwtModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 19184  - [39m25/02/2026, 06.56.55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +2ms[39m
+[32m[Nest] 19184  - [39m25/02/2026, 06.56.55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mDiscoveryModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 19184  - [39m25/02/2026, 06.56.55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mJobsModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 19184  - [39m25/02/2026, 06.56.55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +19ms[39m
+[32m[Nest] 19184  - [39m25/02/2026, 06.56.55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 19184  - [39m25/02/2026, 06.56.55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mScheduleModule dependencies initialized[39m[38;5;3m +4ms[39m
+[33m[Nest] 19184  - [39m25/02/2026, 06.56.55 [33m   WARN[39m [38;5;3m[UploadService] [39m[33mAWS Credentials (Access Key & Secret Key) are MISSING in environment variables. Uploads will fail if attempted.[39m
+[33m[Nest] 19184  - [39m25/02/2026, 06.56.55 [33m   WARN[39m [38;5;3m[StripeService] [39m[33mStripe is running in mock mode. No real transactions will occur.[39m
+[32m[Nest] 19184  - [39m25/02/2026, 06.56.55 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +2ms[39m
+[31m[Nest] 19184  - [39m25/02/2026, 06.56.55 [31m  ERROR[39m [38;5;3m[ExceptionHandler] [39m[31mNest can't resolve dependencies of the TenantCacheInterceptor (?, Reflector). Please make sure that the argument "CACHE_MANAGER" at index [0] is available in the DashboardModule context.
+
+Potential solutions:
+- Is DashboardModule a valid NestJS module?
+- If "CACHE_MANAGER" is a provider, is it part of the current DashboardModule?
+- If "CACHE_MANAGER" is exported from a separate @Module, is that module imported within DashboardModule?
+  @Module({
+    imports: [ /* the Module containing "CACHE_MANAGER" */ ]
+  })
+[39m
+Error: Nest can't resolve dependencies of the TenantCacheInterceptor (?, Reflector). Please make sure that the argument "CACHE_MANAGER" at index [0] is available in the DashboardModule context.
+
+Potential solutions:
+- Is DashboardModule a valid NestJS module?
+- If "CACHE_MANAGER" is a provider, is it part of the current DashboardModule?
+- If "CACHE_MANAGER" is exported from a separate @Module, is that module imported within DashboardModule?
+  @Module({
+    imports: [ /* the Module containing "CACHE_MANAGER" */ ]
+  })
+
+    at Injector.lookupComponentInParentModules (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:262:19)
+    at async Injector.resolveComponentInstance (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:215:33)
+    at async resolveParam (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:129:38)
+    at async Promise.all (index 0)
+    at async Injector.resolveConstructorParams (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:144:27)
+    at async Injector.loadInstance (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:70:13)
+    at async Injector.loadInjectable (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:94:9)
+    at async D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\instance-loader.js:80:13
+    at async Promise.all (index 2)
+    at async InstanceLoader.createInstancesOfInjectables (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\instance-loader.js:79:9)
+    at async D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\instance-loader.js:41:13
+    at async Promise.all (index 18)
+    at async InstanceLoader.createInstances (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\instance-loader.js:39:9)
+    at async InstanceLoader.createInstancesOfDependencies (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\instance-loader.js:22:13)
+    at async D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\nest-factory.js:108:17
+    at async ExceptionsZone.asyncRun (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\errors\exceptions-zone.js:22:13)
+[2J[3J[H[[90m07.37.35[0m] File change detected. Starting incremental compilation...
+
+[[90m07.37.40[0m] Found 0 errors. Watching for file changes.
+
+[32m[Nest] 25984  - [39m25/02/2026, 07.37.49 [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[2J[3J[H[[90m07.37.49[0m] File change detected. Starting incremental compilation...
+
+[32m[Nest] 25984  - [39m25/02/2026, 07.37.49 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +97ms[39m
+[32m[Nest] 25984  - [39m25/02/2026, 07.37.49 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPassportModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 25984  - [39m25/02/2026, 07.37.49 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mThrottlerModule dependencies initialized[39m[38;5;3m +12ms[39m
+[32m[Nest] 25984  - [39m25/02/2026, 07.37.49 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mJwtModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 25984  - [39m25/02/2026, 07.37.49 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +68ms[39m
+[32m[Nest] 25984  - [39m25/02/2026, 07.37.49 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mDiscoveryModule dependencies initialized[39m[38;5;3m +3ms[39m
+[32m[Nest] 25984  - [39m25/02/2026, 07.37.49 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mJobsModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 25984  - [39m25/02/2026, 07.37.49 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +5ms[39m
+[32m[Nest] 25984  - [39m25/02/2026, 07.37.49 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 25984  - [39m25/02/2026, 07.37.49 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mScheduleModule dependencies initialized[39m[38;5;3m +2ms[39m
+[33m[Nest] 25984  - [39m25/02/2026, 07.37.49 [33m   WARN[39m [38;5;3m[UploadService] [39m[33mAWS Credentials (Access Key & Secret Key) are MISSING in environment variables. Uploads will fail if attempted.[39m
+[33m[Nest] 25984  - [39m25/02/2026, 07.37.49 [33m   WARN[39m [38;5;3m[StripeService] [39m[33mStripe is running in mock mode. No real transactions will occur.[39m
+[32m[Nest] 25984  - [39m25/02/2026, 07.37.49 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +1ms[39m
+[31m[Nest] 25984  - [39m25/02/2026, 07.37.49 [31m  ERROR[39m [38;5;3m[ExceptionHandler] [39m[31mNest can't resolve dependencies of the TenantCacheInterceptor (?, Reflector). Please make sure that the argument "CACHE_MANAGER" at index [0] is available in the DashboardModule context.
+
+Potential solutions:
+- Is DashboardModule a valid NestJS module?
+- If "CACHE_MANAGER" is a provider, is it part of the current DashboardModule?
+- If "CACHE_MANAGER" is exported from a separate @Module, is that module imported within DashboardModule?
+  @Module({
+    imports: [ /* the Module containing "CACHE_MANAGER" */ ]
+  })
+[39m
+Error: Nest can't resolve dependencies of the TenantCacheInterceptor (?, Reflector). Please make sure that the argument "CACHE_MANAGER" at index [0] is available in the DashboardModule context.
+
+Potential solutions:
+- Is DashboardModule a valid NestJS module?
+- If "CACHE_MANAGER" is a provider, is it part of the current DashboardModule?
+- If "CACHE_MANAGER" is exported from a separate @Module, is that module imported within DashboardModule?
+  @Module({
+    imports: [ /* the Module containing "CACHE_MANAGER" */ ]
+  })
+
+    at Injector.lookupComponentInParentModules (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:262:19)
+    at async Injector.resolveComponentInstance (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:215:33)
+    at async resolveParam (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:129:38)
+    at async Promise.all (index 0)
+    at async Injector.resolveConstructorParams (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:144:27)
+    at async Injector.loadInstance (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:70:13)
+    at async Injector.loadInjectable (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:94:9)
+    at async D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\instance-loader.js:80:13
+    at async Promise.all (index 2)
+    at async InstanceLoader.createInstancesOfInjectables (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\instance-loader.js:79:9)
+    at async D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\instance-loader.js:41:13
+    at async Promise.all (index 18)
+    at async InstanceLoader.createInstances (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\instance-loader.js:39:9)
+    at async InstanceLoader.createInstancesOfDependencies (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\instance-loader.js:22:13)
+    at async D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\nest-factory.js:108:17
+    at async ExceptionsZone.asyncRun (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\errors\exceptions-zone.js:22:13)
+[[90m07.37.53[0m] Found 0 errors. Watching for file changes.
+
+[2J[3J[H[[90m07.37.56[0m] File change detected. Starting incremental compilation...
+
+[32m[Nest] 7100  - [39m25/02/2026, 07.38.02 [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 7100  - [39m25/02/2026, 07.38.02 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +96ms[39m
+[32m[Nest] 7100  - [39m25/02/2026, 07.38.02 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPassportModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 7100  - [39m25/02/2026, 07.38.02 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mThrottlerModule dependencies initialized[39m[38;5;3m +11ms[39m
+[32m[Nest] 7100  - [39m25/02/2026, 07.38.02 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mJwtModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 7100  - [39m25/02/2026, 07.38.02 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +2ms[39m
+[32m[Nest] 7100  - [39m25/02/2026, 07.38.02 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mDiscoveryModule dependencies initialized[39m[38;5;3m +5ms[39m
+[32m[Nest] 7100  - [39m25/02/2026, 07.38.02 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mJobsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 7100  - [39m25/02/2026, 07.38.02 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +6ms[39m
+[32m[Nest] 7100  - [39m25/02/2026, 07.38.02 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 7100  - [39m25/02/2026, 07.38.02 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mScheduleModule dependencies initialized[39m[38;5;3m +3ms[39m
+[33m[Nest] 7100  - [39m25/02/2026, 07.38.02 [33m   WARN[39m [38;5;3m[UploadService] [39m[33mAWS Credentials (Access Key & Secret Key) are MISSING in environment variables. Uploads will fail if attempted.[39m
+[33m[Nest] 7100  - [39m25/02/2026, 07.38.02 [33m   WARN[39m [38;5;3m[StripeService] [39m[33mStripe is running in mock mode. No real transactions will occur.[39m
+[32m[Nest] 7100  - [39m25/02/2026, 07.38.02 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +2ms[39m
+[31m[Nest] 7100  - [39m25/02/2026, 07.38.02 [31m  ERROR[39m [38;5;3m[ExceptionHandler] [39m[31mNest can't resolve dependencies of the TenantCacheInterceptor (?, Reflector). Please make sure that the argument "CACHE_MANAGER" at index [0] is available in the DashboardModule context.
+
+Potential solutions:
+- Is DashboardModule a valid NestJS module?
+- If "CACHE_MANAGER" is a provider, is it part of the current DashboardModule?
+- If "CACHE_MANAGER" is exported from a separate @Module, is that module imported within DashboardModule?
+  @Module({
+    imports: [ /* the Module containing "CACHE_MANAGER" */ ]
+  })
+[39m
+Error: Nest can't resolve dependencies of the TenantCacheInterceptor (?, Reflector). Please make sure that the argument "CACHE_MANAGER" at index [0] is available in the DashboardModule context.
+
+Potential solutions:
+- Is DashboardModule a valid NestJS module?
+- If "CACHE_MANAGER" is a provider, is it part of the current DashboardModule?
+- If "CACHE_MANAGER" is exported from a separate @Module, is that module imported within DashboardModule?
+  @Module({
+    imports: [ /* the Module containing "CACHE_MANAGER" */ ]
+  })
+
+    at Injector.lookupComponentInParentModules (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:262:19)
+    at async Injector.resolveComponentInstance (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:215:33)
+    at async resolveParam (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:129:38)
+    at async Promise.all (index 0)
+    at async Injector.resolveConstructorParams (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:144:27)
+    at async Injector.loadInstance (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:70:13)
+    at async Injector.loadInjectable (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:94:9)
+    at async D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\instance-loader.js:80:13
+    at async Promise.all (index 2)
+    at async InstanceLoader.createInstancesOfInjectables (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\instance-loader.js:79:9)
+    at async D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\instance-loader.js:41:13
+    at async Promise.all (index 18)
+    at async InstanceLoader.createInstances (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\instance-loader.js:39:9)
+    at async InstanceLoader.createInstancesOfDependencies (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\instance-loader.js:22:13)
+    at async D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\nest-factory.js:108:17
+    at async ExceptionsZone.asyncRun (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\errors\exceptions-zone.js:22:13)
+[[90m07.38.17[0m] Found 0 errors. Watching for file changes.
+
+[32m[Nest] 31968  - [39m25/02/2026, 07.38.26 [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 31968  - [39m25/02/2026, 07.38.27 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +95ms[39m
+[32m[Nest] 31968  - [39m25/02/2026, 07.38.27 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPassportModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 31968  - [39m25/02/2026, 07.38.27 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mThrottlerModule dependencies initialized[39m[38;5;3m +19ms[39m
+[32m[Nest] 31968  - [39m25/02/2026, 07.38.27 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mJwtModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 31968  - [39m25/02/2026, 07.38.27 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +3ms[39m
+[32m[Nest] 31968  - [39m25/02/2026, 07.38.27 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mDiscoveryModule dependencies initialized[39m[38;5;3m +7ms[39m
+[32m[Nest] 31968  - [39m25/02/2026, 07.38.27 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mJobsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 31968  - [39m25/02/2026, 07.38.27 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +9ms[39m
+[32m[Nest] 31968  - [39m25/02/2026, 07.38.27 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 31968  - [39m25/02/2026, 07.38.27 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mScheduleModule dependencies initialized[39m[38;5;3m +3ms[39m
+[33m[Nest] 31968  - [39m25/02/2026, 07.38.27 [33m   WARN[39m [38;5;3m[UploadService] [39m[33mAWS Credentials (Access Key & Secret Key) are MISSING in environment variables. Uploads will fail if attempted.[39m
+[33m[Nest] 31968  - [39m25/02/2026, 07.38.27 [33m   WARN[39m [38;5;3m[StripeService] [39m[33mStripe is running in mock mode. No real transactions will occur.[39m
+[32m[Nest] 31968  - [39m25/02/2026, 07.38.27 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +2ms[39m
+[31m[Nest] 31968  - [39m25/02/2026, 07.38.27 [31m  ERROR[39m [38;5;3m[ExceptionHandler] [39m[31mNest can't resolve dependencies of the TenantCacheInterceptor (?, Reflector). Please make sure that the argument "CACHE_MANAGER" at index [0] is available in the DashboardModule context.
+
+Potential solutions:
+- Is DashboardModule a valid NestJS module?
+- If "CACHE_MANAGER" is a provider, is it part of the current DashboardModule?
+- If "CACHE_MANAGER" is exported from a separate @Module, is that module imported within DashboardModule?
+  @Module({
+    imports: [ /* the Module containing "CACHE_MANAGER" */ ]
+  })
+[39m
+Error: Nest can't resolve dependencies of the TenantCacheInterceptor (?, Reflector). Please make sure that the argument "CACHE_MANAGER" at index [0] is available in the DashboardModule context.
+
+Potential solutions:
+- Is DashboardModule a valid NestJS module?
+- If "CACHE_MANAGER" is a provider, is it part of the current DashboardModule?
+- If "CACHE_MANAGER" is exported from a separate @Module, is that module imported within DashboardModule?
+  @Module({
+    imports: [ /* the Module containing "CACHE_MANAGER" */ ]
+  })
+
+    at Injector.lookupComponentInParentModules (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:262:19)
+    at async Injector.resolveComponentInstance (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:215:33)
+    at async resolveParam (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:129:38)
+    at async Promise.all (index 0)
+    at async Injector.resolveConstructorParams (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:144:27)
+    at async Injector.loadInstance (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:70:13)
+    at async Injector.loadInjectable (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\injector.js:94:9)
+    at async D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\instance-loader.js:80:13
+    at async Promise.all (index 2)
+    at async InstanceLoader.createInstancesOfInjectables (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\instance-loader.js:79:9)
+    at async D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\instance-loader.js:41:13
+    at async Promise.all (index 18)
+    at async InstanceLoader.createInstances (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\instance-loader.js:39:9)
+    at async InstanceLoader.createInstancesOfDependencies (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\injector\instance-loader.js:22:13)
+    at async D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\nest-factory.js:108:17
+    at async ExceptionsZone.asyncRun (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\errors\exceptions-zone.js:22:13)

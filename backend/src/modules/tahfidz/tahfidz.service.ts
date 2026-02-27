@@ -40,6 +40,16 @@ export class TahfidzService {
     });
   }
 
+  async getTahfidzAllSantri(tenantId: string) {
+    return this.prisma.tahfidz.findMany({
+      where: { tenantId },
+      orderBy: { date: 'desc' },
+      include: {
+        santri: { select: { name: true, kelas: true } },
+      },
+    });
+  }
+
   async createOrUpdateMutabaah(tenantId: string, userId: string, dto: CreateMutabaahDto) {
     const santri = await this.prisma.santri.findFirst({
       where: { id: dto.santriId, tenantId },

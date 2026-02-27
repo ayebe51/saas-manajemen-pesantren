@@ -4,10 +4,10 @@ export declare class EmployeeController {
     private readonly employeeService;
     constructor(employeeService: EmployeeService);
     createEmployee(tenantId: string, dto: CreateEmployeeDto): Promise<{
-        phone: string | null;
-        name: string;
         id: string;
+        name: string;
         address: string | null;
+        phone: string | null;
         status: string;
         createdAt: Date;
         updatedAt: Date;
@@ -18,10 +18,10 @@ export declare class EmployeeController {
         joinDate: Date | null;
     }>;
     getEmployees(tenantId: string): Promise<{
-        phone: string | null;
-        name: string;
         id: string;
+        name: string;
         address: string | null;
+        phone: string | null;
         status: string;
         createdAt: Date;
         updatedAt: Date;

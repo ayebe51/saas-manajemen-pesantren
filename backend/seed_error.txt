@@ -1,0 +1,25 @@
+Environment variables loaded from .env
+Running seed command `ts-node prisma/seed.ts` ...
+Starting seed...
+Created Tenant: Pesantren Al-Ikhlas
+PrismaClientKnownRequestError: 
+Invalid `prisma.user.create()` invocation in
+D:\apss-source\SaaS Manajemen Pesantren\backend\prisma\seed.ts:26:40
+
+  23 
+  24 // 2. Create Platform Super Admin
+  25 const superAdminPassword = await bcrypt.hash('superadmin123', 10);
+→ 26 const superAdmin = await prisma.user.create(
+Unique constraint failed on the fields: (`email`)
+    at $n.handleRequestError (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@prisma\client\runtime\library.js:121:7315)
+    at $n.handleAndLogRequestError (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async main (D:\apss-source\SaaS Manajemen Pesantren\backend\prisma\seed.ts:26:22) {
+  code: 'P2002',
+  clientVersion: '5.22.0',
+  meta: { modelName: 'User', target: [ 'email' ] }
+}
+
+An error occurred while running the seed command:
+Error: Command failed with exit code 1: ts-node prisma/seed.ts

@@ -1,0 +1,187 @@
+
+> pesantren-saas-api@1.0.0 start
+> nest start
+
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[NestFactory] [39m[32mStarting Nest application...[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPrismaModule dependencies initialized[39m[38;5;3m +38ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPassportModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mThrottlerModule dependencies initialized[39m[38;5;3m +7ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mJwtModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigHostModule dependencies initialized[39m[38;5;3m +2ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mDiscoveryModule dependencies initialized[39m[38;5;3m +2ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mJobsModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCacheModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +2ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mConfigModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mScheduleModule dependencies initialized[39m[38;5;3m +1ms[39m
+[33m[Nest] 26704  - [39m25/02/2026, 07.50.48 [33m   WARN[39m [38;5;3m[UploadService] [39m[33mAWS Credentials (Access Key & Secret Key) are MISSING in environment variables. Uploads will fail if attempted.[39m
+[33m[Nest] 26704  - [39m25/02/2026, 07.50.48 [33m   WARN[39m [38;5;3m[StripeService] [39m[33mStripe is running in mock mode. No real transactions will occur.[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAppModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mExternalNotificationModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mJwtModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mNotificationModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mTahfidzModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mWalletModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAcademicModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mEmployeeModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuditLogModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mTenantModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mSantriModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPerizinanModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mCatatanModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPelanggaranModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mKunjunganModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mKesehatanModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPpdbModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mInventoryModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mDormitoryModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mReportModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mDashboardModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPublicModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mUploadModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mPembayaranModule dependencies initialized[39m[38;5;3m +1ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[InstanceLoader] [39m[32mAuthModule dependencies initialized[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[WebSocketsController] [39m[32mNotificationGateway subscribed to the "ping" message[39m[38;5;3m +77ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAuthController {/api/v1/auth}:[39m[38;5;3m +4ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/auth/login, POST} route[39m[38;5;3m +2ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/auth/refresh, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/auth/logout, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/auth/fcm-token, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mTenantController {/api/v1/tenants}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/tenants, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/tenants, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/tenants/:id, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/tenants/:id, PUT} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/tenants/:id, DELETE} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mSantriController {/api/v1/santri}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/santri, POST} route[39m[38;5;3m +2ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/santri/import/bulk, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/santri, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/santri/:id, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/santri/:id, PUT} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/santri/:id/wali, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/santri/:id/wali/:waliId/link, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mPerizinanController {/api/v1/izin}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/izin, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/izin, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/izin/:id, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/izin/:id/approve, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/izin/:id/checkout, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/izin/:id/checkin, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mCatatanController {/api/v1}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/catatan, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/catatan, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/pengumuman, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/pengumuman, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mPembayaranController {/api/v1/payments}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/payments/invoices, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/payments/invoices, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/payments/create-intent, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/payments/webhook/stripe, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mPelanggaranController {/api/v1}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/pelanggaran, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/pelanggaran, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/pembinaan, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/pembinaan, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mKunjunganController {/api/v1/kunjungan}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/kunjungan, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/kunjungan, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/kunjungan/slots, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/kunjungan/:id/checkin, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mKesehatanController {/api/v1/kesehatan}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/kesehatan/records, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/kesehatan/records, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/kesehatan/medications, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/kesehatan/medications/:id/given, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mDashboardController {/api/v1/dashboard}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/dashboard/summary, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/dashboard/trends, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mPublicController {/api/v1/public}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/public/sync/santri, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mWebhookController {/api/v1/webhook}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/webhook/whatsapp, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mUploadController {/api/v1/upload}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/upload, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mTahfidzController {/api/v1/api/v1/tahfidz}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/tahfidz, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/tahfidz/santri/:santriId, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/tahfidz/mutabaah, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/tahfidz/mutabaah/santri/:santriId, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mWalletController {/api/v1/api/v1/wallet}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/wallet/santri/:santriId, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/wallet/deposit/request, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/wallet/deposit/resolve, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/wallet/pos/payment, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/wallet/webhook/moota/:tenantId, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAcademicController {/api/v1/api/v1/academic}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/academic/schedule, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/academic/schedule/kelas/:kelas, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/academic/attendance, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/academic/attendance/santri/:santriId, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/academic/grade, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/academic/grade/santri/:santriId, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mEmployeeController {/api/v1/api/v1/employee}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/employee, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/employee, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/employee/payroll, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/employee/:employeeId/payroll, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/employee/payroll/:payrollId/pay, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mAuditLogController {/api/v1/api/v1/audit-log}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/audit-log, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/audit-log/:id, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mPpdbController {/api/v1/api/v1/ppdb}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/ppdb, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/ppdb, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/ppdb/:id, GET} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/ppdb/:id, PUT} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/ppdb/:id/documents, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/ppdb/:id/exams, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mInventoryController {/api/v1/api/v1/inventory}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/inventory/items, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/inventory/items, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/inventory/items/:id, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/inventory/items/:id, PUT} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/inventory/items/:id/transactions, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/inventory/suppliers, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/inventory/suppliers, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/inventory/purchase-orders, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/inventory/purchase-orders/:id, PUT} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mDormitoryController {/api/v1/api/v1/dormitory}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/dormitory/buildings, POST} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/dormitory/buildings, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/dormitory/buildings/:id, PUT} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/dormitory/rooms, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/dormitory/rooms, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/dormitory/rooms/:id, PUT} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/dormitory/rooms/:roomId/assign, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/dormitory/assignments/:assignmentId/checkout, PUT} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/dormitory/tickets, POST} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/dormitory/tickets, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/dormitory/tickets/:id, PUT} route[39m[38;5;3m +1ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RoutesResolver] [39m[32mReportController {/api/v1/api/v1/reports}:[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/reports/excel/:module, GET} route[39m[38;5;3m +0ms[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[RouterExplorer] [39m[32mMapped {/api/v1/api/v1/reports/pdf/:module, GET} route[39m[38;5;3m +0ms[39m
+[33m[Nest] 26704  - [39m25/02/2026, 07.50.48 [33m   WARN[39m [38;5;3m[ExternalNotificationService] [39m[33mFirebase configuration missing in .env. FCM Push Notifications will be disabled.[39m
+[32m[Nest] 26704  - [39m25/02/2026, 07.50.48 [32m    LOG[39m [38;5;3m[NestApplication] [39m[32mNest application successfully started[39m[38;5;3m +18ms[39m
+[31m[Nest] 26704  - [39m25/02/2026, 07.50.48 [31m  ERROR[39m [38;5;3m[NestApplication] [39m[31mError: listen EADDRINUSE: address already in use :::3000[39m[38;5;3m +3ms[39m
+node:net:1908
+    const ex = new UVExceptionWithHostPort(err, 'listen', address, port);
+               ^
+
+Error: listen EADDRINUSE: address already in use :::3000
+    at Server.setupListenHandle [as _listen2] (node:net:1908:16)
+    at listenInCluster (node:net:1965:12)
+    at Server.listen (node:net:2067:7)
+    at ExpressAdapter.listen (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\platform-express\adapters\express-adapter.js:95:32)
+    at D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\nest-application.js:183:30
+    at new Promise (<anonymous>)
+    at NestApplication.listen (D:\apss-source\SaaS Manajemen Pesantren\backend\node_modules\@nestjs\core\nest-application.js:173:16)
+    at async bootstrap (D:\apss-source\SaaS Manajemen Pesantren\backend\src\main.ts:40:3) {
+  code: 'EADDRINUSE',
+  errno: -4091,
+  syscall: 'listen',
+  address: '::',
+  port: 3000
+}
+
+Node.js v20.20.0

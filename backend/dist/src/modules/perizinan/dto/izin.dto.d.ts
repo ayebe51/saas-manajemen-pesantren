@@ -6,7 +6,8 @@ export declare class CreateIzinDto {
     endAt: string;
 }
 export declare class ApproveIzinDto {
-    waliId: string;
+    approverId?: string;
     status: string;
+    notes?: string;
     token?: string;
 }

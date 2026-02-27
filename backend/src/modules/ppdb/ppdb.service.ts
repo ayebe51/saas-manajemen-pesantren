@@ -28,8 +28,8 @@ export class PpdbService {
       where,
       orderBy: { createdAt: 'desc' },
       include: {
-        _count: { select: { documents: true, exams: true } }
-      }
+        _count: { select: { documents: true, exams: true } },
+      },
     });
   }
 

@@ -154,6 +154,109 @@ async function main() {
         }
     });
     console.log('Created Sample Catatan');
+    const employees = [];
+    const roles = ['GURU', 'KEAMANAN', 'TATA_USAHA', 'MUSYRIFAH', 'MUSYRIF'];
+    for (let i = 1; i <= 5; i++) {
+        const emp = await prisma.employee.create({
+            data: {
+                tenantId: tenant.id,
+                name: `Pegawai ${i} Al-Ikhlas`,
+                nip: `1980000${i}`,
+                phone: `081999999${i}`,
+                position: roles[i - 1],
+                status: 'ACTIVE',
+                joinDate: new Date(2020, 1, i),
+            }
+        });
+        employees.push(emp);
+    }
+    console.log(`Created ${employees.length} Employees`);
+    for (let i = 0; i < 5; i++) {
+        const santri = santris[i];
+        await prisma.tahfidz.create({
+            data: {
+                tenantId: tenant.id,
+                santriId: santri.id,
+                surah: 'Al-Baqarah',
+                ayat: `${i * 10 + 1}-${i * 10 + 10}`,
+                type: i % 2 === 0 ? 'SABAK' : 'SABQI',
+                grade: 'LANCAR',
+                date: new Date(),
+                recordedBy: musyrif.id,
+                notes: 'Alhamdulillah lancar',
+            }
+        });
+    }
+    console.log('Created Tahfidz Records');
+    for (const santri of santris) {
+        const balance = Math.floor(Math.random() * 1000000) + 50000;
+        const wallet = await prisma.wallet.create({
+            data: {
+                tenantId: tenant.id,
+                santriId: santri.id,
+                balance: balance,
+                isActive: true,
+            }
+        });
+        await prisma.walletTransaction.create({
+            data: {
+                walletId: wallet.id,
+                type: 'DEPOSIT',
+                method: 'TRANSFER',
+                amount: balance + 50000,
+                description: 'Setoran Tunai Wali',
+                handledBy: 'Admin TU',
+                status: 'SUCCESS'
+            }
+        });
+        await prisma.walletTransaction.create({
+            data: {
+                walletId: wallet.id,
+                type: 'PAYMENT',
+                method: 'CASH',
+                amount: 50000,
+                description: 'Jajan Kantin',
+                handledBy: 'Kasir Koperasi',
+                status: 'SUCCESS'
+            }
+        });
+    }
+    console.log(`Created Wallets for ${santris.length} Santris`);
+    const supplier = await prisma.supplier.create({
+        data: {
+            tenantId: tenant.id,
+            name: 'CV Berkah',
+            contact: '08122334455',
+        }
+    });
+    const categories = ['SERAGAM', 'BUKU', 'ATRIBUT'];
+    for (let i = 1; i <= 5; i++) {
+        const item = await prisma.item.create({
+            data: {
+                tenantId: tenant.id,
+                sku: `BRG-00${i}`,
+                name: `Barang Koperasi ${i}`,
+                category: categories[i % 3],
+                description: 'Barang berkualitas',
+                price: 25000 * i,
+                costPrice: 15000 * i,
+                stock: Math.floor(Math.random() * 50) + 5,
+                minStock: 10,
+            }
+        });
+        await prisma.inventoryTransaction.create({
+            data: {
+                tenantId: tenant.id,
+                itemId: item.id,
+                type: 'IN',
+                quantity: item.stock,
+                reference: `INV-IN-00${i}`,
+                notes: 'Stok awal',
+                handledBy: 'Admin Gudang'
+            }
+        });
+    }
+    console.log('Created Inventory Items & Transactions');
     console.log('Seed completed successfully!');
 }
 main()

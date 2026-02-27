@@ -28,6 +28,9 @@ export class PerizinanService {
     // Generate unique QR code data
     const qrCodeData = `IZIN-${tenantId.substring(0, 8)}-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`;
 
+    // Workflow: Sakit -> POSKESTREN dulu. Keluar/Pulang -> MUSYRIF dulu.
+    const initialStatus = createIzinDto.type === 'SAKIT' ? 'PENDING_POSKESTREN' : 'PENDING_MUSYRIF';
+
     const izin = await this.prisma.izin.create({
       data: {
         tenantId,
@@ -36,7 +39,7 @@ export class PerizinanService {
         reason: createIzinDto.reason,
         startAt: new Date(createIzinDto.startAt),
         endAt: new Date(createIzinDto.endAt),
-        status: 'PENDING',
+        status: initialStatus,
         requestedBy,
         qrCodeData,
       },
@@ -87,40 +90,39 @@ export class PerizinanService {
   }
 
   async approve(id: string, approveIzinDto: ApproveIzinDto) {
-    // In a public endpoint, we wouldn't have tenantId from the user context,
-    // so we find by ID only. In reality, we'd verify the token.
     const izin = await this.prisma.izin.findUnique({
       where: { id },
     });
 
-    if (!izin) {
-      throw new NotFoundException('Izin request not found');
-    }
+    if (!izin) throw new NotFoundException('Izin request not found');
 
-    if (izin.status !== 'PENDING') {
+    if (izin.status === 'APPROVED_WAITING_CHECKOUT' || izin.status === 'REJECTED') {
       throw new BadRequestException(`Izin is already ${izin.status}`);
     }
 
-    // Verify wali is actually linked to santri
-    const waliLink = await this.prisma.santriWali.findUnique({
-      where: {
-        santriId_waliId: {
-          santriId: izin.santriId,
-          waliId: approveIzinDto.waliId,
-        },
-      },
-    });
+    // Role-based verification can be added here if needed
+    // e.g. checking if approverId is a Wali / Musyrif / Poskestren
 
-    if (!waliLink) {
-      throw new BadRequestException('Wali is not linked to this Santri');
+    let nextStatus = approveIzinDto.status;
+
+    // Auto-escalation Logic
+    if (approveIzinDto.status === 'APPROVED') {
+      if (izin.status === 'PENDING_POSKESTREN') {
+        nextStatus = 'PENDING_MUSYRIF'; // Poskestren setuju -> lanjut ke Musyrif
+      } else if (izin.status === 'PENDING_MUSYRIF') {
+        nextStatus = 'APPROVED_WAITING_CHECKOUT'; // Musyrif setuju -> Izin Valid
+      }
     }
 
     return this.prisma.izin.update({
       where: { id },
       data: {
-        status: approveIzinDto.status, // APPROVED or REJECTED
-        approvedBy: approveIzinDto.waliId,
+        status: nextStatus,
+        approvedBy: approveIzinDto.approverId,
         approvedAt: new Date(),
+        reason: approveIzinDto.notes
+          ? `${izin.reason} | Note: ${approveIzinDto.notes}`
+          : izin.reason,
       },
     });
   }
@@ -128,7 +130,7 @@ export class PerizinanService {
   async checkout(id: string, tenantId: string, operatorId: string) {
     const izin = await this.findOne(id, tenantId);
 
-    if (izin.status !== 'APPROVED') {
+    if (izin.status !== 'APPROVED_WAITING_CHECKOUT') {
       throw new BadRequestException(`Cannot check out. Izin status is ${izin.status}`);
     }
 

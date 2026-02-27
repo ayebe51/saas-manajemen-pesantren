@@ -46,6 +46,15 @@ let TahfidzService = TahfidzService_1 = class TahfidzService {
             orderBy: { date: 'desc' },
         });
     }
+    async getTahfidzAllSantri(tenantId) {
+        return this.prisma.tahfidz.findMany({
+            where: { tenantId },
+            orderBy: { date: 'desc' },
+            include: {
+                santri: { select: { name: true, kelas: true } },
+            },
+        });
+    }
     async createOrUpdateMutabaah(tenantId, userId, dto) {
         const santri = await this.prisma.santri.findFirst({
             where: { id: dto.santriId, tenantId },

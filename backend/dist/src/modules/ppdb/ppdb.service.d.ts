@@ -5,17 +5,17 @@ export declare class PpdbService {
     constructor(prisma: PrismaService);
     create(tenantId: string, createPpdbDto: CreatePpdbDto): Promise<{
         id: string;
-        registrationNumber: string;
-        fullName: string;
-        gender: string;
-        dob: Date | null;
-        previousSchool: string | null;
-        pathway: string;
-        status: string;
-        notes: string | null;
+        tenantId: string;
         createdAt: Date;
         updatedAt: Date;
-        tenantId: string;
+        gender: string;
+        dob: Date | null;
+        status: string;
+        notes: string | null;
+        registrationNumber: string;
+        fullName: string;
+        previousSchool: string | null;
+        pathway: string;
     }>;
     findAll(tenantId: string, status?: string): Promise<({
         _count: {
@@ -24,23 +24,23 @@ export declare class PpdbService {
         };
     } & {
         id: string;
-        registrationNumber: string;
-        fullName: string;
-        gender: string;
-        dob: Date | null;
-        previousSchool: string | null;
-        pathway: string;
-        status: string;
-        notes: string | null;
+        tenantId: string;
         createdAt: Date;
         updatedAt: Date;
-        tenantId: string;
+        gender: string;
+        dob: Date | null;
+        status: string;
+        notes: string | null;
+        registrationNumber: string;
+        fullName: string;
+        previousSchool: string | null;
+        pathway: string;
     })[]>;
     findOne(tenantId: string, id: string): Promise<{
         documents: {
             id: string;
-            createdAt: Date;
             tenantId: string;
+            createdAt: Date;
             registrationId: string;
             documentType: string;
             fileUrl: string;
@@ -48,8 +48,8 @@ export declare class PpdbService {
         }[];
         exams: {
             id: string;
-            createdAt: Date;
             tenantId: string;
+            createdAt: Date;
             result: string | null;
             registrationId: string;
             examType: string;
@@ -59,36 +59,36 @@ export declare class PpdbService {
         }[];
     } & {
         id: string;
-        registrationNumber: string;
-        fullName: string;
-        gender: string;
-        dob: Date | null;
-        previousSchool: string | null;
-        pathway: string;
-        status: string;
-        notes: string | null;
+        tenantId: string;
         createdAt: Date;
         updatedAt: Date;
-        tenantId: string;
+        gender: string;
+        dob: Date | null;
+        status: string;
+        notes: string | null;
+        registrationNumber: string;
+        fullName: string;
+        previousSchool: string | null;
+        pathway: string;
     }>;
     update(tenantId: string, id: string, updatePpdbDto: UpdatePpdbDto): Promise<{
         id: string;
-        registrationNumber: string;
-        fullName: string;
-        gender: string;
-        dob: Date | null;
-        previousSchool: string | null;
-        pathway: string;
-        status: string;
-        notes: string | null;
+        tenantId: string;
         createdAt: Date;
         updatedAt: Date;
-        tenantId: string;
+        gender: string;
+        dob: Date | null;
+        status: string;
+        notes: string | null;
+        registrationNumber: string;
+        fullName: string;
+        previousSchool: string | null;
+        pathway: string;
     }>;
     addDocument(tenantId: string, registrationId: string, addDocDto: AddPpdbDocumentDto): Promise<{
         id: string;
-        createdAt: Date;
         tenantId: string;
+        createdAt: Date;
         registrationId: string;
         documentType: string;
         fileUrl: string;
@@ -96,8 +96,8 @@ export declare class PpdbService {
     }>;
     addExam(tenantId: string, registrationId: string, addExamDto: AddPpdbExamDto): Promise<{
         id: string;
-        createdAt: Date;
         tenantId: string;
+        createdAt: Date;
         result: string | null;
         registrationId: string;
         examType: string;

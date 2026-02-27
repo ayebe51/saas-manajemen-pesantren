@@ -16,12 +16,12 @@ export class WebhookController {
   @ApiOperation({ summary: 'Receive Forwarded/Incoming WhatsApp Messages from Provider' })
   async receiveWhatsappMessage(@Body() payload: any) {
     this.logger.log('Incoming WhatsApp Webhook Hit');
-    
+
     // Karena provider WA akan memanggil Endpoint ini, respon harus selalu cepat (200 OK)
     // agar mereka tidak menganggap timeout.
     // Pemrosesan pesan berat dilempar ke background (async)
     this.waWebhookService.handleIncomingMessage(payload).catch((err) => {
-        this.logger.error(`Error processing webhook: ${err.message}`);
+      this.logger.error(`Error processing webhook: ${err.message}`);
     });
 
     return { status: 'Received' };

@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { api } from '@/lib/api/client';
-import { Search, Filter, Plus, FileSpreadsheet, MoreVertical, Edit2, Trash2, Eye } from 'lucide-react';
+import { Search, Filter, Plus, FileSpreadsheet, Edit2, Trash2, Eye } from 'lucide-react';
 import clsx from 'clsx';
-import { format } from 'date-fns';
 import { SantriFormModal } from './SantriFormModal';
 
 interface Santri {
@@ -69,7 +68,7 @@ export function SantriPage() {
       {/* Header Area */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold" style={{ color: 'var(--text-main)' }}>Data Kesantrian</h1>
+          <h1 className="text-2xl font-bold text-main">Data Kesantrian</h1>
           <p className="text-muted text-sm mt-1">Kelola direktori {totalItems > 0 ? totalItems : ''} data santri, wali, dan riwayat akademik.</p>
         </div>
         <div className="flex gap-3 w-full sm:w-auto">
@@ -101,7 +100,7 @@ export function SantriPage() {
         </form>
 
         <div className="flex gap-2 w-full md:w-auto">
-          <select className="input-base w-full md:w-32 bg-transparent text-sm cursor-pointer">
+          <select title="Pilih Kelas" className="input-base w-full md:w-32 bg-transparent text-sm cursor-pointer">
             <option value="">Semua Kelas</option>
             <option value="10">Kelas 10</option>
             <option value="11">Kelas 11</option>
@@ -118,7 +117,7 @@ export function SantriPage() {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b" style={{ borderColor: 'var(--border-light)', backgroundColor: 'var(--bg-app)' }}>
+              <tr className="border-b border-light bg-app">
                 <th className="py-4 px-6 font-semibold text-sm text-muted">NISN</th>
                 <th className="py-4 px-6 font-semibold text-sm text-muted">Nama Lengkap</th>
                 <th className="py-4 px-6 font-semibold text-sm text-muted">Kelas / Kamar</th>
@@ -137,11 +136,11 @@ export function SantriPage() {
                 </tr>
               ) : (
                 data.map((row) => (
-                  <tr key={row.id} className="border-b last:border-0 hover:bg-surface-glass transition-colors" style={{ borderColor: 'var(--border-light)' }}>
+                  <tr key={row.id} className="border-b last:border-0 hover:bg-surface-glass transition-colors border-light">
                     <td className="py-4 px-6 text-sm font-medium">{row.nisn}</td>
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs" style={{ backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary)' }}>
+                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs bg-primary-light text-primary">
                           {row.name.charAt(0)}
                         </div>
                         <span className="font-semibold text-sm">{row.name}</span>
@@ -177,7 +176,7 @@ export function SantriPage() {
 
         {/* Pagination Footer */}
         {!loading && data.length > 0 && (
-          <div className="p-4 border-t flex justify-between items-center" style={{ borderColor: 'var(--border-light)', backgroundColor: 'var(--bg-app)' }}>
+          <div className="p-4 border-t flex justify-between items-center border-light bg-app">
             <span className="text-sm text-muted">Halaman {page} dari {totalPages}</span>
             <div className="flex gap-2">
               <button 

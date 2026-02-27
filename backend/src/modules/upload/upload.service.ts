@@ -25,7 +25,9 @@ export class UploadService {
       });
       this.logger.log(`S3 Client Initialized (Region: ${region})`);
     } else {
-      this.logger.warn('AWS Credentials (Access Key & Secret Key) are MISSING in environment variables. Uploads will fail if attempted.');
+      this.logger.warn(
+        'AWS Credentials (Access Key & Secret Key) are MISSING in environment variables. Uploads will fail if attempted.',
+      );
     }
   }
 
@@ -34,13 +36,15 @@ export class UploadService {
    */
   async uploadFile(file: Express.Multer.File, folder: string = 'general'): Promise<string> {
     if (!this.s3Client) {
-        this.logger.warn(`[Upload Fallback] Missing credentials, simulating upload for ${file.originalname}`);
-        return `https://mock-s3-bucket.s3.amazonaws.com/${folder}/${Date.now()}-${file.originalname}`;
+      this.logger.warn(
+        `[Upload Fallback] Missing credentials, simulating upload for ${file.originalname}`,
+      );
+      return `https://mock-s3-bucket.s3.amazonaws.com/${folder}/${Date.now()}-${file.originalname}`;
     }
 
     const bucketName = this.configService.get<string>('AWS_S3_BUCKET_NAME');
     if (!bucketName) {
-        throw new Error('AWS_S3_BUCKET_NAME is not configured.');
+      throw new Error('AWS_S3_BUCKET_NAME is not configured.');
     }
 
     const cleanFilename = file.originalname.replace(/\s+/g, '-').toLowerCase();
@@ -61,19 +65,18 @@ export class UploadService {
       this.logger.log(`Successfully uploaded ${uniqueFilename}`);
 
       // Determine public URL format
-      const customUrl = this.configService.get<string>('AWS_S3_BUCKET_URL'); 
+      const customUrl = this.configService.get<string>('AWS_S3_BUCKET_URL');
       if (customUrl) {
-          // If using a custom CDN or R2 Public URL
-          return `${customUrl}/${uniqueFilename}`;
+        // If using a custom CDN or R2 Public URL
+        return `${customUrl}/${uniqueFilename}`;
       }
 
       // Default AWS S3 URL format
       const region = await this.s3Client.config.region();
       return `https://${bucketName}.s3.${region}.amazonaws.com/${uniqueFilename}`;
-
     } catch (error) {
-       this.logger.error(`Failed to upload file to S3: ${error.message}`);
-       throw error;
+      this.logger.error(`Failed to upload file to S3: ${error.message}`);
+      throw error;
     }
   }
 }

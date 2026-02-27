@@ -7,7 +7,7 @@ export class TenantCacheInterceptor extends CacheInterceptor {
   trackBy(context: ExecutionContext): string | undefined {
     // Memanggil logic generik untuk menghasilkan string key dari URL
     const cacheKey = super.trackBy(context);
-    
+
     if (!cacheKey) {
       return undefined;
     }
@@ -17,7 +17,7 @@ export class TenantCacheInterceptor extends CacheInterceptor {
     const user = request.user as any;
     const tenantId = user?.tenantId || 'GLOBAL';
 
-    // Appending Tenant ID ke URL Caching Key 
+    // Appending Tenant ID ke URL Caching Key
     // Format Result: "uuid-tenant:/api/v1/dashboard/summary"
     return `${tenantId}:${cacheKey}`;
   }

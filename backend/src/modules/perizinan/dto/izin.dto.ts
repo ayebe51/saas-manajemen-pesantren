@@ -29,15 +29,23 @@ export class CreateIzinDto {
 }
 
 export class ApproveIzinDto {
+  // id orang yang menyetujui (bisa ustaz, wali, poskestren)
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  approverId?: string;
+
+  // status baru (APPROVED_WAITING_CHECKOUT, PENDING_MUSYRIF, REJECTED)
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  waliId: string;
-
-  @ApiProperty({ enum: ['APPROVED', 'REJECTED'] })
-  @IsString()
-  @IsNotEmpty()
   status: string;
+
+  // Catatan penolakan / persetujuan
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  notes?: string;
 
   // A secure token sent to the wali's WA for approval without login
   @ApiPropertyOptional()

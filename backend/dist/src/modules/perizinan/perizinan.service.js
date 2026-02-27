@@ -33,6 +33,7 @@ let PerizinanService = PerizinanService_1 = class PerizinanService {
             throw new common_1.NotFoundException('Santri not found');
         }
         const qrCodeData = `IZIN-${tenantId.substring(0, 8)}-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`;
+        const initialStatus = createIzinDto.type === 'SAKIT' ? 'PENDING_POSKESTREN' : 'PENDING_MUSYRIF';
         const izin = await this.prisma.izin.create({
             data: {
                 tenantId,
@@ -41,7 +42,7 @@ let PerizinanService = PerizinanService_1 = class PerizinanService {
                 reason: createIzinDto.reason,
                 startAt: new Date(createIzinDto.startAt),
                 endAt: new Date(createIzinDto.endAt),
-                status: 'PENDING',
+                status: initialStatus,
                 requestedBy,
                 qrCodeData,
             },
@@ -85,35 +86,35 @@ let PerizinanService = PerizinanService_1 = class PerizinanService {
         const izin = await this.prisma.izin.findUnique({
             where: { id },
         });
-        if (!izin) {
+        if (!izin)
             throw new common_1.NotFoundException('Izin request not found');
-        }
-        if (izin.status !== 'PENDING') {
+        if (izin.status === 'APPROVED_WAITING_CHECKOUT' || izin.status === 'REJECTED') {
             throw new common_1.BadRequestException(`Izin is already ${izin.status}`);
         }
-        const waliLink = await this.prisma.santriWali.findUnique({
-            where: {
-                santriId_waliId: {
-                    santriId: izin.santriId,
-                    waliId: approveIzinDto.waliId,
-                },
-            },
-        });
-        if (!waliLink) {
-            throw new common_1.BadRequestException('Wali is not linked to this Santri');
+        let nextStatus = approveIzinDto.status;
+        if (approveIzinDto.status === 'APPROVED') {
+            if (izin.status === 'PENDING_POSKESTREN') {
+                nextStatus = 'PENDING_MUSYRIF';
+            }
+            else if (izin.status === 'PENDING_MUSYRIF') {
+                nextStatus = 'APPROVED_WAITING_CHECKOUT';
+            }
         }
         return this.prisma.izin.update({
             where: { id },
             data: {
-                status: approveIzinDto.status,
-                approvedBy: approveIzinDto.waliId,
+                status: nextStatus,
+                approvedBy: approveIzinDto.approverId,
                 approvedAt: new Date(),
+                reason: approveIzinDto.notes
+                    ? `${izin.reason} | Note: ${approveIzinDto.notes}`
+                    : izin.reason,
             },
         });
     }
     async checkout(id, tenantId, operatorId) {
         const izin = await this.findOne(id, tenantId);
-        if (izin.status !== 'APPROVED') {
+        if (izin.status !== 'APPROVED_WAITING_CHECKOUT') {
             throw new common_1.BadRequestException(`Cannot check out. Izin status is ${izin.status}`);
         }
         const now = new Date();

@@ -13,8 +13,8 @@ export declare class PembayaranController {
             nisn: string | null;
         };
         lines: {
-            type: string;
             id: string;
+            type: string;
             description: string;
             amount: number;
             invoiceId: string;
@@ -31,8 +31,8 @@ export declare class PembayaranController {
     })[]>;
     generateInvoice(dto: GenerateInvoiceDto, tenantId: string): Promise<{
         lines: {
-            type: string;
             id: string;
+            type: string;
             description: string;
             amount: number;
             invoiceId: string;
