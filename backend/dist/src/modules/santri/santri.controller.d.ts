@@ -4,8 +4,12 @@ export declare class SantriController {
     private readonly santriService;
     constructor(santriService: SantriService);
     create(tenantId: string, createSantriDto: CreateSantriDto): Promise<{
-        name: string;
         id: string;
+        name: string;
+        address: string | null;
+        status: string;
+        createdAt: Date;
+        updatedAt: Date;
         tenantId: string;
         nisn: string | null;
         gender: string;
@@ -13,11 +17,7 @@ export declare class SantriController {
         kelas: string | null;
         room: string | null;
         contact: string | null;
-        address: string | null;
         photo: string | null;
-        status: string;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     importSantri(tenantId: string, file: Express.Multer.File): Promise<{
         success: boolean;
@@ -36,24 +36,28 @@ export declare class SantriController {
     findAll(tenantId: string, kelas?: string, room?: string): Promise<({
         walis: ({
             wali: {
-                name: string;
                 id: string;
-                tenantId: string;
+                name: string;
                 address: string | null;
+                phone: string;
                 createdAt: Date;
                 updatedAt: Date;
-                relation: string;
-                phone: string;
                 email: string | null;
+                tenantId: string;
+                relation: string;
             };
         } & {
             isPrimary: boolean;
-            santriId: string;
             waliId: string;
+            santriId: string;
         })[];
     } & {
-        name: string;
         id: string;
+        name: string;
+        address: string | null;
+        status: string;
+        createdAt: Date;
+        updatedAt: Date;
         tenantId: string;
         nisn: string | null;
         gender: string;
@@ -61,29 +65,25 @@ export declare class SantriController {
         kelas: string | null;
         room: string | null;
         contact: string | null;
-        address: string | null;
         photo: string | null;
-        status: string;
-        createdAt: Date;
-        updatedAt: Date;
     })[]>;
     findOne(id: string, tenantId: string): Promise<{
         walis: ({
             wali: {
-                name: string;
                 id: string;
-                tenantId: string;
+                name: string;
                 address: string | null;
+                phone: string;
                 createdAt: Date;
                 updatedAt: Date;
-                relation: string;
-                phone: string;
                 email: string | null;
+                tenantId: string;
+                relation: string;
             };
         } & {
             isPrimary: boolean;
-            santriId: string;
             waliId: string;
+            santriId: string;
         })[];
         _count: {
             izin: number;
@@ -91,8 +91,12 @@ export declare class SantriController {
             pelanggaran: number;
         };
     } & {
-        name: string;
         id: string;
+        name: string;
+        address: string | null;
+        status: string;
+        createdAt: Date;
+        updatedAt: Date;
         tenantId: string;
         nisn: string | null;
         gender: string;
@@ -100,15 +104,15 @@ export declare class SantriController {
         kelas: string | null;
         room: string | null;
         contact: string | null;
-        address: string | null;
         photo: string | null;
-        status: string;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     update(id: string, updateSantriDto: UpdateSantriDto, tenantId: string): Promise<{
-        name: string;
         id: string;
+        name: string;
+        address: string | null;
+        status: string;
+        createdAt: Date;
+        updatedAt: Date;
         tenantId: string;
         nisn: string | null;
         gender: string;
@@ -116,26 +120,22 @@ export declare class SantriController {
         kelas: string | null;
         room: string | null;
         contact: string | null;
-        address: string | null;
         photo: string | null;
-        status: string;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     addWali(santriId: string, createWaliDto: CreateWaliDto, tenantId: string): Promise<{
-        name: string;
         id: string;
-        tenantId: string;
+        name: string;
         address: string | null;
+        phone: string;
         createdAt: Date;
         updatedAt: Date;
-        relation: string;
-        phone: string;
         email: string | null;
+        tenantId: string;
+        relation: string;
     }>;
     linkExistingWali(santriId: string, waliId: string, tenantId: string): Promise<{
         isPrimary: boolean;
-        santriId: string;
         waliId: string;
+        santriId: string;
     }>;
 }

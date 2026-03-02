@@ -43,7 +43,7 @@ let NotificationEventListener = NotificationEventListener_1 = class Notification
             this.logger.log(`[MOCK WA MESSAGE] To: ${waliPhone} - Msg: ${message}`);
             this.notificationGateway.sendToTenant(santri.tenantId, 'notification.new', {
                 message: `Pelanggaran baru tercatat: ${santri.name} (${payload.ruleName})`,
-                type: 'warning'
+                type: 'warning',
             });
         }
         catch (e) {
@@ -69,7 +69,7 @@ let NotificationEventListener = NotificationEventListener_1 = class Notification
             this.logger.log(`[MOCK WA RECEIPT] To: ${waliPhone} - Msg: ${msg}`);
             this.notificationGateway.sendToTenant(dompet.tenantId, 'notification.new', {
                 message: `Top-Up sukses masuk: Rp ${payload.amount.toLocaleString('id-ID')} (${dompet.santri.name})`,
-                type: 'success'
+                type: 'success',
             });
         }
         catch (e) {

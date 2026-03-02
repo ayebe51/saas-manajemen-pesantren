@@ -7,21 +7,21 @@ export declare class WalletService {
     getWallet(tenantId: string, santriId: string): Promise<{
         transactions: {
             id: string;
-            createdAt: Date;
-            description: string | null;
-            type: string;
             status: string;
+            createdAt: Date;
+            type: string;
+            description: string | null;
             amount: number;
-            walletId: string;
             method: string;
             reference: string | null;
             handledBy: string | null;
+            walletId: string;
         }[];
     } & {
         id: string;
-        tenantId: string;
-        isActive: boolean;
         updatedAt: Date;
+        isActive: boolean;
+        tenantId: string;
         santriId: string;
         balance: number;
         pin: string | null;
@@ -33,9 +33,9 @@ export declare class WalletService {
         };
     } & {
         id: string;
-        tenantId: string;
-        isActive: boolean;
         updatedAt: Date;
+        isActive: boolean;
+        tenantId: string;
         santriId: string;
         balance: number;
         pin: string | null;
@@ -47,64 +47,64 @@ export declare class WalletService {
             };
         } & {
             id: string;
-            tenantId: string;
-            isActive: boolean;
             updatedAt: Date;
+            isActive: boolean;
+            tenantId: string;
             santriId: string;
             balance: number;
             pin: string | null;
         };
     } & {
         id: string;
-        createdAt: Date;
-        description: string | null;
-        type: string;
         status: string;
+        createdAt: Date;
+        type: string;
+        description: string | null;
         amount: number;
-        walletId: string;
         method: string;
         reference: string | null;
         handledBy: string | null;
+        walletId: string;
     })[]>;
     requestDeposit(tenantId: string, dto: RequestDepositDto): Promise<{
         message: string;
         uniqueAmount: number;
         transaction: {
             id: string;
-            createdAt: Date;
-            description: string | null;
-            type: string;
             status: string;
+            createdAt: Date;
+            type: string;
+            description: string | null;
             amount: number;
-            walletId: string;
             method: string;
             reference: string | null;
             handledBy: string | null;
+            walletId: string;
         };
     }>;
     manualResolveDeposit(tenantId: string, userId: string, dto: ManualResolveDepositDto): Promise<{
         id: string;
-        createdAt: Date;
-        description: string | null;
-        type: string;
         status: string;
+        createdAt: Date;
+        type: string;
+        description: string | null;
         amount: number;
-        walletId: string;
         method: string;
         reference: string | null;
         handledBy: string | null;
+        walletId: string;
     }>;
     makePayment(tenantId: string, cashierId: string, dto: CreatePaymentDto): Promise<{
         id: string;
-        createdAt: Date;
-        description: string | null;
-        type: string;
         status: string;
+        createdAt: Date;
+        type: string;
+        description: string | null;
         amount: number;
-        walletId: string;
         method: string;
         reference: string | null;
         handledBy: string | null;
+        walletId: string;
     }>;
     handleMootaWebhook(tenantId: string, payload: MootaWebhookDto[]): Promise<{
         success: number;

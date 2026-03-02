@@ -1,0 +1,83 @@
+
+> pesantren-saas-api@1.0.0 lint
+> eslint "{src,apps,libs,test}/**/*.ts" --fix
+
+
+D:\apss-source\SaaS Manajemen Pesantren\backend\src\common\guards\jwt-auth.guard.ts
+   1:22  error  'CanActivate' is defined but never used  @typescript-eslint/no-unused-vars
+  10:38  error  'info' is defined but never used         @typescript-eslint/no-unused-vars
+
+D:\apss-source\SaaS Manajemen Pesantren\backend\src\modules\dormitory\dto\dormitory.dto.ts
+  2:24  error  'IsEnum' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\apss-source\SaaS Manajemen Pesantren\backend\src\modules\inventory\dto\inventory.dto.ts
+  2:10  error  'IsDateString' is defined but never used  @typescript-eslint/no-unused-vars
+  2:24  error  'IsEnum' is defined but never used        @typescript-eslint/no-unused-vars
+
+D:\apss-source\SaaS Manajemen Pesantren\backend\src\modules\inventory\inventory.service.ts
+  10:3  error  'UpdateSupplierDto' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\apss-source\SaaS Manajemen Pesantren\backend\src\modules\kunjungan\kunjungan.controller.ts
+  10:3  error  'Req' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\apss-source\SaaS Manajemen Pesantren\backend\src\modules\notification\events\notification.listener.ts
+  3:10  error  'InjectQueue' is defined but never used  @typescript-eslint/no-unused-vars
+  4:10  error  'Queue' is defined but never used        @typescript-eslint/no-unused-vars
+
+D:\apss-source\SaaS Manajemen Pesantren\backend\src\modules\notification\notification.gateway.ts
+  11:18  error  'UseGuards' is defined but never used  @typescript-eslint/no-unused-vars
+  70:33  error  'client' is defined but never used     @typescript-eslint/no-unused-vars
+  70:64  error  'data' is defined but never used       @typescript-eslint/no-unused-vars
+
+D:\apss-source\SaaS Manajemen Pesantren\backend\src\modules\notification\notification.module.ts
+   5:10  error  'BullModule' is defined but never used        @typescript-eslint/no-unused-vars
+  16:10  error  'ReportController' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\apss-source\SaaS Manajemen Pesantren\backend\src\modules\notification\schedules\monthly-report.scheduler.ts
+  2:16  error  'CronExpression' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\apss-source\SaaS Manajemen Pesantren\backend\src\modules\notification\schedules\spp.scheduler.ts
+  4:10  error  'InjectQueue' is defined but never used  @typescript-eslint/no-unused-vars
+  5:10  error  'Queue' is defined but never used        @typescript-eslint/no-unused-vars
+
+D:\apss-source\SaaS Manajemen Pesantren\backend\src\modules\payment\payment.controller.ts
+  6:3  error  'Req' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\apss-source\SaaS Manajemen Pesantren\backend\src\modules\payment\payment.service.ts
+  102:13  error  'tenantId' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\apss-source\SaaS Manajemen Pesantren\backend\src\modules\pelanggaran\dto\pelanggaran.dto.ts
+  1:42  error  'IsOptional' is defined but never used           @typescript-eslint/no-unused-vars
+  1:54  error  'IsBoolean' is defined but never used            @typescript-eslint/no-unused-vars
+  2:23  error  'ApiPropertyOptional' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\apss-source\SaaS Manajemen Pesantren\backend\src\modules\pelanggaran\pelanggaran.controller.ts
+  6:3  error  'Param' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\apss-source\SaaS Manajemen Pesantren\backend\src\modules\pembayaran\pembayaran.controller.ts
+  6:3  error  'Param' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\apss-source\SaaS Manajemen Pesantren\backend\src\modules\pembayaran\pembayaran.service.ts
+  119:5  error  'tenantId' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\apss-source\SaaS Manajemen Pesantren\backend\src\modules\perizinan\dto\izin.dto.ts
+  1:46  error  'IsEnum' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\apss-source\SaaS Manajemen Pesantren\backend\src\modules\perizinan\perizinan.controller.ts
+  7:3  error  'Put' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\apss-source\SaaS Manajemen Pesantren\backend\src\modules\public\public.controller.ts
+  19:89  error  'req' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\apss-source\SaaS Manajemen Pesantren\backend\src\modules\santri\dto\santri.dto.ts
+  1:44  error  'IsEnum' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\apss-source\SaaS Manajemen Pesantren\backend\src\modules\tenant\dto\tenant.dto.ts
+  1:10  error  'IsEmail' is defined but never used  @typescript-eslint/no-unused-vars
+  1:19  error  'IsEnum' is defined but never used   @typescript-eslint/no-unused-vars
+
+D:\apss-source\SaaS Manajemen Pesantren\backend\test\app.e2e-spec.ts
+  3:13  error  'request' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 32 problems (32 errors, 0 warnings)
+

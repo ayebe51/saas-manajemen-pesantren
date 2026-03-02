@@ -58,7 +58,7 @@ export class NotificationEventListener {
       // 3. Tembak UI Frontend Notifikasi Socket Realtime
       this.notificationGateway.sendToTenant(santri.tenantId, 'notification.new', {
         message: `Pelanggaran baru tercatat: ${santri.name} (${payload.ruleName})`,
-        type: 'warning'
+        type: 'warning',
       });
     } catch (e: any) {
       this.logger.error(`Error processing Pelanggaran WA Event: ${e.message}`);
@@ -98,7 +98,7 @@ export class NotificationEventListener {
       // Memicu Update Realtime Dashboard Admin
       this.notificationGateway.sendToTenant(dompet.tenantId, 'notification.new', {
         message: `Top-Up sukses masuk: Rp ${payload.amount.toLocaleString('id-ID')} (${dompet.santri.name})`,
-        type: 'success'
+        type: 'success',
       });
     } catch (e: any) {
       this.logger.error(`Error broadcast WA Receipt Topup: ${e.message}`);

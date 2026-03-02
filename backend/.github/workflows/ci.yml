@@ -38,17 +38,22 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
+          cache-dependency-path: './backend/package-lock.json'
 
       - name: Install dependencies
+        working-directory: ./backend
         run: npm ci
 
       - name: Generate Prisma Client
+        working-directory: ./backend
         run: npx prisma generate
 
       - name: Run Linter
+        working-directory: ./backend
         run: npm run lint
 
       - name: Build Application
+        working-directory: ./backend
         run: npm run build
 
     # Note: For actual E2E testing, run migrations first

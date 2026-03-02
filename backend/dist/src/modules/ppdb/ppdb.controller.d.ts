@@ -5,17 +5,17 @@ export declare class PpdbController {
     constructor(ppdbService: PpdbService);
     create(tenantId: string, createPpdbDto: CreatePpdbDto): Promise<{
         id: string;
-        tenantId: string;
+        status: string;
         createdAt: Date;
         updatedAt: Date;
+        tenantId: string;
         gender: string;
         dob: Date | null;
-        status: string;
         notes: string | null;
-        registrationNumber: string;
         fullName: string;
         previousSchool: string | null;
         pathway: string;
+        registrationNumber: string;
     }>;
     findAll(tenantId: string, status?: string): Promise<({
         _count: {
@@ -24,85 +24,85 @@ export declare class PpdbController {
         };
     } & {
         id: string;
-        tenantId: string;
+        status: string;
         createdAt: Date;
         updatedAt: Date;
+        tenantId: string;
         gender: string;
         dob: Date | null;
-        status: string;
         notes: string | null;
-        registrationNumber: string;
         fullName: string;
         previousSchool: string | null;
         pathway: string;
+        registrationNumber: string;
     })[]>;
     findOne(tenantId: string, id: string): Promise<{
         documents: {
             id: string;
-            tenantId: string;
             createdAt: Date;
-            registrationId: string;
+            tenantId: string;
             documentType: string;
             fileUrl: string;
             isVerified: boolean;
+            registrationId: string;
         }[];
         exams: {
             id: string;
-            tenantId: string;
             createdAt: Date;
             result: string | null;
-            registrationId: string;
+            tenantId: string;
+            score: number | null;
             examType: string;
             examDate: Date;
-            score: number | null;
             interviewer: string | null;
+            registrationId: string;
         }[];
     } & {
         id: string;
-        tenantId: string;
+        status: string;
         createdAt: Date;
         updatedAt: Date;
+        tenantId: string;
         gender: string;
         dob: Date | null;
-        status: string;
         notes: string | null;
-        registrationNumber: string;
         fullName: string;
         previousSchool: string | null;
         pathway: string;
+        registrationNumber: string;
     }>;
     update(tenantId: string, id: string, updatePpdbDto: UpdatePpdbDto): Promise<{
         id: string;
-        tenantId: string;
+        status: string;
         createdAt: Date;
         updatedAt: Date;
+        tenantId: string;
         gender: string;
         dob: Date | null;
-        status: string;
         notes: string | null;
-        registrationNumber: string;
         fullName: string;
         previousSchool: string | null;
         pathway: string;
+        registrationNumber: string;
     }>;
     addDocument(tenantId: string, registrationId: string, addDocDto: AddPpdbDocumentDto): Promise<{
         id: string;
-        tenantId: string;
         createdAt: Date;
-        registrationId: string;
+        tenantId: string;
         documentType: string;
         fileUrl: string;
         isVerified: boolean;
+        registrationId: string;
     }>;
     addExam(tenantId: string, registrationId: string, addExamDto: AddPpdbExamDto): Promise<{
         id: string;
-        tenantId: string;
         createdAt: Date;
         result: string | null;
-        registrationId: string;
+        tenantId: string;
+        score: number | null;
         examType: string;
         examDate: Date;
-        score: number | null;
         interviewer: string | null;
+        registrationId: string;
     }>;
 }

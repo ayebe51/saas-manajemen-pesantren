@@ -53,9 +53,9 @@ export class WhatsappGatewayService {
       }
     } catch (error: any) {
       if (error?.response?.data) {
-         this.logger.error(`Error Fonnte API Request: ${error.response.data.reason}`);
+        this.logger.error(`Error Fonnte API Request: ${error.response.data.reason}`);
       } else {
-         this.logger.error(`Error Fonnte API Request: ${error.message}`);
+        this.logger.error(`Error Fonnte API Request: ${error.message}`);
       }
       return false;
     }

@@ -5,19 +5,19 @@ export declare class SantriService {
     constructor(prisma: PrismaService);
     create(tenantId: string, createSantriDto: CreateSantriDto): Promise<{
         id: string;
-        tenantId: string;
         name: string;
+        address: string | null;
+        status: string;
         createdAt: Date;
         updatedAt: Date;
+        tenantId: string;
         nisn: string | null;
         gender: string;
         dob: Date | null;
         kelas: string | null;
         room: string | null;
         contact: string | null;
-        address: string | null;
         photo: string | null;
-        status: string;
     }>;
     findAll(tenantId: string, filters: {
         kelas?: string;
@@ -26,53 +26,53 @@ export declare class SantriService {
         walis: ({
             wali: {
                 id: string;
-                email: string | null;
-                tenantId: string;
                 name: string;
+                address: string | null;
                 phone: string;
                 createdAt: Date;
                 updatedAt: Date;
-                address: string | null;
+                email: string | null;
+                tenantId: string;
                 relation: string;
             };
         } & {
-            santriId: string;
-            waliId: string;
             isPrimary: boolean;
+            waliId: string;
+            santriId: string;
         })[];
     } & {
         id: string;
-        tenantId: string;
         name: string;
+        address: string | null;
+        status: string;
         createdAt: Date;
         updatedAt: Date;
+        tenantId: string;
         nisn: string | null;
         gender: string;
         dob: Date | null;
         kelas: string | null;
         room: string | null;
         contact: string | null;
-        address: string | null;
         photo: string | null;
-        status: string;
     })[]>;
     findOne(id: string, tenantId: string): Promise<{
         walis: ({
             wali: {
                 id: string;
-                email: string | null;
-                tenantId: string;
                 name: string;
+                address: string | null;
                 phone: string;
                 createdAt: Date;
                 updatedAt: Date;
-                address: string | null;
+                email: string | null;
+                tenantId: string;
                 relation: string;
             };
         } & {
-            santriId: string;
-            waliId: string;
             isPrimary: boolean;
+            waliId: string;
+            santriId: string;
         })[];
         _count: {
             izin: number;
@@ -81,35 +81,35 @@ export declare class SantriService {
         };
     } & {
         id: string;
-        tenantId: string;
         name: string;
+        address: string | null;
+        status: string;
         createdAt: Date;
         updatedAt: Date;
+        tenantId: string;
         nisn: string | null;
         gender: string;
         dob: Date | null;
         kelas: string | null;
         room: string | null;
         contact: string | null;
-        address: string | null;
         photo: string | null;
-        status: string;
     }>;
     update(id: string, tenantId: string, updateSantriDto: UpdateSantriDto): Promise<{
         id: string;
-        tenantId: string;
         name: string;
+        address: string | null;
+        status: string;
         createdAt: Date;
         updatedAt: Date;
+        tenantId: string;
         nisn: string | null;
         gender: string;
         dob: Date | null;
         kelas: string | null;
         room: string | null;
         contact: string | null;
-        address: string | null;
         photo: string | null;
-        status: string;
     }>;
     bulkImport(tenantId: string, file: any): Promise<{
         message: string;
@@ -119,18 +119,18 @@ export declare class SantriService {
     }>;
     addWali(santriId: string, tenantId: string, createWaliDto: CreateWaliDto): Promise<{
         id: string;
-        email: string | null;
-        tenantId: string;
         name: string;
+        address: string | null;
         phone: string;
         createdAt: Date;
         updatedAt: Date;
-        address: string | null;
+        email: string | null;
+        tenantId: string;
         relation: string;
     }>;
     linkWali(santriId: string, waliId: string, tenantId: string): Promise<{
-        santriId: string;
-        waliId: string;
         isPrimary: boolean;
+        waliId: string;
+        santriId: string;
     }>;
 }

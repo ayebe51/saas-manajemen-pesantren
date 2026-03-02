@@ -39,9 +39,9 @@ export declare class EmployeeService {
         updatedAt: Date;
         tenantId: string;
         paidAt: Date | null;
-        employeeId: string;
         month: number;
         year: number;
+        employeeId: string;
         baseSalary: number;
         allowances: number;
         deductions: number;
@@ -54,9 +54,9 @@ export declare class EmployeeService {
         updatedAt: Date;
         tenantId: string;
         paidAt: Date | null;
-        employeeId: string;
         month: number;
         year: number;
+        employeeId: string;
         baseSalary: number;
         allowances: number;
         deductions: number;
@@ -69,9 +69,9 @@ export declare class EmployeeService {
         updatedAt: Date;
         tenantId: string;
         paidAt: Date | null;
-        employeeId: string;
         month: number;
         year: number;
+        employeeId: string;
         baseSalary: number;
         allowances: number;
         deductions: number;
