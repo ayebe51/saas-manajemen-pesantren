@@ -9,7 +9,12 @@ async function bootstrap() {
 
   // Security & Middleware
   app.enableCors({
-    origin: ['http://localhost:5173', 'http://127.0.0.1:5173'], // Allow Vite
+    origin: [
+      'http://localhost:5173',
+      'http://127.0.0.1:5173',
+      // Allow Vercel frontend domains dynamically or explicitly
+      process.env.FRONTEND_URL || '*', // Change '*' to your specific vercel domain in production
+    ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: 'Content-Type, Accept, Authorization, x-tenant-id',
     credentials: true,
@@ -39,7 +44,8 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
-  await app.listen(process.env.PORT || 3000);
+  const port = process.env.PORT || 3000;
+  await app.listen(port, '0.0.0.0');
   console.log(`Application is running on: ${await app.getUrl()}`);
 }
 bootstrap();
