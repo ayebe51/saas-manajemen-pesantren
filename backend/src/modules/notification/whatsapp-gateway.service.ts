@@ -52,7 +52,11 @@ export class WhatsappGatewayService {
         return false;
       }
     } catch (error: any) {
-      this.logger.error(`Error Fonnte API Request: ${error.message}`);
+      if (error?.response?.data) {
+         this.logger.error(`Error Fonnte API Request: ${error.response.data.reason}`);
+      } else {
+         this.logger.error(`Error Fonnte API Request: ${error.message}`);
+      }
       return false;
     }
   }

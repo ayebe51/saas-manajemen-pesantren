@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { Download, FileText, FileSpreadsheet, ListFilter, Loader2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { api } from '@/lib/api/client';
+import { useAuthStore } from '@/lib/store/auth.store';
 
 export function LaporanPage() {
   const [downloading, setDownloading] = useState<string | null>(null);
+  const { user } = useAuthStore();
 
   const reports = [
     { id: 'keuangan', title: 'Laporan Mutasi Keuangan Global', desc: 'Arus Kas masuk/keluar, pembayaran SPP dan invoice yayasan bulan ini.', icon: FileSpreadsheet, color: 'success' },
@@ -25,7 +28,12 @@ export function LaporanPage() {
   const handleDownload = async (type: 'pdf' | 'excel', moduleId: string) => {
     setDownloading(`${type}-${moduleId}`);
     try {
-      const response = await api.get(`/reports/${type}/${moduleId}`, {
+      // Akses real endpoint PDF Report Koperasi untuk modul Keuangan
+      const endpoint = moduleId === 'keuangan' && type === 'pdf' 
+        ? `/report/monthly/${user?.tenantId}` 
+        : `/reports/${type}/${moduleId}`;
+
+      const response = await api.get(endpoint, {
         responseType: 'blob'
       });
       const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -63,7 +71,7 @@ export function LaporanPage() {
               </div>
               
               <div className="flex gap-2">
-                 <button className="btn btn-outline py-1.5 px-3 text-xs flex items-center gap-2" title="Filter Tanggal">
+                 <button onClick={() => toast('Fitur filter rentang tanggal akan segera hadir.')} className="btn btn-outline py-1.5 px-3 text-xs flex items-center gap-2" title="Filter Tanggal">
                    <ListFilter className="w-3 h-3" /> Filter
                  </button>
               </div>

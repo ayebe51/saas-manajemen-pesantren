@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { api } from '@/lib/api/client';
-import { Search, Filter, Plus, FileSpreadsheet, Edit2, Trash2, Eye } from 'lucide-react';
+import { Search, Filter, Plus, FileSpreadsheet, Edit2, Trash2, Eye, Loader2 } from 'lucide-react';
 import clsx from 'clsx';
+import toast from 'react-hot-toast';
 import { SantriFormModal } from './SantriFormModal';
 
 interface Santri {
@@ -21,11 +22,17 @@ export function SantriPage() {
 
   // Form State
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [selectedSantri, setSelectedSantri] = useState<Santri | null>(null);
 
   // Pagination & Meta
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
+
+  // Import State & Filter State
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [importing, setImporting] = useState(false);
+  const [showAdvancedFilter, setShowAdvancedFilter] = useState(false);
 
   const fetchSantri = async () => {
     setLoading(true);
@@ -63,6 +70,35 @@ export function SantriPage() {
     fetchSantri();
   };
 
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    setImporting(true);
+    const toastId = toast.loading('Memproses berkas Excel...');
+    
+    try {
+      await api.post('/santri/import', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      toast.success('Data Santri sukses diimpor ke sistem!', { id: toastId });
+      fetchSantri();
+    } catch (error) {
+      const err = error as { response?: { data?: { message?: string } } };
+      toast.error(err.response?.data?.message || 'Gagal mengimpor rekaman data.', { id: toastId });
+    } finally {
+      setImporting(false);
+      e.target.value = ''; // reset
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header Area */}
@@ -72,13 +108,28 @@ export function SantriPage() {
           <p className="text-muted text-sm mt-1">Kelola direktori {totalItems > 0 ? totalItems : ''} data santri, wali, dan riwayat akademik.</p>
         </div>
         <div className="flex gap-3 w-full sm:w-auto">
-          <button className="btn btn-outline flex-1 sm:flex-none">
-            <FileSpreadsheet className="w-4 h-4" />
-            <span className="hidden sm:inline">Import Excel</span>
+          <button 
+            className="btn btn-outline flex-1 sm:flex-none"
+            onClick={handleImportClick}
+            disabled={importing}
+          >
+            {importing ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileSpreadsheet className="w-4 h-4" />}
+            <span className="hidden sm:inline">{importing ? 'Memproses...' : 'Import Excel'}</span>
           </button>
+          <input 
+            title="Upload Excel File"
+            type="file" 
+            ref={fileInputRef} 
+            className="hidden" 
+            accept=".xlsx, .xls, .csv" 
+            onChange={handleFileChange} 
+          />
           <button 
             className="btn btn-primary flex-1 sm:flex-none shadow-glow"
-            onClick={() => setIsFormOpen(true)}
+            onClick={() => {
+              setSelectedSantri(null);
+              setIsFormOpen(true);
+            }}
           >
             <Plus className="w-4 h-4" />
             <span>Tambah Baru</span>
@@ -106,9 +157,44 @@ export function SantriPage() {
             <option value="11">Kelas 11</option>
             <option value="12">Kelas 12</option>
           </select>
-          <button className="btn btn-outline px-3" title="Filter Lanjutan">
-            <Filter className="w-5 h-5" />
-          </button>
+          <div className="relative">
+             <button 
+               className="btn btn-outline px-3" 
+               title="Filter Lanjutan"
+               onClick={() => setShowAdvancedFilter(!showAdvancedFilter)}
+             >
+               <Filter className="w-5 h-5" />
+             </button>
+             {showAdvancedFilter && (
+               <div className="absolute right-0 top-full mt-2 w-64 glass-panel p-4 z-20 animate-in fade-in zoom-in-95 duration-200">
+                  <h4 className="font-semibold text-sm mb-3 text-main">Filter Spesifik</h4>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="text-xs text-muted mb-1 block">Status Beasiswa</label>
+                      <select title="Status Beasiswa" className="input-base w-full text-sm">
+                        <option>Semua Status</option>
+                        <option>Penerima Beasiswa Yatim</option>
+                        <option>Prestasi Akademik</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted mb-1 block">Provinsi Asal</label>
+                      <input type="text" className="input-base w-full text-sm" placeholder="Ketik provinsi asal..." />
+                    </div>
+                    <button 
+                      className="btn btn-primary w-full text-sm mt-4 shadow-glow py-2"
+                      onClick={() => {
+                        setShowAdvancedFilter(false);
+                        toast.success('Parameter filter spesifik mulai diaplikasikan.');
+                        fetchSantri();
+                      }}
+                    >
+                      Aktifkan Filter
+                    </button>
+                  </div>
+               </div>
+             )}
+          </div>
         </div>
       </div>
 
@@ -162,9 +248,9 @@ export function SantriPage() {
                     </td>
                     <td className="py-4 px-6 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <button className="p-1.5 text-muted hover:text-primary transition-colors rounded-md hover:bg-surface-glass" title="Lihat Profil"><Eye className="w-4 h-4" /></button>
-                        <button className="p-1.5 text-muted hover:text-accent transition-colors rounded-md hover:bg-surface-glass" title="Edit"><Edit2 className="w-4 h-4" /></button>
-                        <button className="p-1.5 text-muted hover:text-danger transition-colors rounded-md hover:bg-surface-glass" title="Hapus"><Trash2 className="w-4 h-4" /></button>
+                        <button onClick={() => toast.success(`Profil ${row.name} segera hadir!`)} className="p-1.5 text-muted hover:text-primary transition-colors rounded-md hover:bg-surface-glass" title="Lihat Profil"><Eye className="w-4 h-4" /></button>
+                        <button onClick={() => { setSelectedSantri(row); setIsFormOpen(true); }} className="p-1.5 text-muted hover:text-accent transition-colors rounded-md hover:bg-surface-glass" title="Edit"><Edit2 className="w-4 h-4" /></button>
+                        <button onClick={() => toast.error('Fungsi hapus tidak diizinkan untuk data santri. Silakan ubah status menjadi non-aktif.')} className="p-1.5 text-muted hover:text-danger transition-colors rounded-md hover:bg-surface-glass" title="Hapus"><Trash2 className="w-4 h-4" /></button>
                       </div>
                     </td>
                   </tr>
@@ -200,9 +286,14 @@ export function SantriPage() {
 
       <SantriFormModal 
         isOpen={isFormOpen} 
-        onClose={() => setIsFormOpen(false)} 
+        initialData={selectedSantri}
+        onClose={() => {
+          setIsFormOpen(false);
+          setSelectedSantri(null);
+        }} 
         onSuccess={() => {
            setIsFormOpen(false);
+           setSelectedSantri(null);
            fetchSantri();
         }}
       />

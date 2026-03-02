@@ -7,14 +7,13 @@ import {
   HttpCode,
   HttpStatus,
   Logger,
-  Get,
 } from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiBody } from '@nestjs/swagger';
-import { TenantId } from '../../common/decorators/tenant.decorator';
+import { TenantId } from '../../common/decorators/tenant-id.decorator';
 
 @ApiTags('Payments (Midtrans)')
 @Controller('api/v1/payments')

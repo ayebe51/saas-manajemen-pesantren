@@ -1,10 +1,10 @@
-import { Queue } from 'bullmq';
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { NotificationGateway } from '../notification.gateway';
 export declare class NotificationEventListener {
     private prisma;
-    private waQueue;
+    private notificationGateway;
     private readonly logger;
-    constructor(prisma: PrismaService, waQueue: Queue);
+    constructor(prisma: PrismaService, notificationGateway: NotificationGateway);
     handlePelanggaranEvent(payload: {
         santriId: string;
         ruleName: string;

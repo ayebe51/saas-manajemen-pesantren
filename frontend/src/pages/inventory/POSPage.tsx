@@ -97,9 +97,10 @@ export function POSPage() {
       setStudentId('');
       setIsCheckoutModalOpen(false);
       fetchItems(); // Refresh stok
-    } catch (error: any) {
+    } catch (error) {
       console.error('Checkout failed', error);
-      toast.error(error.response?.data?.message || 'Transaksi gagal. Periksa saldo atau validitas Santri.');
+      const err = error as { response?: { data?: { message?: string } } };
+      toast.error(err.response?.data?.message || 'Transaksi gagal. Periksa saldo atau validitas Santri.');
     } finally {
       setLoading(false);
     }
@@ -190,14 +191,14 @@ export function POSPage() {
                     <div className="text-xs text-muted">Rp {item.price.toLocaleString('id-ID')}</div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <button onClick={() => updateQuantity(item.id, -1)} className="p-1 rounded-md hover:bg-light hover:text-danger">
+                    <button title="Kurangi Kuantitas" onClick={() => updateQuantity(item.id, -1)} className="p-1 rounded-md hover:bg-light hover:text-danger">
                       <Minus className="w-4 h-4" />
                     </button>
                     <span className="w-6 text-center text-sm font-medium">{item.quantity}</span>
-                    <button onClick={() => updateQuantity(item.id, 1)} className="p-1 rounded-md hover:bg-light text-primary">
+                    <button title="Tambah Kuantitas" onClick={() => updateQuantity(item.id, 1)} className="p-1 rounded-md hover:bg-light text-primary">
                       <Plus className="w-4 h-4" />
                     </button>
-                    <button onClick={() => removeFromCart(item.id)} className="p-1 ml-2 text-muted hover:text-danger transition-colors">
+                    <button title="Hapus dari Keranjang" onClick={() => removeFromCart(item.id)} className="p-1 ml-2 text-muted hover:text-danger transition-colors">
                       <X className="w-4 h-4" />
                     </button>
                   </div>
@@ -235,6 +236,7 @@ export function POSPage() {
                 Verifikasi Pembeli
               </h2>
               <button 
+                title="Tutup Modal"
                 onClick={() => setIsCheckoutModalOpen(false)}
                 className="p-2 hover:bg-light rounded-full transition-colors"
               >

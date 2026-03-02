@@ -4,5 +4,8 @@ export declare class PaymentController {
     private readonly logger;
     constructor(paymentService: PaymentService);
     requestTopUp(tenantId: string, santriId: string, amount: number): Promise<any>;
-    midtransWebhookNotification(notificationBody: any): Promise<any>;
+    midtransWebhookNotification(notificationBody: any): Promise<{
+        success: boolean;
+        message: string;
+    }>;
 }

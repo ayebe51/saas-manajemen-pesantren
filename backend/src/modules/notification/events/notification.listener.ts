@@ -3,6 +3,7 @@ import { OnEvent } from '@nestjs/event-emitter';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { PrismaService } from '../../../common/prisma/prisma.service';
+import { NotificationGateway } from '../notification.gateway';
 
 @Injectable()
 export class NotificationEventListener {
@@ -10,7 +11,8 @@ export class NotificationEventListener {
 
   constructor(
     private prisma: PrismaService,
-    @InjectQueue('wa-messages') private waQueue: Queue,
+    // @InjectQueue('wa-messages') private waQueue: Queue,
+    private notificationGateway: NotificationGateway,
   ) {}
 
   /**
@@ -47,9 +49,16 @@ export class NotificationEventListener {
       const message = `*INFO KEDISIPLINAN PESANTREN*\n\nAssalamu'alaikum Bpk/Ibu.\n\nKami mengabarkan bahwa putra/putri Anda, Ananda *${santri.name}* telah tercatat melakukan pelanggaran dengan rincian:\n\n- Pelanggaran: ${payload.ruleName}\n- Poin Hukuman: ${payload.points}\n- Tanggal Kejadian: ${payload.date.toLocaleDateString('id-ID')}\n\nMohon kebijaksanaannya dalam membimbing Ananda ketika pulang/telepon.`;
 
       // 2. Ceburkan pesan ke dalam Antrean WA supaya aman dari Blokir
-      await this.waQueue.add('send-pelanggaran-alert', {
-        targetPhone: waliPhone,
-        message: message,
+      // await this.waQueue.add('send-pelanggaran-alert', {
+      //   targetPhone: waliPhone,
+      //   message: message,
+      // });
+      this.logger.log(`[MOCK WA MESSAGE] To: ${waliPhone} - Msg: ${message}`);
+
+      // 3. Tembak UI Frontend Notifikasi Socket Realtime
+      this.notificationGateway.sendToTenant(santri.tenantId, 'notification.new', {
+        message: `Pelanggaran baru tercatat: ${santri.name} (${payload.ruleName})`,
+        type: 'warning'
       });
     } catch (e: any) {
       this.logger.error(`Error processing Pelanggaran WA Event: ${e.message}`);
@@ -80,9 +89,16 @@ export class NotificationEventListener {
 
       const msg = `*INFO KEUANGAN PESANTREN*\n\nAlhamdulillah, Bapak/Ibu.\n\nTop-Up saldo E-Wallet atas nama Ananda *${dompet.santri.name}* sebesar *Rp ${payload.amount.toLocaleString('id-ID')}* telah SUKSES otomatis ditambahkan ke sistem oleh Payment Gateway.\n\nSaldo Akhir Ananda saat ini: *Rp ${dompet.balance.toLocaleString('id-ID')}*.\n\nTerima kasih.\n- Koperasi Baitul Mal`;
 
-      await this.waQueue.add('send-topup-receipt', {
-        targetPhone: waliPhone,
-        message: msg,
+      // await this.waQueue.add('send-topup-receipt', {
+      //   targetPhone: waliPhone,
+      //   message: msg,
+      // });
+      this.logger.log(`[MOCK WA RECEIPT] To: ${waliPhone} - Msg: ${msg}`);
+
+      // Memicu Update Realtime Dashboard Admin
+      this.notificationGateway.sendToTenant(dompet.tenantId, 'notification.new', {
+        message: `Top-Up sukses masuk: Rp ${payload.amount.toLocaleString('id-ID')} (${dompet.santri.name})`,
+        type: 'success'
       });
     } catch (e: any) {
       this.logger.error(`Error broadcast WA Receipt Topup: ${e.message}`);

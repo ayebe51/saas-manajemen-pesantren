@@ -9,7 +9,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var WhatsappGatewayService_1;
-var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.WhatsappGatewayService = void 0;
 const common_1 = require("@nestjs/common");
@@ -49,7 +48,12 @@ let WhatsappGatewayService = WhatsappGatewayService_1 = class WhatsappGatewaySer
             }
         }
         catch (error) {
-            this.logger.error(`Error Fonnte API Request: ${error.message}`);
+            if (error?.response?.data) {
+                this.logger.error(`Error Fonnte API Request: ${error.response.data.reason}`);
+            }
+            else {
+                this.logger.error(`Error Fonnte API Request: ${error.message}`);
+            }
             return false;
         }
     }
@@ -57,6 +61,7 @@ let WhatsappGatewayService = WhatsappGatewayService_1 = class WhatsappGatewaySer
 exports.WhatsappGatewayService = WhatsappGatewayService;
 exports.WhatsappGatewayService = WhatsappGatewayService = WhatsappGatewayService_1 = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [typeof (_a = typeof axios_1.HttpService !== "undefined" && axios_1.HttpService) === "function" ? _a : Object, config_1.ConfigService])
+    __metadata("design:paramtypes", [axios_1.HttpService,
+        config_1.ConfigService])
 ], WhatsappGatewayService);
 //# sourceMappingURL=whatsapp-gateway.service.js.map

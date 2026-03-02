@@ -1,0 +1,10 @@
+﻿src/modules/notification/notification.module.ts(14,28): error TS2307: Cannot find module '@nestjs/axios' or its corresponding type declarations.
+src/modules/notification/report-generator.service.ts(3,22): error TS7016: Could not find a declaration file for module 'html-pdf-node'. 'D:/apss-source/SaaS Manajemen Pesantren/backend/node_modules/html-pdf-node/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/html-pdf-node` if it exists or add a new declaration (.d.ts) file containing `declare module 'html-pdf-node';`
+src/modules/notification/whatsapp-gateway.service.ts(2,29): error TS2307: Cannot find module '@nestjs/axios' or its corresponding type declarations.
+src/modules/notification/whatsapp-gateway.service.ts(47,11): error TS18046: 'response' is of type 'unknown'.
+src/modules/notification/whatsapp-gateway.service.ts(51,58): error TS18046: 'response' is of type 'unknown'.
+src/modules/payment/payment.controller.ts(17,26): error TS2307: Cannot find module '../../common/decorators/tenant.decorator' or its corresponding type declarations.
+src/modules/payment/payment.service.ts(9,33): error TS2307: Cannot find module 'midtrans-client' or its corresponding type declarations.
+src/modules/payment/payment.service.ts(137,15): error TS2353: Object literal may only specify known properties, and 'tenantId' does not exist in type '(Without<WalletTransactionCreateInput, WalletTransactionUncheckedCreateInput> & WalletTransactionUncheckedCreateInput) | (Without<...> & WalletTransactionCreateInput)'.
+src/modules/santri/santri.controller.ts(43,38): error TS2345: Argument of type 'CreateSantriDto' is not assignable to parameter of type 'string'.

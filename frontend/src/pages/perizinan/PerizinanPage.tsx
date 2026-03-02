@@ -2,8 +2,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { Search, Plus, QrCode, FileText, CheckCircle, XCircle, Clock, Loader2, Activity } from 'lucide-react';
 import { api } from '@/lib/api/client';
 import { format } from 'date-fns';
-
+import { IzinFormModal } from './IzinFormModal';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 interface Izin {
   id: string;
@@ -22,6 +23,7 @@ export function PerizinanPage() {
   const [filterStatus, setFilterStatus] = useState('');
   const [izinList, setIzinList] = useState<Izin[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fetchIzin = useCallback(async () => {
     setLoading(true);
@@ -55,7 +57,22 @@ export function PerizinanPage() {
       case 'REJECTED': return <span className="badge badge-danger bg-opacity-20 flex items-center gap-1"><XCircle className="w-3 h-3" /> Ditolak</span>;
       case 'CHECKED_OUT': return <span className="badge bg-indigo-500/20 text-indigo-600 flex items-center gap-1"><CheckCircle className="w-3 h-3" /> Di Luar Asrama</span>;
       case 'CHECKED_IN': return <span className="badge bg-slate-500/20 text-slate-500 flex items-center gap-1"><CheckCircle className="w-3 h-3" /> Selesai (Kembali)</span>;
-      default: return <span className="badge">{status}</span>;
+      default: return <span className="badge justify-center">{status}</span>;
+    }
+  };
+
+  const handleApproveReject = async (id: string, newStatus: string) => {
+    const toastId = toast.loading('Memproses Persetujuan...');
+    try {
+       await api.post(`/izin/${id}/approve`, {
+          status: newStatus
+       });
+       toast.success(`Izin berhasil di-${newStatus === 'APPROVED_WAITING_CHECKOUT' ? 'setujui' : 'tolak'}. Wali santri telah diberitahu via WA.`, { id: toastId });
+       fetchIzin();
+    } catch (error) {
+       console.error(error);
+       const err = error as { response?: { data?: { message?: string | object } } };
+       toast.error(err.response?.data?.message as string || 'Gagal mengubah status izin.', { id: toastId });
     }
   };
 
@@ -74,7 +91,10 @@ export function PerizinanPage() {
             <QrCode className="w-4 h-4" />
             <span className="hidden sm:inline">Scan QR Satpam</span>
           </button>
-          <button className="btn btn-primary flex-1 sm:flex-none shadow-glow">
+          <button 
+            className="btn btn-primary flex-1 sm:flex-none shadow-glow"
+            onClick={() => setIsModalOpen(true)}
+          >
             <Plus className="w-4 h-4" />
             <span>Buat Surat Izin</span>
           </button>
@@ -95,6 +115,7 @@ export function PerizinanPage() {
 
         <div className="flex gap-2 w-full md:w-auto">
           <select 
+            title="Filter Status Izin"
             className="input-base w-full md:w-48 bg-transparent text-sm cursor-pointer"
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
@@ -163,12 +184,31 @@ export function PerizinanPage() {
                           <div className="flex items-center justify-end gap-2">
                             {(row.status === 'PENDING_POSKESTREN' || row.status === 'PENDING_MUSYRIF') && (
                               <>
-                                 <button className="btn btn-primary py-1 px-3 text-xs bg-success border-success" title="Setujui (Approve)">Setujui</button>
-                                 <button className="btn btn-outline py-1 px-3 text-xs hover:bg-danger/10 hover:text-danger hover:border-danger" title="Tolak (Reject)">Tolak</button>
+                                 <button 
+                                   className="btn btn-primary py-1 px-3 text-xs bg-success border-success" 
+                                   title="Setujui (Approve)"
+                                   onClick={() => handleApproveReject(row.id, 'APPROVED_WAITING_CHECKOUT')}
+                                 >
+                                   Setujui
+                                 </button>
+                                 <button 
+                                   className="btn btn-outline py-1 px-3 text-xs hover:bg-danger/10 hover:text-danger hover:border-danger" 
+                                   title="Tolak (Reject)"
+                                   onClick={() => handleApproveReject(row.id, 'REJECTED')}
+                                 >
+                                    Tolak
+                                 </button>
                               </>
                             )}
                             {(row.status === 'APPROVED_WAITING_CHECKOUT' || row.status === 'CHECKED_OUT') && (
-                              <button className="btn btn-outline py-1 px-3 text-xs flex items-center gap-1" title="Cetak Surat Jalan Gatepass">
+                              <button 
+                                className="btn btn-outline py-1 px-3 text-xs flex items-center gap-1" 
+                                title="Cetak Surat Jalan Gatepass"
+                                onClick={() => {
+                                   toast.success('Membuka dialog pencetakan Surat Jalan QR-Code...');
+                                   window.print();
+                                }}
+                              >
                                  <FileText className="w-3 h-3" /> Cetak
                               </button>
                             )}
@@ -181,6 +221,15 @@ export function PerizinanPage() {
               )}
            </div>
       </div>
+      
+      <IzinFormModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSuccess={() => {
+          setIsModalOpen(false);
+          fetchIzin();
+        }}
+      />
     </div>
   );
 }

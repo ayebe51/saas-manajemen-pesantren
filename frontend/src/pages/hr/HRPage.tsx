@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Search, UserPlus, Briefcase, CalendarClock, Loader2, Activity } from 'lucide-react';
 import { api } from '@/lib/api/client';
 import clsx from 'clsx';
+import { EmployeeFormModal } from './EmployeeFormModal';
+import { PayrollModal } from './PayrollModal';
 
 interface Employee {
   id: string;
@@ -15,6 +17,11 @@ export function HRPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Modal states
+  const [isEmployeeModalOpen, setIsEmployeeModalOpen] = useState(false);
+  const [isPayrollModalOpen, setIsPayrollModalOpen] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState<{ id: string, name: string } | null>(null);
 
   useEffect(() => {
     fetchEmployees();
@@ -47,7 +54,10 @@ export function HRPage() {
           <p className="text-muted text-sm mt-1">Sistem informasi presensi dan data kepegawaian yayasan.</p>
         </div>
         <div className="flex gap-3 w-full sm:w-auto">
-          <button className="btn btn-primary flex-1 sm:flex-none shadow-glow">
+          <button 
+            className="btn btn-primary flex-1 sm:flex-none shadow-glow"
+            onClick={() => setIsEmployeeModalOpen(true)}
+          >
             <UserPlus className="w-4 h-4" />
             <span>Tambah Pegawai</span>
           </button>
@@ -112,7 +122,14 @@ export function HRPage() {
                              </span>
                           </td>
                           <td className="py-4 px-6 text-right">
-                             <button className="btn btn-outline py-1.5 px-3 text-xs flex items-center gap-2 ml-auto" title="Log Absensi & Gaji">
+                             <button 
+                               className="btn btn-outline py-1.5 px-3 text-xs flex items-center gap-2 ml-auto" 
+                               title="Log Absensi & Gaji"
+                               onClick={() => {
+                                 setSelectedEmployee({ id: row.id, name: row.name });
+                                 setIsPayrollModalOpen(true);
+                               }}
+                             >
                                <CalendarClock className="w-3 h-3" /> Rekam Gaji
                              </button>
                           </td>
@@ -124,6 +141,22 @@ export function HRPage() {
          </div>
       </div>
       
+      {/* Modals */}
+      <EmployeeFormModal 
+        isOpen={isEmployeeModalOpen}
+        onClose={() => setIsEmployeeModalOpen(false)}
+        onSuccess={() => {
+          setIsEmployeeModalOpen(false);
+          fetchEmployees();
+        }}
+      />
+
+      <PayrollModal 
+        isOpen={isPayrollModalOpen}
+        onClose={() => setIsPayrollModalOpen(false)}
+        employeeId={selectedEmployee?.id || null}
+        employeeName={selectedEmployee?.name || null}
+      />
     </div>
   );
 }

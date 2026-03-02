@@ -1,17 +1,17 @@
-import { Processor, WorkerHost } from '@nestjs/bullmq';
+// import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
-import { Job } from 'bullmq';
+// import { Job } from 'bullmq';
 import { WhatsappGatewayService } from './whatsapp-gateway.service';
 
-@Processor('wa-messages')
-export class WaQueueProcessor extends WorkerHost {
+// @Processor('wa-messages')
+export class WaQueueProcessor {
   private readonly logger = new Logger(WaQueueProcessor.name);
 
   constructor(private readonly waGateway: WhatsappGatewayService) {
-    super();
+    // super();
   }
 
-  async process(job: Job<any, any, string>): Promise<any> {
+  async process(job: any): Promise<any> {
     this.logger.debug(`Memproses Antrean Pesan WA untuk Job ID: ${job.id}`);
 
     const { targetPhone, message } = job.data;

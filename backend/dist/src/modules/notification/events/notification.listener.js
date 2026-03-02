@@ -8,21 +8,17 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
 var NotificationEventListener_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NotificationEventListener = void 0;
 const common_1 = require("@nestjs/common");
 const event_emitter_1 = require("@nestjs/event-emitter");
-const bullmq_1 = require("@nestjs/bullmq");
-const bullmq_2 = require("bullmq");
 const prisma_service_1 = require("../../../common/prisma/prisma.service");
+const notification_gateway_1 = require("../notification.gateway");
 let NotificationEventListener = NotificationEventListener_1 = class NotificationEventListener {
-    constructor(prisma, waQueue) {
+    constructor(prisma, notificationGateway) {
         this.prisma = prisma;
-        this.waQueue = waQueue;
+        this.notificationGateway = notificationGateway;
         this.logger = new common_1.Logger(NotificationEventListener_1.name);
     }
     async handlePelanggaranEvent(payload) {
@@ -44,9 +40,10 @@ let NotificationEventListener = NotificationEventListener_1 = class Notification
             if (!waliPhone)
                 return;
             const message = `*INFO KEDISIPLINAN PESANTREN*\n\nAssalamu'alaikum Bpk/Ibu.\n\nKami mengabarkan bahwa putra/putri Anda, Ananda *${santri.name}* telah tercatat melakukan pelanggaran dengan rincian:\n\n- Pelanggaran: ${payload.ruleName}\n- Poin Hukuman: ${payload.points}\n- Tanggal Kejadian: ${payload.date.toLocaleDateString('id-ID')}\n\nMohon kebijaksanaannya dalam membimbing Ananda ketika pulang/telepon.`;
-            await this.waQueue.add('send-pelanggaran-alert', {
-                targetPhone: waliPhone,
-                message: message,
+            this.logger.log(`[MOCK WA MESSAGE] To: ${waliPhone} - Msg: ${message}`);
+            this.notificationGateway.sendToTenant(santri.tenantId, 'notification.new', {
+                message: `Pelanggaran baru tercatat: ${santri.name} (${payload.ruleName})`,
+                type: 'warning'
             });
         }
         catch (e) {
@@ -69,9 +66,10 @@ let NotificationEventListener = NotificationEventListener_1 = class Notification
             if (!waliPhone)
                 return;
             const msg = `*INFO KEUANGAN PESANTREN*\n\nAlhamdulillah, Bapak/Ibu.\n\nTop-Up saldo E-Wallet atas nama Ananda *${dompet.santri.name}* sebesar *Rp ${payload.amount.toLocaleString('id-ID')}* telah SUKSES otomatis ditambahkan ke sistem oleh Payment Gateway.\n\nSaldo Akhir Ananda saat ini: *Rp ${dompet.balance.toLocaleString('id-ID')}*.\n\nTerima kasih.\n- Koperasi Baitul Mal`;
-            await this.waQueue.add('send-topup-receipt', {
-                targetPhone: waliPhone,
-                message: msg,
+            this.logger.log(`[MOCK WA RECEIPT] To: ${waliPhone} - Msg: ${msg}`);
+            this.notificationGateway.sendToTenant(dompet.tenantId, 'notification.new', {
+                message: `Top-Up sukses masuk: Rp ${payload.amount.toLocaleString('id-ID')} (${dompet.santri.name})`,
+                type: 'success'
             });
         }
         catch (e) {
@@ -94,8 +92,7 @@ __decorate([
 ], NotificationEventListener.prototype, "handleWalletTopUpSuccess", null);
 exports.NotificationEventListener = NotificationEventListener = NotificationEventListener_1 = __decorate([
     (0, common_1.Injectable)(),
-    __param(1, (0, bullmq_1.InjectQueue)('wa-messages')),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        bullmq_2.Queue])
+        notification_gateway_1.NotificationGateway])
 ], NotificationEventListener);
 //# sourceMappingURL=notification.listener.js.map

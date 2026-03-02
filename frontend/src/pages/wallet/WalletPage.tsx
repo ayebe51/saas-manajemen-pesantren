@@ -3,6 +3,7 @@ import { Wallet, Search, ArrowUpRight, RefreshCcw, PlusCircle, CreditCard, Histo
 import { api } from '@/lib/api/client';
 import clsx from 'clsx';
 import { format } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
 
 interface WalletAccount {
   id: string;
@@ -22,6 +23,7 @@ interface WalletTransaction {
 }
 
 export function WalletPage() {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState<'overview' | 'history'>('overview');
   const [wallets, setWallets] = useState<WalletAccount[]>([]);
@@ -68,11 +70,11 @@ export function WalletPage() {
           <p className="text-muted text-sm mt-1">Sistem Tabungan *Cashless* & Riwayat Transaksi Koperasi.</p>
         </div>
         <div className="flex gap-3 w-full sm:w-auto">
-          <button className="btn btn-outline flex-1 sm:flex-none">
-            <RefreshCcw className="w-4 h-4" />
+          <button onClick={fetchData} disabled={loading} className="btn btn-outline flex-1 sm:flex-none">
+            <RefreshCcw className={clsx("w-4 h-4", loading && "animate-spin")} />
             <span className="hidden sm:inline">Sinkronisasi</span>
           </button>
-          <button className="btn btn-primary flex-1 sm:flex-none shadow-glow">
+          <button onClick={() => navigate('/wallet/topup')} className="btn btn-primary flex-1 sm:flex-none shadow-glow">
             <PlusCircle className="w-4 h-4" />
             <span>Top-up Saldo</span>
           </button>
@@ -194,7 +196,7 @@ export function WalletPage() {
                                <div className="text-xs text-muted">Update: {format(new Date(wallet.updatedAt), 'dd MMM yyyy, HH:mm')}</div>
                             </td>
                             <td className="py-4 px-6 text-right">
-                               <button className="btn btn-outline py-1.5 px-3 text-xs">Kelola Saldo</button>
+                               <button onClick={() => navigate('/wallet/topup')} className="btn btn-outline py-1.5 px-3 text-xs">Kelola Saldo</button>
                             </td>
                          </tr>
                       ))}

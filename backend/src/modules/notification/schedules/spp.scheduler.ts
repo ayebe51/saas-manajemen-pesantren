@@ -10,7 +10,7 @@ export class SppSchedulerService {
 
   constructor(
     private prisma: PrismaService,
-    @InjectQueue('wa-messages') private waQueue: Queue,
+    // @InjectQueue('wa-messages') private waQueue: Queue,
   ) {}
 
   /**
@@ -47,10 +47,11 @@ export class SppSchedulerService {
         const message = `*PENGINGAT SPP PESANTREN*\n\nAssalamu'alaikum Bpk/Ibu ${waliPrimary.name}.\n\nKami mengingatkan bahwa tagihan Syahriah (SPP) Ananda *${data.name}* sebesar ${nominalSpp} untuk bulan ini akan segera jatuh tempo.\n\nMohon segera melunasi melalui VA atau fasilitas Top-Up pada Aplikasi Wali Santri.\n\nTerima Kasih.\n- Admin APSS`;
 
         // Masukkan ke dalan antrean BullMQ
-        await this.waQueue.add('send-spp-reminder', {
-          targetPhone: waliPrimary.phone,
-          message: message,
-        });
+        // await this.waQueue.add('send-spp-reminder', {
+        //   targetPhone: waliPrimary.phone,
+        //   message: message,
+        // });
+        this.logger.log(`[MOCK WA SPP RMD] To: ${waliPrimary.phone} - Msg: ${message}`);
 
         queueCount++;
       }

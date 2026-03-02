@@ -2,7 +2,7 @@ import { NavLink } from 'react-router-dom';
 import { useAuthStore } from '@/lib/store/auth.store';
 import { 
   Home, Users, Briefcase, GraduationCap, 
-  Wallet, ArchiveRestore, Building2, FileBarChart, Settings, Shield, CreditCard 
+  Wallet, ArchiveRestore, Building2, FileBarChart, Settings, Shield, CreditCard, IdCard 
 } from 'lucide-react';
 import clsx from 'clsx';
 
@@ -15,6 +15,7 @@ const navItems = [
   { path: '/inventory', icon: ArchiveRestore, label: 'Koperasi' },
   { path: '/asrama', icon: Building2, label: 'Asrama' },
   { path: '/hr', icon: Briefcase, label: 'Kepegawaian' },
+  { path: '/id-card', icon: IdCard, label: 'E-ID Card' },
   { path: '/laporan', icon: FileBarChart, label: 'Laporan' },
 ];
 

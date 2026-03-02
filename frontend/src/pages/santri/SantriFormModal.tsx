@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { api } from '@/lib/api/client';
 import { X, Loader2 } from 'lucide-react';
 
@@ -6,9 +6,10 @@ interface SantriFormProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  initialData?: any; // To support editing
 }
 
-export function SantriFormModal({ isOpen, onClose, onSuccess }: SantriFormProps) {
+export function SantriFormModal({ isOpen, onClose, onSuccess, initialData }: SantriFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -22,6 +23,22 @@ export function SantriFormModal({ isOpen, onClose, onSuccess }: SantriFormProps)
     address: ''
   });
 
+  useEffect(() => {
+    if (initialData && isOpen) {
+      setFormData({
+        nisn: initialData.nisn || '',
+        name: initialData.name || '',
+        gender: initialData.gender || 'L',
+        dob: initialData.dob ? new Date(initialData.dob).toISOString().split('T')[0] : '', // format YYYY-MM-DD
+        kelas: initialData.kelas || '10',
+        room: initialData.room || '',
+        address: initialData.address || ''
+      });
+    } else if (!isOpen) {
+       setFormData({ nisn: '', name: '', gender: 'L', dob: '', kelas: '10', room: '', address: '' });
+    }
+  }, [initialData, isOpen]);
+
   if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -30,14 +47,21 @@ export function SantriFormModal({ isOpen, onClose, onSuccess }: SantriFormProps)
     setError('');
 
     try {
-      // Endpoint API expect dob in ISO String or YYYY-MM-DD
-      await api.post('/santri', {
-        ...formData,
-        dob: new Date(formData.dob).toISOString()
-      });
+      if (initialData?.id) {
+         await api.put(`/santri/${initialData.id}`, {
+            ...formData,
+            dob: formData.dob ? new Date(formData.dob).toISOString() : undefined
+         });
+      } else {
+         // Endpoint API expect dob in ISO String or YYYY-MM-DD
+         await api.post('/santri', {
+           ...formData,
+           dob: new Date(formData.dob).toISOString()
+         });
+      }
       onSuccess(); // Triggers parent to refetch data and close modal
     } catch (err: any) {
-       setError(err.response?.data?.message || 'Gagal menyimpan data santri baru.');
+       setError(err.response?.data?.message || 'Gagal menyimpan data santri.');
     } finally {
       setLoading(false);
     }
@@ -56,7 +80,7 @@ export function SantriFormModal({ isOpen, onClose, onSuccess }: SantriFormProps)
         
         {/* Header */}
         <div className="flex justify-between items-center mb-6 border-b pb-4 border-light">
-          <h2 className="text-xl font-bold text-main">Formulir Pendaftaran Santri</h2>
+          <h2 className="text-xl font-bold text-main">{initialData ? 'Ubah Data Santri' : 'Formulir Pendaftaran Santri'}</h2>
           <button title="Tutup Formulir" onClick={onClose} className="p-2 text-muted hover:bg-surface-glass rounded-full transition-colors">
             <X className="w-5 h-5" />
           </button>

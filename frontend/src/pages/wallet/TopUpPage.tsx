@@ -4,17 +4,23 @@ import { api } from '../../lib/api/client';
 import { useAuthStore } from '../../lib/store/auth.store';
 import toast from 'react-hot-toast';
 
+interface SantriOption {
+  id: string;
+  name: string;
+  nisn: string;
+}
+
 // Tambahkan type definition untuk instance midtrans global window
 declare global {
   interface Window {
-    snap: any;
+    snap: { pay: (token: string, options: Record<string, unknown>) => void };
   }
 }
 
 export default function TopUpPage() {
   const { user } = useAuthStore();
   const [amount, setAmount] = useState<number | ''>('');
-  const [santriData, setSantriData] = useState<any[]>([]);
+  const [santriData, setSantriData] = useState<SantriOption[]>([]);
   const [selectedSantri, setSelectedSantri] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -33,6 +39,7 @@ export default function TopUpPage() {
            }
         }
       } catch (e) {
+        console.error(e);
         toast.error("Gagal menarik data Anak.");
       }
     };
@@ -79,15 +86,15 @@ export default function TopUpPage() {
        if(transactionToken) {
           // 2. Tampilkan Popup Midtrans
           window.snap.pay(transactionToken, {
-            onSuccess: function(result: any){
+            onSuccess: function(result: unknown){
               toast.success("Pembayaran Berhasil! Saldo akan masuk otomatis.");
               console.log(result);
             },
-            onPending: function(result: any){
+            onPending: function(result: unknown){
               toast.success("Menunggu pembayaran Anda. Silakan bayar sesuai instruksi.");
               console.log(result);
             },
-            onError: function(result: any){
+            onError: function(result: unknown){
               toast.error("Pembayaran gagal / dibatalkan.");
               console.log(result);
             },
@@ -98,7 +105,8 @@ export default function TopUpPage() {
        } else {
           toast.error("Gagal mendapatkan Token Pembayaran.");
        }
-     } catch (e: any) {
+     } catch (e) {
+        console.error(e);
         toast.error("Terjadi ksalahan koneksi server.");
      } finally {
         setIsLoading(false);
@@ -109,26 +117,27 @@ export default function TopUpPage() {
     <div className="space-y-6 max-w-4xl mx-auto">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-white/90">Top-Up Saldo</h2>
-          <p className="text-blue-200/60 mt-1">Isi ulang E-Wallet anak Anda cepat & aman (Tanpa Ribet).</p>
+          <h2 className="text-2xl font-bold tracking-tight text-slate-800">Top-Up Saldo</h2>
+          <p className="text-slate-500 mt-1">Isi ulang E-Wallet anak Anda cepat & aman (Tanpa Ribet).</p>
         </div>
         <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-4 py-2 rounded-xl">
            <ShieldCheck className="w-5 h-5 text-emerald-400" />
-           <span className="text-emerald-400 font-medium text-sm">Pembayaran Terverifikasi (Midtrans)</span>
+           <span className="text-emerald-700 font-medium text-sm">Pembayaran Terverifikasi (Midtrans)</span>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Kolom Kiri: Form Top Up */}
         <div className="lg:col-span-2 space-y-6">
-           <div className="bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-6">
+           <div className="bg-white/80 backdrop-blur-xl border border-slate-200 shadow-sm rounded-2xl p-6">
                
                <div className="space-y-4">
                  <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">Pilih Santri Penerima (Anak)</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Pilih Santri Penerima (Anak)</label>
                     <div className="relative">
                       <select 
-                        className="w-full bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-500 outline-none appearance-none"
+                        title="Pilih Anak"
+                        className="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none appearance-none"
                         value={selectedSantri}
                         onChange={(e) => setSelectedSantri(e.target.value)}
                       >
@@ -144,12 +153,12 @@ export default function TopUpPage() {
                  </div>
 
                  <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">Nominal Top-Up</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Nominal Top-Up</label>
                     <div className="relative">
-                       <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-semibold">Rp</span>
+                       <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-semibold">Rp</span>
                        <input 
                          type="number"
-                         className="w-full bg-slate-900/50 border border-slate-700 rounded-xl pl-12 pr-4 py-4 text-xl font-bold text-white focus:ring-2 focus:ring-blue-500 outline-none placeholder:text-slate-600 placeholder:font-normal"
+                         className="w-full bg-white border border-slate-300 rounded-xl pl-12 pr-4 py-4 text-xl font-bold text-slate-800 focus:ring-2 focus:ring-blue-500 outline-none placeholder:text-slate-400 placeholder:font-normal"
                          placeholder="0"
                          value={amount}
                          onChange={(e) => setAmount(Number(e.target.value))}
@@ -159,7 +168,7 @@ export default function TopUpPage() {
 
                  {/* Cepat Pilih Template Nominal */}
                  <div>
-                    <p className="text-xs text-slate-400 mb-2">Pilihan Cepat:</p>
+                    <p className="text-xs text-slate-500 mb-2 block font-medium">Pilihan Cepat:</p>
                     <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                        {presetAmounts.map((preset) => (
                            <button
@@ -167,8 +176,8 @@ export default function TopUpPage() {
                              onClick={() => setAmount(preset)}
                              className={`py-2 px-1 text-sm font-medium rounded-lg transition-all ${
                                 amount === preset 
-                                ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' 
-                                : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'
+                                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20 border border-blue-600' 
+                                : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200 hover:border-slate-300'
                              }`}
                            >
                               {(preset / 1000)}k
@@ -216,23 +225,23 @@ export default function TopUpPage() {
               </div>
            </div>
 
-           <div className="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-5 space-y-4">
-              <h3 className="text-slate-200 font-semibold mb-2 text-sm uppercase tracking-wider">Metode Pembayaran Tersedia</h3>
+           <div className="bg-white/70 border border-slate-200 shadow-sm rounded-2xl p-5 space-y-4">
+              <h3 className="text-slate-800 font-semibold mb-2 text-sm uppercase tracking-wider">Metode Pembayaran Tersedia</h3>
               <div className="space-y-3">
                  <div className="flex items-center gap-3">
-                    <div className="bg-slate-800 p-2 rounded-lg"><Smartphone className="w-4 h-4 text-blue-400" /></div>
-                    <span className="text-sm text-slate-300">QRIS (Gopay, OVO, Dana, LinkAja)</span>
+                    <div className="bg-slate-50 p-2 border border-slate-100 rounded-lg"><Smartphone className="w-4 h-4 text-blue-500" /></div>
+                    <span className="text-sm text-slate-600 font-medium">QRIS <span className="text-slate-400 font-normal">(Gopay, OVO, Dana, LinkAja)</span></span>
                  </div>
                  <div className="flex items-center gap-3">
-                    <div className="bg-slate-800 p-2 rounded-lg"><CreditCard className="w-4 h-4 text-emerald-400" /></div>
-                    <span className="text-sm text-slate-300">Virtual Account (BCA, Mandiri, BNI, BRI)</span>
+                    <div className="bg-slate-50 p-2 border border-slate-100 rounded-lg"><CreditCard className="w-4 h-4 text-emerald-500" /></div>
+                    <span className="text-sm text-slate-600 font-medium">Virtual Account <span className="text-slate-400 font-normal">(BCA, Mandiri, BNI, BRI)</span></span>
                  </div>
                  <div className="flex items-center gap-3">
-                    <div className="bg-slate-800 p-2 rounded-lg"><CheckCircle2 className="w-4 h-4 text-orange-400" /></div>
-                    <span className="text-sm text-slate-300">Alfamart / Indomaret</span>
+                    <div className="bg-slate-50 p-2 border border-slate-100 rounded-lg"><CheckCircle2 className="w-4 h-4 text-orange-500" /></div>
+                    <span className="text-sm text-slate-600 font-medium">Retail <span className="text-slate-400 font-normal">(Alfamart / Indomaret)</span></span>
                  </div>
               </div>
-              <p className="text-xs text-slate-500 leading-relaxed mt-4 pt-4 border-t border-slate-700/50">
+              <p className="text-xs text-slate-500 leading-relaxed mt-4 pt-4 border-t border-slate-200">
                 Penyelesaian pembayaran akan otomatis mencatat mutasi pada akun anak Anda dengan durasi rata-rata &lt;1 detik.
               </p>
            </div>

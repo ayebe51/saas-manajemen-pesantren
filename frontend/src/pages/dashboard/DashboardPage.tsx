@@ -3,6 +3,8 @@ import { api } from '@/lib/api/client';
 import { Users, Wallet, Activity, TrendingUp, AlertCircle } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import clsx from 'clsx';
+import { socketClient } from '@/lib/socket/socket.client';
+import toast from 'react-hot-toast';
 
 interface DashboardStats {
   kpi: {
@@ -34,6 +36,28 @@ export function DashboardPage() {
     };
 
     fetchStats();
+
+    // Setup WebSocket listener for real-time notifications
+    socketClient.connect();
+    socketClient.on('notification.new', (data: any) => {
+      const { message, type } = data;
+      if (type === 'success') toast.success(message, { duration: 5000 });
+      else if (type === 'warning') toast.custom((t) => (
+        <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} max-w-md w-full bg-slate-800 text-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5 border border-warning/30`}>
+          <div className="flex-1 w-0 p-4">
+            <div className="flex items-start">
+              <div className="flex-shrink-0 pt-0.5"><AlertCircle className="w-5 h-5 text-warning"/></div>
+              <div className="ml-3 flex-1"><p className="text-sm font-medium text-white">{message}</p></div>
+            </div>
+          </div>
+        </div>
+      ), { duration: 6000 });
+      else toast(message);
+    });
+
+    return () => {
+      socketClient.off('notification.new');
+    };
   }, []);
 
   const statCards = [

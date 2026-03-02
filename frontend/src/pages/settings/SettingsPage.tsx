@@ -179,7 +179,7 @@ export function SettingsPage() {
                     <td className="px-4 py-3">{t.status === 'ACTIVE' ? <span className="text-success">&bull; Aktif</span> : <span className="text-danger">&bull; Nonaktif</span>}</td>
                     <td className="px-4 py-3 text-center">{t._count?.santri || 0}</td>
                     <td className="px-4 py-3 text-right">
-                       <button className="text-danger hover:text-danger-emphasis p-1" onClick={() => handleDeleteTenant(t.id)}>
+                       <button title="Hapus Cabang" className="text-danger hover:text-danger-emphasis p-1" onClick={() => handleDeleteTenant(t.id)}>
                          <Trash2 className="w-4 h-4" />
                        </button>
                     </td>
@@ -205,25 +205,25 @@ export function SettingsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                <div>
                   <label className="block text-sm font-medium mb-1">Nama Yayasan / Pesantren</label>
-                  <input type="text" className="input-base" value={name} onChange={e => setName(e.target.value)} />
+                  <input title="Nama Yayasan" placeholder="Nama Yayasan" type="text" className="input-base" value={name} onChange={e => setName(e.target.value)} />
                </div>
                <div>
                   <label className="block text-sm font-medium mb-1 flex items-center gap-2">
                      <Mail className="w-3 h-3 text-muted" /> Email Institusi / Info
                   </label>
-                  <input type="email" className="input-base" value={email} onChange={e => setEmail(e.target.value)} />
+                  <input title="Email" placeholder="Email Instansi" type="email" className="input-base" value={email} onChange={e => setEmail(e.target.value)} />
                </div>
             </div>
             <div>
                <label className="block text-sm font-medium mb-1">Alamat Lengkap Cabang</label>
-               <textarea className="input-base min-h-[80px]" value={address} onChange={e => setAddress(e.target.value)}></textarea>
+               <textarea title="Alamat" placeholder="Alamat Cabang Lengkap" className="input-base min-h-[80px]" value={address} onChange={e => setAddress(e.target.value)}></textarea>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
                <div>
                   <label className="block text-sm font-medium mb-1 flex items-center gap-2">
                      <Phone className="w-3 h-3 text-muted" /> Telepon Resmi
                   </label>
-                  <input type="text" className="input-base" value={phone} onChange={e => setPhone(e.target.value)} />
+                  <input title="Nomor Telepon" placeholder="Nomor Telepon" type="text" className="input-base" value={phone} onChange={e => setPhone(e.target.value)} />
                </div>
             </div>
          </div>
@@ -243,7 +243,7 @@ export function SettingsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
                <div>
                   <label className="block text-sm font-medium mb-1">Email Masuk</label>
-                  <input type="text" className="input-base opacity-70 cursor-not-allowed" defaultValue={user?.email || ''} disabled />
+                  <input title="Email Anda" placeholder="Email Anda" type="text" className="input-base opacity-70 cursor-not-allowed" defaultValue={user?.email || ''} disabled />
                </div>
             </div>
          </div>

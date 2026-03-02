@@ -11,15 +11,16 @@ const common_1 = require("@nestjs/common");
 const jwt_1 = require("@nestjs/jwt");
 const config_1 = require("@nestjs/config");
 const notification_gateway_1 = require("./notification.gateway");
-const bullmq_1 = require("@nestjs/bullmq");
 const external_notification_module_1 = require("../external-notification/external-notification.module");
 const whatsapp_webhook_service_1 = require("./whatsapp-webhook.service");
 const prisma_module_1 = require("../../common/prisma/prisma.module");
 const schedule_1 = require("@nestjs/schedule");
 const whatsapp_gateway_service_1 = require("./whatsapp-gateway.service");
 const spp_scheduler_1 = require("./schedules/spp.scheduler");
+const monthly_report_scheduler_1 = require("./schedules/monthly-report.scheduler");
 const notification_listener_1 = require("./events/notification.listener");
 const axios_1 = require("@nestjs/axios");
+const report_generator_service_1 = require("./report-generator.service");
 let NotificationModule = class NotificationModule {
 };
 exports.NotificationModule = NotificationModule;
@@ -31,9 +32,6 @@ exports.NotificationModule = NotificationModule = __decorate([
             config_1.ConfigModule,
             axios_1.HttpModule,
             jwt_1.JwtModule.register({}),
-            bullmq_1.BullModule.registerQueue({
-                name: 'wa-messages',
-            }),
             schedule_1.ScheduleModule.forRoot(),
         ],
         providers: [
@@ -41,9 +39,16 @@ exports.NotificationModule = NotificationModule = __decorate([
             whatsapp_webhook_service_1.WhatsappWebhookService,
             whatsapp_gateway_service_1.WhatsappGatewayService,
             spp_scheduler_1.SppSchedulerService,
+            monthly_report_scheduler_1.MonthlyReportScheduler,
             notification_listener_1.NotificationEventListener,
+            report_generator_service_1.ReportGeneratorService,
         ],
-        exports: [notification_gateway_1.NotificationGateway, whatsapp_webhook_service_1.WhatsappWebhookService, whatsapp_gateway_service_1.WhatsappGatewayService],
+        exports: [
+            notification_gateway_1.NotificationGateway,
+            whatsapp_webhook_service_1.WhatsappWebhookService,
+            whatsapp_gateway_service_1.WhatsappGatewayService,
+            report_generator_service_1.ReportGeneratorService,
+        ],
     })
 ], NotificationModule);
 //# sourceMappingURL=notification.module.js.map

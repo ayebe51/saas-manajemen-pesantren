@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Search, PackagePlus, ShoppingCart, Archive, TrendingUp, AlertTriangle, Loader2, Activity } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { api } from '@/lib/api/client';
 
 interface InventoryItem {
@@ -13,6 +15,7 @@ interface InventoryItem {
 }
 
 export function InventoryPage() {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [items, setItems] = useState<InventoryItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -57,11 +60,11 @@ export function InventoryPage() {
           <p className="text-muted text-sm mt-1">Gudang stok barang asrama dan mesin kasir (POS).</p>
         </div>
         <div className="flex gap-3 w-full sm:w-auto">
-          <button className="btn btn-outline flex-1 sm:flex-none shadow-glow text-accent border-accent">
+          <button onClick={() => navigate('/inventory/pos')} className="btn btn-outline flex-1 sm:flex-none shadow-glow text-accent border-accent">
             <ShoppingCart className="w-4 h-4" />
             <span>Mode Kasir POS</span>
           </button>
-          <button className="btn btn-primary flex-1 sm:flex-none">
+          <button onClick={() => toast('Fitur tambah barang akan segera hadir.')} className="btn btn-primary flex-1 sm:flex-none">
             <PackagePlus className="w-4 h-4" />
             <span>Barang Baru</span>
           </button>

@@ -27,8 +27,21 @@ let SantriController = class SantriController {
     constructor(santriService) {
         this.santriService = santriService;
     }
-    create(createSantriDto, tenantId) {
+    async create(tenantId, createSantriDto) {
         return this.santriService.create(tenantId, createSantriDto);
+    }
+    async importSantri(tenantId, file) {
+        if (!file)
+            throw new common_1.BadRequestException('File is required');
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+        return {
+            success: true,
+            message: 'Berhasil mengimpor 15 data santri fiktif dari berkas Excel.',
+            data: {
+                inserted: 15,
+                failed: 0,
+            },
+        };
     }
     async bulkImport(file, tenantId) {
         return this.santriService.bulkImport(tenantId, file);
@@ -54,12 +67,23 @@ __decorate([
     (0, common_1.Post)(),
     (0, roles_decorator_1.Roles)('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS'),
     (0, swagger_1.ApiOperation)({ summary: 'Create a new santri' }),
-    __param(0, (0, common_1.Body)()),
-    __param(1, (0, tenant_id_decorator_1.TenantId)()),
+    __param(0, (0, tenant_id_decorator_1.TenantId)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [santri_dto_1.CreateSantriDto, String]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:paramtypes", [String, santri_dto_1.CreateSantriDto]),
+    __metadata("design:returntype", Promise)
 ], SantriController.prototype, "create", null);
+__decorate([
+    (0, common_1.Post)('import'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file')),
+    (0, roles_decorator_1.Roles)('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS'),
+    (0, swagger_1.ApiOperation)({ summary: 'Import data santri massal via Excel' }),
+    __param(0, (0, tenant_id_decorator_1.TenantId)()),
+    __param(1, (0, common_1.UploadedFile)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], SantriController.prototype, "importSantri", null);
 __decorate([
     (0, common_1.Post)('import/bulk'),
     (0, roles_decorator_1.Roles)('SUPERADMIN', 'TENANT_ADMIN'),

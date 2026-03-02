@@ -3,6 +3,9 @@ import { Search, BookOpen, GraduationCap, Award, FileText, ArrowRight, Loader2, 
 import { api } from '@/lib/api/client';
 import { format } from 'date-fns';
 import clsx from 'clsx';
+import { TahfidzFormModal } from './TahfidzFormModal';
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 interface TahfidzItem {
   id: string;
@@ -19,6 +22,8 @@ export function AkademikPage() {
   const [activeTab, setActiveTab] = useState<'tahfidz' | 'jadwal' | 'nilai'>('tahfidz');
   const [tahfidzList, setTahfidzList] = useState<TahfidzItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isTahfidzModalOpen, setIsTahfidzModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchTahfidz();
@@ -50,11 +55,17 @@ export function AkademikPage() {
           <p className="text-muted text-sm mt-1">Pusat mutaba'ah hafalan (Tahfidz), jadwal diniyah, dan rapor ujian.</p>
         </div>
         <div className="flex gap-3 w-full sm:w-auto">
-          <button className="btn btn-outline flex-1 sm:flex-none">
+          <button 
+            className="btn btn-outline flex-1 sm:flex-none"
+            onClick={() => window.print()}
+          >
             <FileText className="w-4 h-4" />
             <span className="hidden sm:inline">Cetak Rapor</span>
           </button>
-          <button className="btn btn-primary flex-1 sm:flex-none shadow-glow">
+          <button 
+            className="btn btn-primary flex-1 sm:flex-none shadow-glow"
+            onClick={() => setIsTahfidzModalOpen(true)}
+          >
             <BookOpen className="w-4 h-4" />
             <span>Input Setoran</span>
           </button>
@@ -153,7 +164,14 @@ export function AkademikPage() {
                                {format(new Date(row.date), 'dd MMM yyyy, HH:mm')}
                             </td>
                             <td className="py-4 px-6 text-right">
-                               <button title="Aksi Akademik" className="p-2 hover:bg-primary/10 rounded-full text-primary transition-colors">
+                               <button 
+                                 title="Aksi Akademik" 
+                                 className="p-2 hover:bg-primary/10 rounded-full text-primary transition-colors"
+                                 onClick={() => {
+                                    toast.success('Navigasi ke riwayat hafalan siswa.');
+                                    navigate('/santri'); // Tautkan dengan profil siswa
+                                 }}
+                               >
                                  <ArrowRight className="w-4 h-4" />
                                </button>
                             </td>
@@ -169,6 +187,15 @@ export function AkademikPage() {
             )}
          </div>
       </div>
+
+      <TahfidzFormModal 
+        isOpen={isTahfidzModalOpen}
+        onClose={() => setIsTahfidzModalOpen(false)}
+        onSuccess={() => {
+          setIsTahfidzModalOpen(false);
+          fetchTahfidz();
+        }}
+      />
     </div>
   );
 }

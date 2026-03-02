@@ -16,6 +16,7 @@ import { HRPage } from '@/pages/hr/HRPage';
 import { LaporanPage } from '@/pages/laporan/LaporanPage';
 import { SettingsPage } from '@/pages/settings/SettingsPage';
 import { AuditLogPage } from '@/pages/audit-log/AuditLogPage';
+import { IdCardGeneratorPage } from '@/pages/id-card/IdCardGeneratorPage';
 
 
 
@@ -48,6 +49,7 @@ export default function App() {
             <Route path="pos" element={<POSPage />} />
           </Route>
           <Route path="laporan" element={<LaporanPage />} />
+          <Route path="id-card" element={<IdCardGeneratorPage />} />
           <Route path="asrama">
             <Route index element={<PerizinanPage />} />
             <Route path="scan" element={<ScanPage />} />

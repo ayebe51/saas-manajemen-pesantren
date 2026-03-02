@@ -12,7 +12,6 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 var PaymentController_1;
-var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PaymentController = void 0;
 const common_1 = require("@nestjs/common");
@@ -21,7 +20,7 @@ const jwt_auth_guard_1 = require("../../common/guards/jwt-auth.guard");
 const roles_guard_1 = require("../../common/guards/roles.guard");
 const roles_decorator_1 = require("../../common/decorators/roles.decorator");
 const swagger_1 = require("@nestjs/swagger");
-const tenant_decorator_1 = require("../../common/decorators/tenant.decorator");
+const tenant_id_decorator_1 = require("../../common/decorators/tenant-id.decorator");
 let PaymentController = PaymentController_1 = class PaymentController {
     constructor(paymentService) {
         this.paymentService = paymentService;
@@ -43,7 +42,7 @@ __decorate([
     (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({ summary: 'Minta Tiket Pembayaran Midtrans Snap (Top Up Dompet)' }),
     (0, swagger_1.ApiBody)({ schema: { example: { santriId: 'uuid', amount: 50000 } } }),
-    __param(0, (0, tenant_decorator_1.TenantId)()),
+    __param(0, (0, tenant_id_decorator_1.TenantId)()),
     __param(1, (0, common_1.Body)('santriId')),
     __param(2, (0, common_1.Body)('amount')),
     __metadata("design:type", Function),
@@ -62,6 +61,6 @@ __decorate([
 exports.PaymentController = PaymentController = PaymentController_1 = __decorate([
     (0, swagger_1.ApiTags)('Payments (Midtrans)'),
     (0, common_1.Controller)('api/v1/payments'),
-    __metadata("design:paramtypes", [typeof (_a = typeof payment_service_1.PaymentService !== "undefined" && payment_service_1.PaymentService) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [payment_service_1.PaymentService])
 ], PaymentController);
 //# sourceMappingURL=payment.controller.js.map
