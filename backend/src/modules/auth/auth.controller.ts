@@ -108,12 +108,21 @@ export class AuthController {
   async runSeed() {
     const execAsync = promisify(exec);
     try {
-      const { stdout, stderr } = await execAsync('npx prisma db seed');
-      return { success: true, message: 'Seeding completed', stdout, stderr };
+      // First, ensure all tables are created by running migrations
+      const migrateCmd = await execAsync('npx prisma migrate deploy');
+      // Then run the seed script
+      const seedCmd = await execAsync('npx prisma db seed');
+
+      return {
+        success: true,
+        message: 'Migration and seeding completed',
+        migration: { stdout: migrateCmd.stdout, stderr: migrateCmd.stderr },
+        seed: { stdout: seedCmd.stdout, stderr: seedCmd.stderr },
+      };
     } catch (e: any) {
       return {
         success: false,
-        message: 'Seeding failed',
+        message: 'Migration or Seeding failed',
         error: e.message,
         stdout: e.stdout,
         stderr: e.stderr,
