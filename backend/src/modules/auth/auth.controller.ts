@@ -97,6 +97,11 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Register Firebase Cloud Messaging (FCM) device token' })
   @ApiResponse({ status: 200, description: 'FCM Token registered successfully' })
+  async registerFcmToken(@Req() request: any, @Body() fcmTokenDto: FcmTokenDto) {
+    await this.authService.saveFcmToken(request.user.id, fcmTokenDto.token);
+    return { message: 'FCM Token registered successfully' };
+  }
+
   @Get('seed')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Temp endpoint to seed DB bypassing local firewall' })
