@@ -135,6 +135,6 @@
     }
   },
   "prisma": {
-    "seed": "tsc prisma/seed.ts && node prisma/seed.js"
+    "seed": "node prisma/run-seed.js"
   }
 }
