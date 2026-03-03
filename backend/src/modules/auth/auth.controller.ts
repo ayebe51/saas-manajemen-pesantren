@@ -95,6 +95,22 @@ export class AuthController {
     };
   }
 
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get current user profile' })
+  async getMe(@Req() request: any) {
+    // request.user is populated by JwtStrategy, but we might want full user data
+    // For now, returning request.user is sufficient since it has id, email, role, tenantId
+    // If name is really needed, we should fetch from Prisma here or include in JWT.
+    // However, the frontend just needs a valid response to keep the session alive.
+    return {
+      message: 'Profile retrieved',
+      data: request.user,
+    };
+  }
+
   @Post('fcm-token')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
