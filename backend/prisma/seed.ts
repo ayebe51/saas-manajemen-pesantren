@@ -6,37 +6,49 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Starting seed...');
 
-  // 1. Create Tenant
-  const tenant = await prisma.tenant.create({
-    data: {
-      name: 'Pesantren Al-Ikhlas',
-      address: 'Jl. Raya Pesantren No. 1, Jawa Barat',
-      phone: '081234567890',
-      plan: 'PRO',
-      settings: JSON.stringify({
-        theme: 'light',
-        allowVisitorBooking: true,
-      }),
-    },
+  // 1. Create or Find Tenant
+  let tenant = await prisma.tenant.findFirst({
+    where: { name: 'Pesantren Al-Ikhlas' },
   });
-  console.log(`Created Tenant: ${tenant.name}`);
+
+  if (!tenant) {
+    tenant = await prisma.tenant.create({
+      data: {
+        name: 'Pesantren Al-Ikhlas',
+        address: 'Jl. Raya Pesantren No. 1, Jawa Barat',
+        phone: '081234567890',
+        plan: 'PRO',
+        settings: JSON.stringify({
+          theme: 'light',
+          allowVisitorBooking: true,
+        }),
+      },
+    });
+    console.log(`Created Tenant: ${tenant.name}`);
+  } else {
+    console.log(`Found existing Tenant: ${tenant.name}`);
+  }
 
   // 2. Create Platform Super Admin
   const superAdminPassword = await bcrypt.hash('superadmin123', 10);
-  const superAdmin = await prisma.user.create({
-    data: {
+  const superAdmin = await prisma.user.upsert({
+    where: { email: 'admin@pesantren-saas.com' },
+    update: {},
+    create: {
       email: 'admin@pesantren-saas.com',
       passwordHash: superAdminPassword,
       role: 'SUPERADMIN',
       name: 'SaaS Platform Admin',
     },
   });
-  console.log('Created Super Admin');
+  console.log('Upserted Super Admin');
 
   // 3. Create Tenant Admin
   const tenantAdminPassword = await bcrypt.hash('admin123', 10);
-  const tenantAdmin = await prisma.user.create({
-    data: {
+  const tenantAdmin = await prisma.user.upsert({
+    where: { email: 'admin@al-ikhlas.com' },
+    update: {},
+    create: {
       tenantId: tenant.id,
       email: 'admin@al-ikhlas.com',
       passwordHash: tenantAdminPassword,
@@ -45,12 +57,14 @@ async function main() {
       phone: '08111111111',
     },
   });
-  console.log('Created Tenant Admin');
+  console.log('Upserted Tenant Admin');
 
   // 4. Create Musyrif (Staff)
   const musyrifPassword = await bcrypt.hash('musyrif123', 10);
-  const musyrif = await prisma.user.create({
-    data: {
+  const musyrif = await prisma.user.upsert({
+    where: { email: 'musyrif@al-ikhlas.com' },
+    update: {},
+    create: {
       tenantId: tenant.id,
       email: 'musyrif@al-ikhlas.com',
       passwordHash: musyrifPassword,
@@ -59,7 +73,7 @@ async function main() {
       phone: '08222222222',
     },
   });
-  console.log('Created Musyrif');
+  console.log('Upserted Musyrif');
 
   // 5. Create 5 Wali
   const walis = [];
