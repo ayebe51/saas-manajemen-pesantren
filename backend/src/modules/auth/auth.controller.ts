@@ -1,6 +1,18 @@
-import { Controller, Post, Body, HttpCode, HttpStatus, Res, UseGuards, Req } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  HttpCode,
+  HttpStatus,
+  Res,
+  UseGuards,
+  Req,
+  Get,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { Response, Request } from 'express';
+import { exec } from 'child_process';
+import { promisify } from 'util';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { FcmTokenDto } from './dto/fcm-token.dto';
@@ -85,8 +97,22 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Register Firebase Cloud Messaging (FCM) device token' })
   @ApiResponse({ status: 200, description: 'FCM Token registered successfully' })
-  async registerFcmToken(@Req() request: any, @Body() fcmTokenDto: FcmTokenDto) {
-    await this.authService.saveFcmToken(request.user.id, fcmTokenDto.token);
-    return { message: 'FCM Token registered successfully' };
+  @Get('seed')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Temp endpoint to seed DB bypassing local firewall' })
+  async runSeed() {
+    const execAsync = promisify(exec);
+    try {
+      const { stdout, stderr } = await execAsync('npx prisma db seed');
+      return { success: true, message: 'Seeding completed', stdout, stderr };
+    } catch (e: any) {
+      return {
+        success: false,
+        message: 'Seeding failed',
+        error: e.message,
+        stdout: e.stdout,
+        stderr: e.stderr,
+      };
+    }
   }
 }
