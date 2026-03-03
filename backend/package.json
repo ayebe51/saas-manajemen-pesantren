@@ -135,6 +135,6 @@
     }
   },
   "prisma": {
-    "seed": "ts-node prisma/seed.ts"
+    "seed": "ts-node --project tsconfig.json prisma/seed.ts"
   }
 }
