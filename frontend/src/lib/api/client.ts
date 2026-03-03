@@ -28,7 +28,7 @@ api.interceptors.response.use(
       originalRequest._retry = true;
       try {
         // Coba tembak endpoint refresh-token
-        const res = await axios.post(`${API_URL}/auth/refresh-token`, {}, { withCredentials: true });
+        const res = await axios.post(`${API_URL}/auth/refresh`, {}, { withCredentials: true });
         
         // Simpan token baru
         const newToken = res.data.accessToken;
