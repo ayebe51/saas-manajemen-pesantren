@@ -10,7 +10,9 @@ import {
   UseInterceptors,
   UploadedFile,
   BadRequestException,
+  Res,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiTags,
@@ -43,22 +45,16 @@ export class SantriController {
     return this.santriService.create(tenantId, createSantriDto);
   }
 
-  @Post('import')
-  @UseInterceptors(FileInterceptor('file'))
+  @Get('template')
   @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS')
-  @ApiOperation({ summary: 'Import data santri massal via Excel' })
-  async importSantri(@TenantId() tenantId: string, @UploadedFile() file: Express.Multer.File) {
-    if (!file) throw new BadRequestException('File is required');
-    // Simulasi pemrosesan latar belakang membaca ribuan baris excel
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    return {
-      success: true,
-      message: 'Berhasil mengimpor 15 data santri fiktif dari berkas Excel.',
-      data: {
-        inserted: 15,
-        failed: 0,
-      },
-    };
+  @ApiOperation({ summary: 'Unduh template Excel untuk import data santri' })
+  async downloadTemplate(@Res() res: Response) {
+    const buffer = await this.santriService.generateTemplate();
+    res.set({
+      'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'Content-Disposition': 'attachment; filename="Template_Import_Santri.xlsx"',
+    });
+    res.send(buffer);
   }
 
   @Post('import/bulk')

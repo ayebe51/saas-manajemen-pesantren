@@ -63,6 +63,43 @@ export class SantriService {
     });
   }
 
+  async generateTemplate(): Promise<any> {
+    const workbook = new Workbook();
+    const worksheet = workbook.addWorksheet('Data Santri');
+
+    worksheet.columns = [
+      { header: 'NISN', key: 'nisn', width: 15 },
+      { header: 'NAMA LENGKAP (*)', key: 'name', width: 30 },
+      { header: 'L/P', key: 'gender', width: 10 },
+      { header: 'DOB (YYYY-MM-DD)', key: 'dob', width: 25 },
+      { header: 'KELAS', key: 'kelas', width: 15 },
+      { header: 'KAMAR/ASRAMA', key: 'room', width: 20 },
+      { header: 'KONTAK/HP', key: 'contact', width: 20 },
+      { header: 'ALAMAT', key: 'address', width: 40 },
+    ];
+
+    worksheet.addRow({
+      nisn: '1234567890',
+      name: 'Fulan bin Fulan',
+      gender: 'L',
+      dob: '2005-08-17',
+      kelas: '10',
+      room: 'Abu Bakar 01',
+      contact: '081234567890',
+      address: 'Jl. Raya Pesantren No. 1, Desa Suka Maju',
+    });
+
+    worksheet.getRow(1).font = { bold: true };
+    worksheet.getRow(1).fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FFE0E0E0' },
+    };
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    return buffer as Buffer;
+  }
+
   async bulkImport(tenantId: string, file: any) {
     if (!file) {
       throw new BadRequestException('File Excel wajib diunggah');

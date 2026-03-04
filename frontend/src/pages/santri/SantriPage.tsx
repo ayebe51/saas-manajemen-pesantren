@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { api } from '@/lib/api/client';
-import { Search, Filter, Plus, FileSpreadsheet, Edit2, Trash2, Eye, Loader2 } from 'lucide-react';
+import { Search, Filter, Plus, FileSpreadsheet, Edit2, Trash2, Eye, Loader2, Download } from 'lucide-react';
 import clsx from 'clsx';
 import toast from 'react-hot-toast';
 import { SantriFormModal } from './SantriFormModal';
@@ -99,6 +99,22 @@ export function SantriPage() {
     }
   };
 
+  const handleDownloadTemplate = async () => {
+    try {
+      const response = await api.get('/santri/template', { responseType: 'blob' });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'Template_Import_Santri.xlsx');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      toast.error('Gagal mengunduh template Excel');
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header Area */}
@@ -107,7 +123,14 @@ export function SantriPage() {
           <h1 className="text-2xl font-bold text-main">Data Kesantrian</h1>
           <p className="text-muted text-sm mt-1">Kelola direktori {totalItems > 0 ? totalItems : ''} data santri, wali, dan riwayat akademik.</p>
         </div>
-        <div className="flex gap-3 w-full sm:w-auto">
+        <div className="flex gap-2 w-full sm:w-auto">
+          <button 
+            className="btn btn-outline flex-none px-3"
+            onClick={handleDownloadTemplate}
+            title="Unduh Template Excel"
+          >
+            <Download className="w-4 h-4" />
+          </button>
           <button 
             className="btn btn-outline flex-1 sm:flex-none"
             onClick={handleImportClick}
