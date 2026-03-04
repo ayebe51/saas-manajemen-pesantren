@@ -34,7 +34,7 @@ export class AuthController {
     // Set refresh token in secure httpOnly cookie
     response.cookie('refresh_token', refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: true, // SameSite 'none' requires Secure to be true always
       sameSite: 'none',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
@@ -60,7 +60,7 @@ export class AuthController {
     // Set new refresh token in cookie
     response.cookie('refresh_token', newRefreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: true, // SameSite 'none' requires Secure to be true always
       sameSite: 'none',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
@@ -86,7 +86,7 @@ export class AuthController {
 
     response.clearCookie('refresh_token', {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: true,
       sameSite: 'none',
     });
 
