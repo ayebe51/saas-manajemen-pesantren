@@ -56,7 +56,7 @@ export function SantriFormModal({ isOpen, onClose, onSuccess, initialData }: San
          // Endpoint API expect dob in ISO String or YYYY-MM-DD
          await api.post('/santri', {
            ...formData,
-           dob: new Date(formData.dob).toISOString()
+           dob: formData.dob ? new Date(formData.dob).toISOString() : undefined
          });
       }
       onSuccess(); // Triggers parent to refetch data and close modal

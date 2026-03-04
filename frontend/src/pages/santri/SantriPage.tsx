@@ -85,7 +85,7 @@ export function SantriPage() {
     const toastId = toast.loading('Memproses berkas Excel...');
     
     try {
-      await api.post('/santri/import', formData, {
+      await api.post('/santri/import/bulk', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       toast.success('Data Santri sukses diimpor ke sistem!', { id: toastId });
