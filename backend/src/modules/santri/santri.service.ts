@@ -97,7 +97,7 @@ export class SantriService {
     };
 
     const buffer = await workbook.xlsx.writeBuffer();
-    return buffer as Buffer;
+    return buffer as any;
   }
 
   async bulkImport(tenantId: string, file: any) {
