@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api/client';
 import { X, Loader2 } from 'lucide-react';
+import { useAuthStore } from '@/lib/store/auth.store';
 
 interface SantriFormProps {
   isOpen: boolean;
@@ -10,6 +11,7 @@ interface SantriFormProps {
 }
 
 export function SantriFormModal({ isOpen, onClose, onSuccess, initialData }: SantriFormProps) {
+  const { user } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -50,12 +52,14 @@ export function SantriFormModal({ isOpen, onClose, onSuccess, initialData }: San
       if (initialData?.id) {
          await api.put(`/santri/${initialData.id}`, {
             ...formData,
+            tenantId: user?.tenantId,
             dob: formData.dob ? new Date(formData.dob).toISOString() : undefined
          });
       } else {
          // Endpoint API expect dob in ISO String or YYYY-MM-DD
          await api.post('/santri', {
            ...formData,
+           tenantId: user?.tenantId,
            dob: formData.dob ? new Date(formData.dob).toISOString() : undefined
          });
       }
