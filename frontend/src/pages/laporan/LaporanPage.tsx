@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Download, FileText, FileSpreadsheet, ListFilter, Loader2 } from 'lucide-react';
+import { Download, FileText, FileSpreadsheet, ListFilter, Loader2, Calendar } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { api } from '@/lib/api/client';
 import { useAuthStore } from '@/lib/store/auth.store';
@@ -7,6 +7,8 @@ import { useAuthStore } from '@/lib/store/auth.store';
 export function LaporanPage() {
   const [downloading, setDownloading] = useState<string | null>(null);
   const { user } = useAuthStore();
+  const [filters, setFilters] = useState<Record<string, { from: string; to: string }>>({});
+  const [openFilter, setOpenFilter] = useState<string | null>(null);
 
   const reports = [
     { id: 'keuangan', title: 'Laporan Mutasi Keuangan Global', desc: 'Arus Kas masuk/keluar, pembayaran SPP dan invoice yayasan bulan ini.', icon: FileSpreadsheet, color: 'success' },
@@ -25,15 +27,31 @@ export function LaporanPage() {
     }
   };
 
+  const toggleFilter = (moduleId: string) => {
+    if (openFilter === moduleId) {
+      setOpenFilter(null);
+    } else {
+      setOpenFilter(moduleId);
+      if (!filters[moduleId]) {
+        const now = new Date();
+        const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+        const today = now.toISOString().split('T')[0];
+        setFilters(prev => ({ ...prev, [moduleId]: { from: firstDay, to: today } }));
+      }
+    }
+  };
+
   const handleDownload = async (type: 'pdf' | 'excel', moduleId: string) => {
     setDownloading(`${type}-${moduleId}`);
     try {
-      // Akses real endpoint PDF Report Koperasi untuk modul Keuangan
       const endpoint = moduleId === 'keuangan' && type === 'pdf' 
         ? `/report/monthly/${user?.tenantId}` 
         : `/reports/${type}/${moduleId}`;
 
-      const response = await api.get(endpoint, {
+      const dateFilter = filters[moduleId];
+      const params = dateFilter ? `?from=${dateFilter.from}&to=${dateFilter.to}` : '';
+
+      const response = await api.get(`${endpoint}${params}`, {
         responseType: 'blob'
       });
       const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -71,11 +89,42 @@ export function LaporanPage() {
               </div>
               
               <div className="flex gap-2">
-                 <button onClick={() => toast('Fitur filter rentang tanggal akan segera hadir.')} className="btn btn-outline py-1.5 px-3 text-xs flex items-center gap-2" title="Filter Tanggal">
+                 <button 
+                   onClick={() => toggleFilter(report.id)} 
+                   className={`btn ${openFilter === report.id ? 'btn-primary' : 'btn-outline'} py-1.5 px-3 text-xs flex items-center gap-2`} 
+                   title="Filter Tanggal"
+                 >
                    <ListFilter className="w-3 h-3" /> Filter
                  </button>
               </div>
             </div>
+
+            {/* Date Range Filter */}
+            {openFilter === report.id && (
+              <div className="mb-4 p-3 rounded-lg bg-surface-glass border border-light animate-in fade-in">
+                <div className="flex items-center gap-2 mb-2">
+                  <Calendar className="w-3.5 h-3.5 text-primary" />
+                  <span className="text-xs font-semibold text-muted">Rentang Tanggal Laporan</span>
+                </div>
+                <div className="flex gap-2 items-center">
+                  <input
+                    type="date"
+                    title="Tanggal Mulai"
+                    value={filters[report.id]?.from || ''}
+                    onChange={e => setFilters(prev => ({ ...prev, [report.id]: { ...prev[report.id], from: e.target.value } }))}
+                    className="input-base py-1.5 text-xs flex-1"
+                  />
+                  <span className="text-xs text-muted">s/d</span>
+                  <input
+                    type="date"
+                    title="Tanggal Akhir"
+                    value={filters[report.id]?.to || ''}
+                    onChange={e => setFilters(prev => ({ ...prev, [report.id]: { ...prev[report.id], to: e.target.value } }))}
+                    className="input-base py-1.5 text-xs flex-1"
+                  />
+                </div>
+              </div>
+            )}
             
             <h3 className="text-lg font-bold mb-2">{report.title}</h3>
             <p className="text-sm text-muted mb-6 leading-relaxed min-h-[40px]">{report.desc}</p>

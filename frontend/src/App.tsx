@@ -5,6 +5,7 @@ import { AuthGuard } from '@/components/auth/AuthGuard';
 import { AuthProvider } from '@/components/auth/AuthProvider';
 import { DashboardPage } from '@/pages/dashboard/DashboardPage';
 import { SantriPage } from '@/pages/santri/SantriPage';
+import { SantriProfilPage } from '@/pages/santri/SantriProfilPage';
 import { WalletPage } from '@/pages/wallet/WalletPage';
 import TopUpPage from './pages/wallet/TopUpPage';
 import { PerizinanPage } from '@/pages/perizinan/PerizinanPage';
@@ -47,6 +48,7 @@ export default function App() {
           {/* Index Route memuat Beranda Dasbor */}
           <Route index element={<DashboardPage />} />
           <Route path="santri" element={<SantriPage />} />
+          <Route path="santri/:id" element={<SantriProfilPage />} />
           <Route path="akademik" element={<AkademikPage />} />
           <Route path="finance" element={<WalletPage />} />
           <Route path="/wallet/topup" element={<TopUpPage />} />

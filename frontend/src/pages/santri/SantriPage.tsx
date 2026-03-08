@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { api } from '@/lib/api/client';
 import { Search, Filter, Plus, FileSpreadsheet, Edit2, Trash2, Eye, Loader2, Download } from 'lucide-react';
 import clsx from 'clsx';
@@ -18,6 +19,7 @@ interface Santri {
 
 export function SantriPage() {
   const { user } = useAuthStore();
+  const navigate = useNavigate();
   const [data, setData] = useState<Santri[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -305,7 +307,7 @@ export function SantriPage() {
                     </td>
                     <td className="py-4 px-6 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <button onClick={() => toast.success(`Profil ${row.name} segera hadir!`)} className="p-1.5 text-muted hover:text-primary transition-colors rounded-md hover:bg-surface-glass" title="Lihat Profil"><Eye className="w-4 h-4" /></button>
+                        <button onClick={() => navigate(`/santri/${row.id}`)} className="p-1.5 text-muted hover:text-primary transition-colors rounded-md hover:bg-surface-glass" title="Lihat Profil"><Eye className="w-4 h-4" /></button>
                         <button onClick={() => { setSelectedSantri(row); setIsFormOpen(true); }} className="p-1.5 text-muted hover:text-accent transition-colors rounded-md hover:bg-surface-glass" title="Edit"><Edit2 className="w-4 h-4" /></button>
                         <button onClick={() => handleDelete(row)} className="p-1.5 text-muted hover:text-danger transition-colors rounded-md hover:bg-surface-glass" title="Hapus"><Trash2 className="w-4 h-4" /></button>
                       </div>
