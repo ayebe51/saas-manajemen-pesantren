@@ -25,6 +25,9 @@ import { AsramaPage } from '@/pages/dormitory/AsramaPage';
 import { KesehatanPage } from '@/pages/kesehatan/KesehatanPage';
 import { PelanggaranPage } from '@/pages/pelanggaran/PelanggaranPage';
 import { KunjunganPage } from '@/pages/kunjungan/KunjunganPage';
+import { WaliPortalPage } from '@/pages/wali/WaliPortalPage';
+import { PresensiPage } from '@/pages/presensi/PresensiPage';
+import { PoinRewardPage } from '@/pages/poin/PoinRewardPage';
 
 
 
@@ -35,6 +38,7 @@ export default function App() {
         <Routes>
         {/* Rute Publik */}
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/wali" element={<WaliPortalPage />} />
         
         {/* Rute Terproteksi JWT (Private) */}
         <Route 
@@ -71,6 +75,8 @@ export default function App() {
           <Route path="kesehatan" element={<KesehatanPage />} />
           <Route path="pelanggaran" element={<PelanggaranPage />} />
           <Route path="kunjungan" element={<KunjunganPage />} />
+          <Route path="presensi" element={<PresensiPage />} />
+          <Route path="poin-reward" element={<PoinRewardPage />} />
           <Route path="audit-log" element={<AuditLogPage />} />
           <Route path="settings" element={<SettingsPage />} />
         </Route>

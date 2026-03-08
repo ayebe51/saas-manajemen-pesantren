@@ -4,7 +4,7 @@ import {
   Home, Users, Briefcase, GraduationCap, 
   Wallet, ArchiveRestore, Building2, FileBarChart, Settings, Shield, CreditCard, IdCard,
   ClipboardList, MessageSquare, Receipt, Heart, AlertTriangle, UserCheck,
-  Sun, Moon, LogOut, ChevronDown
+  Sun, Moon, LogOut, ChevronDown, QrCode, Trophy
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useState, useEffect } from 'react';
@@ -19,6 +19,8 @@ const navItems = [
   { path: '/pelanggaran', icon: AlertTriangle, label: 'Pelanggaran' },
   { path: '/kesehatan', icon: Heart, label: 'Kesehatan' },
   { path: '/kunjungan', icon: UserCheck, label: 'Kunjungan' },
+  { path: '/presensi', icon: QrCode, label: 'Presensi QR' },
+  { path: '/poin-reward', icon: Trophy, label: 'Poin Reward' },
   { path: '/finance', icon: Wallet, label: 'Keuangan' },
   { path: '/pembayaran', icon: Receipt, label: 'Pembayaran SPP' },
   { path: '/wallet/topup', icon: CreditCard, label: 'Top-Up Saldo' },
