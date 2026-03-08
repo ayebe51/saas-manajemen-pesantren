@@ -31,8 +31,9 @@ export function LoginPage() {
       
       // Redirect ke Dashboard
       navigate('/', { replace: true });
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Login gagal. Periksa kembali kredensial Anda.');
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
+      setError(error.response?.data?.message || 'Login gagal. Periksa kembali kredensial Anda.');
     } finally {
       setLoading(false);
     }

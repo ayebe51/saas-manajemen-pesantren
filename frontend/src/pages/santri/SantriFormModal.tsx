@@ -7,6 +7,7 @@ interface SantriFormProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initialData?: any; // To support editing
 }
 
@@ -64,8 +65,9 @@ export function SantriFormModal({ isOpen, onClose, onSuccess, initialData }: San
          });
       }
       onSuccess(); // Triggers parent to refetch data and close modal
-    } catch (err: any) {
-       setError(err.response?.data?.message || 'Gagal menyimpan data santri.');
+    } catch (err: unknown) {
+       const error = err as { response?: { data?: { message?: string } } };
+       setError(error.response?.data?.message || 'Gagal menyimpan data santri.');
     } finally {
       setLoading(false);
     }

@@ -18,6 +18,7 @@ export function PpdbPage() {
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('');
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { fetchData(); }, [statusFilter]);
 
   const fetchData = async () => {

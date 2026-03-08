@@ -16,7 +16,6 @@ interface AuditLog {
 }
 
 export function AuditLogPage() {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionFilter, setActionFilter] = useState('');

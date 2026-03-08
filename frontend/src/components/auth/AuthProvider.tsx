@@ -23,7 +23,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (response.data && response.data.data) {
            setUser(response.data.data);
         }
-      } catch (err) {
+      } catch {
         // Jika gagal (token tidak valid / expire), store.logout() akan dipanggil otomatis
         // via interceptor jika 401. Namun kita backup di sini:
         logout();

@@ -54,8 +54,7 @@ export function IdCardGeneratorPage() {
            setDataList(mapped);
         }
       }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
+    } catch {
       toast.error('Gagal memuat data');
     } finally {
       setLoading(false);

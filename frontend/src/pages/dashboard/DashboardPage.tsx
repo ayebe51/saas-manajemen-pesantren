@@ -39,7 +39,7 @@ export function DashboardPage() {
 
     // Setup WebSocket listener for real-time notifications
     socketClient.connect();
-    socketClient.on('notification.new', (data: any) => {
+    socketClient.on('notification.new', (data: { message: string; type: string }) => {
       const { message, type } = data;
       if (type === 'success') toast.success(message, { duration: 5000 });
       else if (type === 'warning') toast.custom((t) => (

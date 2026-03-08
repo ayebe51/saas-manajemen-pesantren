@@ -11,6 +11,7 @@ export function AsramaPage() {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { fetchData(); }, [tab]);
 
   const fetchData = async () => {

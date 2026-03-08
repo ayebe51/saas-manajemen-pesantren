@@ -57,7 +57,6 @@ export function ScanPage() {
     }
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onScanFailure = () => {
     // handle scan failure, usually better to ignore and keep scanning
     // console.warn(`Code scan error = ${error}`);

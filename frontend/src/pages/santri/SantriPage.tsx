@@ -147,7 +147,7 @@ export function SantriPage() {
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url);
-    } catch (error) {
+    } catch {
       toast.error('Gagal mengunduh template Excel');
     }
   };

@@ -11,6 +11,7 @@ export function CatatanPage() {
   const [pengumuman, setPengumuman] = useState<Pengumuman[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { fetchData(); }, [tab]);
 
   const fetchData = async () => {
