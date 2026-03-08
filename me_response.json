@@ -1,0 +1,9 @@
+{
+  "message": "Profile retrieved",
+  "data": {
+    "id": "656a4c6d-cd6a-4949-a15f-a68b338d3a89",
+    "email": "admin@al-ikhlas.com",
+    "role": "TENANT_ADMIN",
+    "tenantId": "480d0a66-1771-4c79-a461-0ff52e33b9d8"
+  }
+}

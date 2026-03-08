@@ -31,7 +31,8 @@ export function HRPage() {
     setLoading(true);
     try {
       const res = await api.get('/employee');
-      setEmployees(res.data.data || res.data || []);
+      const data = Array.isArray(res.data) ? res.data : (res.data.data || []);
+      setEmployees(data);
     } catch (error) {
       console.error('Failed to fetch employees', error);
       // Empty State: Fallback to dummy data removed

@@ -21,7 +21,7 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 @ApiTags('Manajemen Asrama')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, TenantGuard, RolesGuard)
-@Controller('api/v1/dormitory')
+@Controller('dormitory')
 export class DormitoryController {
   constructor(private readonly dormitoryService: DormitoryService) {}
 

@@ -33,7 +33,8 @@ export function AkademikPage() {
     setLoading(true);
     try {
       const res = await api.get('/tahfidz');
-      setTahfidzList(res.data.data || res.data || []);
+      const data = Array.isArray(res.data) ? res.data : (res.data.data || []);
+      setTahfidzList(data);
     } catch (error) {
       console.error('Failed to fetch tahfidz', error);
       // Empty State

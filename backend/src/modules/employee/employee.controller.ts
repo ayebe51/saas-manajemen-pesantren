@@ -11,7 +11,7 @@ import { EmployeeService } from './employee.service';
 @ApiTags('Kepegawaian (HR) & Penggajian')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, TenantGuard, RolesGuard)
-@Controller('api/v1/employee')
+@Controller('employee')
 export class EmployeeController {
   constructor(private readonly employeeService: EmployeeService) {}
 

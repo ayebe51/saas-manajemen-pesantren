@@ -120,7 +120,6 @@ export class SantriService {
     let successCount = 0;
     let failedCount = 0;
     const errors: string[] = [];
-    const santriDataToInsert: any[] = [];
 
     // Header Template Expected: A:NISN, B:NAMA, C:L/P, D:DOB YYYY-MM-DD, E:KELAS, F:KAMAR, G:KONTAK, H:ALAMAT
     const rows: Row[] = [];

@@ -45,7 +45,7 @@ export function LaporanPage() {
       link.remove();
     } catch (error) {
       console.error(`Failed to download ${type} for ${moduleId}`, error);
-      alert('Gagal mengunduh laporan. Silakan coba lagi.');
+      toast.error('Gagal mengunduh laporan. Silakan coba lagi.');
     } finally {
       setDownloading(null);
     }

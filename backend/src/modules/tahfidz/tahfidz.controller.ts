@@ -12,7 +12,7 @@ import { TahfidzService } from './tahfidz.service';
 @ApiTags('Tahfidz & Mutabaah')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, TenantGuard, RolesGuard)
-@Controller('api/v1/tahfidz')
+@Controller('tahfidz')
 export class TahfidzController {
   constructor(private readonly tahfidzService: TahfidzService) {}
 

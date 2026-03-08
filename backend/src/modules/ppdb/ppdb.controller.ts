@@ -11,7 +11,7 @@ import { TenantId } from '../../common/decorators/tenant-id.decorator';
 @ApiTags('PPDB (Penerimaan Siswa Baru)')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, TenantGuard, RolesGuard)
-@Controller('api/v1/ppdb')
+@Controller('ppdb')
 export class PpdbController {
   constructor(private readonly ppdbService: PpdbService) {}
 

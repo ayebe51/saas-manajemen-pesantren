@@ -17,7 +17,7 @@ import {
 import { WalletService } from './wallet.service';
 
 @ApiTags('Dompet Digital (Wallet)')
-@Controller('api/v1/wallet')
+@Controller('wallet')
 export class WalletController {
   constructor(private readonly walletService: WalletService) {}
 

@@ -16,7 +16,7 @@ import { ApiTags, ApiOperation, ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 import { TenantId } from '../../common/decorators/tenant-id.decorator';
 
 @ApiTags('Payments (Midtrans)')
-@Controller('api/v1/payments')
+@Controller('payments')
 export class PaymentController {
   private readonly logger = new Logger(PaymentController.name);
 

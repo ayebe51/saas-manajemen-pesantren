@@ -11,7 +11,7 @@ import { TenantId } from '../../common/decorators/tenant-id.decorator';
 @ApiTags('Laporan (Cetak PDF / Excel)')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, TenantGuard, RolesGuard)
-@Controller('api/v1/reports')
+@Controller('reports')
 export class ReportController {
   constructor(private readonly reportService: ReportService) {}
 

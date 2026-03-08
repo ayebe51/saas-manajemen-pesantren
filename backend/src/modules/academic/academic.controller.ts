@@ -12,7 +12,7 @@ import { CreateBulkAttendanceDto, CreateGradeDto, CreateScheduleDto } from './dt
 @ApiTags('Akademik & Rapor')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, TenantGuard, RolesGuard)
-@Controller('api/v1/academic')
+@Controller('academic')
 export class AcademicController {
   constructor(private readonly academicService: AcademicService) {}
 

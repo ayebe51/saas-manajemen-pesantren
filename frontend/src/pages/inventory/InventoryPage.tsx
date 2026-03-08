@@ -28,9 +28,9 @@ export function InventoryPage() {
     setLoading(true);
     try {
       const res = await api.get('/inventory/items');
-      const data = res.data.data || res.data || [];
+      const rawData = Array.isArray(res.data) ? res.data : (res.data.data || res.data || []);
       // Calculate status based on stock
-      const mappedData = data.map((item: InventoryItem) => ({
+      const mappedData = rawData.map((item: InventoryItem) => ({
         ...item,
         status: item.stock <= 0 ? 'KOSONG' : (item.stock < 10 ? 'KRITIS' : 'AMAN')
       }));
