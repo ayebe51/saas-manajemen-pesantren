@@ -4,6 +4,7 @@ import { Search, Filter, Plus, FileSpreadsheet, Edit2, Trash2, Eye, Loader2, Dow
 import clsx from 'clsx';
 import toast from 'react-hot-toast';
 import { SantriFormModal } from './SantriFormModal';
+import { useAuthStore } from '@/lib/store/auth.store';
 
 interface Santri {
   id: string;
@@ -16,6 +17,7 @@ interface Santri {
 }
 
 export function SantriPage() {
+  const { user } = useAuthStore();
   const [data, setData] = useState<Santri[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -80,15 +82,28 @@ export function SantriPage() {
 
     const formData = new FormData();
     formData.append('file', file);
+    if (user?.tenantId) {
+       formData.append('tenantId', user.tenantId);
+    }
 
     setImporting(true);
     const toastId = toast.loading('Memproses berkas Excel...');
     
     try {
-      await api.post('/santri/import/bulk', formData, {
+      const res = await api.post('/santri/import/bulk', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      toast.success('Data Santri sukses diimpor ke sistem!', { id: toastId });
+      
+      const { successCount, failedCount, errors } = res.data;
+      if (failedCount > 0) {
+        if (successCount === 0) {
+           toast.error(`Gagal memproses data: ${errors?.[0] || 'Cek format template'}`, { id: toastId });
+        } else {
+           toast.success(`Berhasil: ${successCount}, Gagal: ${failedCount}.`, { id: toastId });
+        }
+      } else {
+        toast.success(`Semua ${successCount || ''} Data Santri sukses diimpor!`, { id: toastId });
+      }
       fetchSantri();
     } catch (error) {
       const err = error as { response?: { data?: { message?: string } } };
