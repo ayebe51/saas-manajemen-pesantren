@@ -68,10 +68,22 @@ export function SantriPage() {
     }
   };
 
+  const handleDelete = async (santri: Santri) => {
+    if (!confirm(`Apakah Anda yakin ingin menghapus data ${santri.name}? Tindakan ini tidak dapat dibatalkan.`)) return;
+    try {
+      await api.delete(`/santri/${santri.id}`);
+      toast.success(`Data ${santri.name} berhasil dihapus`);
+      fetchSantri();
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
+      toast.error(error.response?.data?.message || 'Gagal menghapus data santri');
+    }
+  };
+
   useEffect(() => {
     fetchSantri();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]); // Re-fetch only on page change, or manual form submit
+  }, [page]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -295,7 +307,7 @@ export function SantriPage() {
                       <div className="flex items-center justify-end gap-2">
                         <button onClick={() => toast.success(`Profil ${row.name} segera hadir!`)} className="p-1.5 text-muted hover:text-primary transition-colors rounded-md hover:bg-surface-glass" title="Lihat Profil"><Eye className="w-4 h-4" /></button>
                         <button onClick={() => { setSelectedSantri(row); setIsFormOpen(true); }} className="p-1.5 text-muted hover:text-accent transition-colors rounded-md hover:bg-surface-glass" title="Edit"><Edit2 className="w-4 h-4" /></button>
-                        <button onClick={() => toast.error('Fungsi hapus tidak diizinkan untuk data santri. Silakan ubah status menjadi non-aktif.')} className="p-1.5 text-muted hover:text-danger transition-colors rounded-md hover:bg-surface-glass" title="Hapus"><Trash2 className="w-4 h-4" /></button>
+                        <button onClick={() => handleDelete(row)} className="p-1.5 text-muted hover:text-danger transition-colors rounded-md hover:bg-surface-glass" title="Hapus"><Trash2 className="w-4 h-4" /></button>
                       </div>
                     </td>
                   </tr>

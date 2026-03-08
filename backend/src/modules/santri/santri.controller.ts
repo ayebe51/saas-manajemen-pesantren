@@ -6,6 +6,7 @@ import {
   Param,
   Put,
   Query,
+  Delete,
   UseGuards,
   UseInterceptors,
   UploadedFile,
@@ -104,6 +105,13 @@ export class SantriController {
     @TenantId() tenantId: string,
   ) {
     return this.santriService.update(id, tenantId, updateSantriDto);
+  }
+
+  @Delete(':id')
+  @Roles('SUPERADMIN', 'TENANT_ADMIN')
+  @ApiOperation({ summary: 'Delete a santri permanently' })
+  async remove(@Param('id') id: string, @TenantId() tenantId: string) {
+    return this.santriService.remove(id, tenantId);
   }
 
   // Wali Management for Santri

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Search, PackagePlus, ShoppingCart, Archive, TrendingUp, AlertTriangle, Loader2, Activity } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import toast from 'react-hot-toast';
 import { api } from '@/lib/api/client';
+import { ItemFormModal } from './ItemFormModal';
 
 interface InventoryItem {
   id: string;
@@ -19,6 +19,7 @@ export function InventoryPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [items, setItems] = useState<InventoryItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
   useEffect(() => {
     fetchItems();
@@ -64,7 +65,7 @@ export function InventoryPage() {
             <ShoppingCart className="w-4 h-4" />
             <span>Mode Kasir POS</span>
           </button>
-          <button onClick={() => toast('Fitur tambah barang akan segera hadir.')} className="btn btn-primary flex-1 sm:flex-none">
+          <button onClick={() => setIsFormOpen(true)} className="btn btn-primary flex-1 sm:flex-none">
             <PackagePlus className="w-4 h-4" />
             <span>Barang Baru</span>
           </button>
@@ -159,7 +160,14 @@ export function InventoryPage() {
             )}
          </div>
       </div>
-      
+      <ItemFormModal
+        isOpen={isFormOpen}
+        onClose={() => setIsFormOpen(false)}
+        onSuccess={() => {
+          setIsFormOpen(false);
+          fetchItems();
+        }}
+      />
     </div>
   );
 }

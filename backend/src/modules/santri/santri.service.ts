@@ -63,6 +63,17 @@ export class SantriService {
     });
   }
 
+  async remove(id: string, tenantId: string) {
+    // Verify existence and tenant access
+    await this.findOne(id, tenantId);
+
+    await this.prisma.santri.delete({
+      where: { id },
+    });
+
+    return { message: 'Santri berhasil dihapus' };
+  }
+
   async generateTemplate(): Promise<any> {
     const workbook = new Workbook();
     const worksheet = workbook.addWorksheet('Data Santri');
@@ -169,7 +180,7 @@ export class SantriService {
             contact,
             address,
             status: 'AKTIF',
-          }
+          },
         });
         
         successCount++;
