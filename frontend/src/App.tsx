@@ -17,6 +17,13 @@ import { LaporanPage } from '@/pages/laporan/LaporanPage';
 import { SettingsPage } from '@/pages/settings/SettingsPage';
 import { AuditLogPage } from '@/pages/audit-log/AuditLogPage';
 import { IdCardGeneratorPage } from '@/pages/id-card/IdCardGeneratorPage';
+import { PpdbPage } from '@/pages/ppdb/PpdbPage';
+import { CatatanPage } from '@/pages/catatan/CatatanPage';
+import { PembayaranPage } from '@/pages/pembayaran/PembayaranPage';
+import { AsramaPage } from '@/pages/dormitory/AsramaPage';
+import { KesehatanPage } from '@/pages/kesehatan/KesehatanPage';
+import { PelanggaranPage } from '@/pages/pelanggaran/PelanggaranPage';
+import { KunjunganPage } from '@/pages/kunjungan/KunjunganPage';
 
 
 
@@ -55,6 +62,13 @@ export default function App() {
             <Route path="scan" element={<ScanPage />} />
           </Route>
           <Route path="hr" element={<HRPage />} />
+          <Route path="ppdb" element={<PpdbPage />} />
+          <Route path="catatan" element={<CatatanPage />} />
+          <Route path="pembayaran" element={<PembayaranPage />} />
+          <Route path="dormitory" element={<AsramaPage />} />
+          <Route path="kesehatan" element={<KesehatanPage />} />
+          <Route path="pelanggaran" element={<PelanggaranPage />} />
+          <Route path="kunjungan" element={<KunjunganPage />} />
           <Route path="audit-log" element={<AuditLogPage />} />
           <Route path="settings" element={<SettingsPage />} />
         </Route>

@@ -2,18 +2,26 @@ import { NavLink } from 'react-router-dom';
 import { useAuthStore } from '@/lib/store/auth.store';
 import { 
   Home, Users, Briefcase, GraduationCap, 
-  Wallet, ArchiveRestore, Building2, FileBarChart, Settings, Shield, CreditCard, IdCard 
+  Wallet, ArchiveRestore, Building2, FileBarChart, Settings, Shield, CreditCard, IdCard,
+  ClipboardList, MessageSquare, Receipt, Heart, AlertTriangle, UserCheck
 } from 'lucide-react';
 import clsx from 'clsx';
 
 const navItems = [
   { path: '/', icon: Home, label: 'Beranda' },
   { path: '/santri', icon: Users, label: 'Kesantrian' },
+  { path: '/ppdb', icon: ClipboardList, label: 'PPDB' },
   { path: '/akademik', icon: GraduationCap, label: 'Akademik' },
+  { path: '/catatan', icon: MessageSquare, label: 'Buku Penghubung' },
+  { path: '/pelanggaran', icon: AlertTriangle, label: 'Pelanggaran' },
+  { path: '/kesehatan', icon: Heart, label: 'Kesehatan' },
+  { path: '/kunjungan', icon: UserCheck, label: 'Kunjungan' },
   { path: '/finance', icon: Wallet, label: 'Keuangan' },
+  { path: '/pembayaran', icon: Receipt, label: 'Pembayaran SPP' },
   { path: '/wallet/topup', icon: CreditCard, label: 'Top-Up Saldo' },
   { path: '/inventory', icon: ArchiveRestore, label: 'Koperasi' },
-  { path: '/asrama', icon: Building2, label: 'Asrama' },
+  { path: '/asrama', icon: Building2, label: 'Perizinan' },
+  { path: '/dormitory', icon: Building2, label: 'Asrama' },
   { path: '/hr', icon: Briefcase, label: 'Kepegawaian' },
   { path: '/id-card', icon: IdCard, label: 'E-ID Card' },
   { path: '/laporan', icon: FileBarChart, label: 'Laporan' },
