@@ -181,9 +181,54 @@ export function AkademikPage() {
                    </tbody>
                 </table>
               )
+            ) : activeTab === 'nilai' ? (
+               (() => {
+                 const gradeCounts: Record<string, number> = {};
+                 tahfidzList.forEach(t => {
+                   const g = t.grade || 'UNKNOWN';
+                   gradeCounts[g] = (gradeCounts[g] || 0) + 1;
+                 });
+                 const total = tahfidzList.length;
+                 const gradeColors: Record<string, string> = {
+                   'MUMTAZ': 'bg-success', 'LANCAR': 'bg-success',
+                   'JAYYID_JIDDAN': 'bg-primary', 'JAYYID JIDDAN': 'bg-primary',
+                   'JAYYID': 'bg-accent', 'MAQBUL': 'bg-warning',
+                   'DHAIF': 'bg-danger', 'PERLU_PERBAIKAN': 'bg-danger',
+                 };
+                 const entries = Object.entries(gradeCounts).sort((a, b) => b[1] - a[1]);
+
+                 return total === 0 ? (
+                   <div className="p-12 flex justify-center items-center flex-col text-muted">
+                     <Activity className="w-12 h-12 mb-4 opacity-50" />
+                     <p>Belum ada data hafalan untuk distribusi nilai.</p>
+                   </div>
+                 ) : (
+                   <div className="p-6">
+                     <h3 className="font-bold text-lg mb-1">Distribusi Predikat Hafalan</h3>
+                     <p className="text-sm text-muted mb-6">Total {total} setoran dari {new Set(tahfidzList.map(t => t.santri?.name)).size} santri</p>
+                     <div className="space-y-4">
+                       {entries.map(([grade, count]) => {
+                         const pct = Math.round((count / total) * 100);
+                         const colorClass = gradeColors[grade] || 'bg-primary';
+                         return (
+                           <div key={grade}>
+                             <div className="flex justify-between items-center mb-1">
+                               <span className="text-sm font-semibold">{grade.replace(/_/g, ' ')}</span>
+                               <span className="text-xs text-muted">{count} ({pct}%)</span>
+                             </div>
+                             <div className="w-full h-3 rounded-full bg-surface-glass overflow-hidden">
+                               <div className={`h-full rounded-full ${colorClass} transition-all duration-700`} style={{ width: `${pct}%` }} />
+                             </div>
+                           </div>
+                         );
+                       })}
+                     </div>
+                   </div>
+                 );
+               })()
             ) : (
                <div className="p-12 text-center text-muted">
-                  Konstruksi modul antarmuka {activeTab} sedang menanti integrasi data relasional (*Mockup*).
+                  Modul jadwal kegiatan sedang dalam pengembangan.
                </div>
             )}
          </div>

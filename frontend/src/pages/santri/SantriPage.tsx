@@ -5,6 +5,7 @@ import { Search, Filter, Plus, FileSpreadsheet, Edit2, Trash2, Eye, Loader2, Dow
 import clsx from 'clsx';
 import toast from 'react-hot-toast';
 import { SantriFormModal } from './SantriFormModal';
+import { ExportButton } from '@/components/shared/ExportButton';
 import { useAuthStore } from '@/lib/store/auth.store';
 
 interface Santri {
@@ -193,6 +194,17 @@ export function SantriPage() {
             <Plus className="w-4 h-4" />
             <span>Tambah Baru</span>
           </button>
+          <ExportButton
+            data={data as unknown as Record<string, unknown>[]}
+            filename="data-santri"
+            columns={[
+              { key: 'nisn', label: 'NISN' },
+              { key: 'name', label: 'Nama' },
+              { key: 'kelas', label: 'Kelas' },
+              { key: 'room', label: 'Kamar' },
+              { key: 'status', label: 'Status' },
+            ]}
+          />
         </div>
       </div>
 
