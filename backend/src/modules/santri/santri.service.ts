@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
-import { Workbook } from 'exceljs';
+import { Workbook, Row } from 'exceljs';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { CreateSantriDto, UpdateSantriDto, CreateWaliDto } from './dto/santri.dto';
 
@@ -123,7 +123,7 @@ export class SantriService {
     const santriDataToInsert: any[] = [];
 
     // Header Template Expected: A:NISN, B:NAMA, C:L/P, D:DOB YYYY-MM-DD, E:KELAS, F:KAMAR, G:KONTAK, H:ALAMAT
-    const rows: exceljs.Row[] = [];
+    const rows: Row[] = [];
     worksheet.eachRow((row, rowNumber) => {
       if (rowNumber > 1) rows.push(row);
     });
