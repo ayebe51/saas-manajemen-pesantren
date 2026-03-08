@@ -43,7 +43,8 @@ export function SantriPage() {
       const params = new URLSearchParams({
         page: page.toString(),
         limit: '10',
-        ...(searchTerm && { search: searchTerm })
+        ...(searchTerm && { search: searchTerm }),
+        ...(user?.tenantId && { tenantId: user.tenantId })
       });
       
       const res = await api.get(`/santri?${params}`);
