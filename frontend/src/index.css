@@ -55,6 +55,36 @@
   --font-body: "Inter", sans-serif;
 }
 
+/* Dark Mode Theme */
+.dark {
+  --color-primary: #818cf8; /* Indigo 400 */
+  --color-primary-hover: #6366f1; /* Indigo 500 */
+  --color-primary-light: rgba(99, 102, 241, 0.15);
+
+  --color-accent: #22d3ee; /* Cyan 400 */
+  --color-accent-glow: rgba(34, 211, 238, 0.3);
+
+  --color-success: #34d399; /* Emerald 400 */
+  --color-warning: #fbbf24; /* Amber 400 */
+  --color-danger: #f87171; /* Red 400 */
+
+  --bg-app: #0f172a; /* Slate 900 */
+  --bg-surface: #1e293b; /* Slate 800 */
+  --bg-surface-glass: rgba(30, 41, 59, 0.85);
+
+  --text-main: #f1f5f9; /* Slate 100 */
+  --text-muted: #94a3b8; /* Slate 400 */
+  --text-inverse: #0f172a;
+
+  --border-light: #334155; /* Slate 700 */
+  --border-glass: rgba(51, 65, 85, 0.5);
+
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
+  --shadow-glass: 0 10px 30px -10px rgba(0, 0, 0, 0.3);
+  --shadow-glow: 0 0 15px var(--color-accent-glow);
+}
+
 /* Base Body Resets */
 * {
   box-sizing: border-box;
@@ -228,3 +258,19 @@ a:hover {
     background-position: 0% 50%;
   }
 }
+
+/* Thin scrollbar for sidebar */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: var(--border-light);
+  border-radius: 9999px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
