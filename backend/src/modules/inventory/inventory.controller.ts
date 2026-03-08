@@ -107,4 +107,10 @@ export class InventoryController {
   ) {
     return this.inventoryService.updatePurchaseOrder(tenantId, id, dto);
   }
+  @Post('cooperative/checkout')
+  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS')
+  @ApiOperation({ summary: 'Koperasi POS Checkout (Deduct items & Wallet)' })
+  checkoutCooperative(@TenantId() tenantId: string, @Body() dto: any) {
+    return this.inventoryService.checkoutCooperative(tenantId, dto);
+  }
 }

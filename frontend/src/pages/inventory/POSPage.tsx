@@ -86,7 +86,7 @@ export function POSPage() {
     setLoading(true);
     try {
       // Endpoint yang akan kita buat di backend untuk atomic transaction (Wallet + Inventory)
-      await api.post('/cooperative/checkout', {
+      await api.post('/inventory/cooperative/checkout', {
         santriId: studentId, // Asumsi form input berupa NISN atau ID Santri (Nanti diolah backend)
         items: cart.map(item => ({ itemId: item.id, quantity: item.quantity })),
         totalAmount

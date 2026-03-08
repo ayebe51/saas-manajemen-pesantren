@@ -16,11 +16,16 @@ export class SantriService {
     });
   }
 
-  async findAll(tenantId: string, filters: { kelas?: string; room?: string }) {
+  async findAll(tenantId: string, filters: { kelas?: string; room?: string; waliId?: string }) {
     const whereClause: any = { tenantId };
 
     if (filters.kelas) whereClause.kelas = filters.kelas;
     if (filters.room) whereClause.room = filters.room;
+    if (filters.waliId) {
+      whereClause.walis = {
+        some: { wali: { userId: filters.waliId } },
+      };
+    }
 
     return this.prisma.santri.findMany({
       where: whereClause,
@@ -182,7 +187,7 @@ export class SantriService {
             status: 'AKTIF',
           },
         });
-        
+
         successCount++;
       } catch (err: any) {
         errors.push(`Baris ${rowNumber}: Gagal menyimpan (${err.message.substring(0, 100)}...)`);

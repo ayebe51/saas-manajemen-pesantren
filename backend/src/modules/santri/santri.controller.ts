@@ -82,12 +82,14 @@ export class SantriController {
   @ApiOperation({ summary: 'Get all santri for current tenant' })
   @ApiQuery({ name: 'kelas', required: false })
   @ApiQuery({ name: 'room', required: false })
+  @ApiQuery({ name: 'waliId', required: false })
   findAll(
     @TenantId() tenantId: string,
     @Query('kelas') kelas?: string,
     @Query('room') room?: string,
+    @Query('waliId') waliId?: string,
   ) {
-    return this.santriService.findAll(tenantId, { kelas, room });
+    return this.santriService.findAll(tenantId, { kelas, room, waliId });
   }
 
   @Get(':id')

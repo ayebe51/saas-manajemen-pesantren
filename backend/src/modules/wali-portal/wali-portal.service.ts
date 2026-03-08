@@ -61,15 +61,15 @@ export class WaliPortalService {
         photo: s.photo,
         tahfidz: s.tahfidz,
         pelanggaran: s.pelanggaran,
-        invoices: s.invoices.map(inv => ({ 
-          description: `Tagihan SPP/Lainnya`, 
-          amount: inv.amountDue, 
-          status: inv.status 
+        invoices: s.invoices.map((inv) => ({
+          description: `Tagihan SPP/Lainnya`,
+          amount: inv.amountDue,
+          status: inv.status,
         })),
-        catatan: s.catatanHarian.map(c => ({ 
-          content: c.content, 
-          type: c.category, 
-          createdAt: c.createdAt 
+        catatan: s.catatanHarian.map((c) => ({
+          content: c.content,
+          type: c.category,
+          createdAt: c.createdAt,
         })),
         _count: s._count,
       };
