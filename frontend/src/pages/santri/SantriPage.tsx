@@ -47,7 +47,13 @@ export function SantriPage() {
       });
       
       const res = await api.get(`/santri?${params}`);
-      if (res.data?.data) {
+      
+      // Handle both paginated responses and flat array responses
+      if (Array.isArray(res.data)) {
+        setData(res.data);
+        setTotalItems(res.data.length);
+        setTotalPages(1);
+      } else if (res.data?.data) {
         setData(res.data.data.items || res.data.data);
         if (res.data.data.meta) {
            setTotalPages(res.data.data.meta.lastPage || 1);
