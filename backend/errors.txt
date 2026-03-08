@@ -1,0 +1,5 @@
+﻿src/modules/wali-portal/wali-portal.service.ts(30,29): error TS2353: Object literal may only specify known properties, and 'description' does not exist in type 'InvoiceSelect<DefaultArgs>'.
+src/modules/wali-portal/wali-portal.service.ts(35,44): error TS2353: Object literal may only specify known properties, and 'type' does not exist in type 'CatatanHarianSelect<DefaultArgs>'.
+src/modules/wali-portal/wali-portal.service.ts(47,23): error TS2339: Property 'santris' does not exist on type '{ id: string; name: string; address: string | null; createdAt: Date; updatedAt: Date; tenantId: string; relation: string; phone: string; email: string | null; }'.
+src/modules/wali-portal/wali-portal.service.ts(52,17): error TS2339: Property 'santris' does not exist on type '{ id: string; name: string; address: string | null; createdAt: Date; updatedAt: Date; tenantId: string; relation: string; phone: string; email: string | null; }'.
+src/modules/wali-portal/wali-portal.service.ts(52,30): error TS7006: Parameter 'sw' implicitly has an 'any' type.

@@ -63,6 +63,7 @@ model Tenant {
   rooms                 Room[]
   roomAssignments       RoomAssignment[]
   maintenanceTickets    MaintenanceTicket[]
+  points                Point[]
 
   @@map("tenants")
 }
@@ -142,6 +143,7 @@ model Santri {
   wallet      Wallet?      @relation("WalletToSantri")
   attendances Attendance[] @relation("AttendanceToSantri")
   grades      Grade[]      @relation("GradeToSantri")
+  points      Point[]      @relation("PointToSantri")
 
   @@index([tenantId])
   @@map("santri")
@@ -940,4 +942,25 @@ model MaintenanceTicket {
   @@index([tenantId])
   @@index([roomId])
   @@map("maintenance_tickets")
+}
+
+// --- Sistem Poin & Reward ---
+model Point {
+  id       String @id @default(uuid())
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  santriId String
+  santri   Santri @relation("PointToSantri", fields: [santriId], references: [id], onDelete: Cascade)
+
+  category    String // HAFALAN, AKADEMIK, DISIPLIN, KEBERSIHAN, KEPEMIMPINAN, OLAHRAGA
+  points      Int
+  description String
+
+  createdBy   String? // UUID user pencatat
+  createdAt   DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([santriId])
+  @@map("points")
 }

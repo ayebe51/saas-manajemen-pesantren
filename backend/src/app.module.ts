@@ -37,6 +37,9 @@ import { DormitoryModule } from './modules/dormitory/dormitory.module';
 import { ReportModule } from './modules/report/report.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { PaymentModule } from './modules/payment/payment.module';
+import { WaliPortalModule } from './modules/wali-portal/wali-portal.module';
+import { AttendanceModule } from './modules/attendance/attendance.module';
+import { PointsModule } from './modules/points/points.module';
 
 @Module({
   imports: [
@@ -82,6 +85,9 @@ import { PaymentModule } from './modules/payment/payment.module';
     ReportModule,
     AnalyticsModule,
     PaymentModule,
+    WaliPortalModule,
+    AttendanceModule,
+    PointsModule,
   ],
   providers: [
     {
@@ -101,7 +107,8 @@ export class AppModule implements NestModule {
     consumer
       .apply(TenantMiddleware)
       .exclude(
-        { path: 'api/v1/auth/(.*)', method: RequestMethod.ALL }, // Login doesn't need tenant mid, payload handles it
+        { path: 'api/v1/auth/(.*)', method: RequestMethod.ALL },
+        { path: 'api/v1/wali/(.*)', method: RequestMethod.ALL },
       )
       .forRoutes('*'); // Apply everywhere else
   }
