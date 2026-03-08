@@ -123,9 +123,14 @@ export class SantriService {
     const santriDataToInsert: any[] = [];
 
     // Header Template Expected: A:NISN, B:NAMA, C:L/P, D:DOB YYYY-MM-DD, E:KELAS, F:KAMAR, G:KONTAK, H:ALAMAT
+    const rows: exceljs.Row[] = [];
     worksheet.eachRow((row, rowNumber) => {
-      // Skip row 1 (Asumsi Header)
-      if (rowNumber === 1) return;
+      if (rowNumber > 1) rows.push(row);
+    });
+
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      const rowNumber = i + 2; // +2 offset since 0-indexed array vs 1-indexed row, and skipping first header row
 
       try {
         const nisn = row.getCell(1).text?.trim() || null;
@@ -141,7 +146,7 @@ export class SantriService {
         if (!name) {
           errors.push(`Baris ${rowNumber}: Nama wajib diisi`);
           failedCount++;
-          return;
+          continue;
         }
 
         let dob: Date | null = null;
@@ -152,29 +157,27 @@ export class SantriService {
           if (!isNaN(parsed.getTime())) dob = parsed;
         }
 
-        santriDataToInsert.push({
-          tenantId,
-          nisn,
-          name,
-          gender,
-          dob,
-          kelas,
-          room,
-          contact,
-          address,
-          status: 'AKTIF',
+        // Process directly to database to catch distinct DB errors (e.g. unique NISN constraints)
+        await this.prisma.santri.create({
+          data: {
+            tenantId,
+            nisn,
+            name,
+            gender,
+            dob,
+            kelas,
+            room,
+            contact,
+            address,
+            status: 'AKTIF',
+          }
         });
+        
         successCount++;
       } catch (err: any) {
-        errors.push(`Baris ${rowNumber}: Gagal diproses (${err.message})`);
+        errors.push(`Baris ${rowNumber}: Gagal menyimpan (${err.message.substring(0, 100)}...)`);
         failedCount++;
       }
-    });
-
-    if (santriDataToInsert.length > 0) {
-      await this.prisma.santri.createMany({
-        data: santriDataToInsert,
-      });
     }
 
     return {
