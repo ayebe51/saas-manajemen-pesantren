@@ -1,5 +1,6 @@
 import { useAuthStore } from '@/lib/store/auth.store';
 import { LogOut, Bell, Search, Menu } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 export function Header() {
   const { logout } = useAuthStore();
@@ -8,7 +9,11 @@ export function Header() {
     <header className="h-16 glass-panel border-b sticky top-0 z-40 flex items-center justify-between px-6 rounded-none border-light">
       {/* Left Area: Mobile Menu & Search */}
       <div className="flex items-center gap-4">
-        <button title="Toggle Menu" className="md:hidden text-muted hover:text-primary transition-colors">
+        <button 
+          title="Toggle Menu" 
+          className="md:hidden text-muted hover:text-primary transition-colors"
+          onClick={() => toast('Menu mobile akan segera hadir', { icon: '📱' })}
+        >
           <Menu className="w-6 h-6" />
         </button>
         
@@ -24,7 +29,11 @@ export function Header() {
 
       {/* Right Area: Actions & Profile */}
       <div className="flex items-center gap-4">
-        <button title="Notifikasi" className="relative p-2 text-muted hover:text-primary transition-colors rounded-full hover:bg-surface-glass">
+        <button 
+          title="Notifikasi" 
+          className="relative p-2 text-muted hover:text-primary transition-colors rounded-full hover:bg-surface-glass"
+          onClick={() => toast('Belum ada notifikasi baru', { icon: '🔔' })}
+        >
           <Bell className="w-5 h-5" />
           <span className="absolute top-1.5 right-2 w-2 h-2 bg-danger rounded-full ring-2 ring-white"></span>
         </button>

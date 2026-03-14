@@ -46,7 +46,7 @@ export function TahfidzFormModal({ isOpen, onClose, onSuccess }: Props) {
     try {
        // Ideally we search/paginate for large list, but for now fetch all or active
        const res = await api.get('/santri?limit=100'); 
-       setSantriyList(res.data?.data?.items || res.data?.data || []);
+       setSantriyList(Array.isArray(res.data) ? res.data : (res.data?.data?.items || res.data?.data || []));
     } catch (e) {
        console.error(e);
        toast.error('Gagal memuat daftar santri');

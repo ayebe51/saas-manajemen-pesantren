@@ -42,7 +42,7 @@ export function IzinFormModal({ isOpen, onClose, onSuccess }: Props) {
     setFetchingSantri(true);
     try {
        const res = await api.get('/santri?limit=100'); 
-       setSantriyList(res.data?.data?.items || res.data?.data || []);
+       setSantriyList(Array.isArray(res.data) ? res.data : (res.data?.data?.items || res.data?.data || []));
     } catch (e) {
        console.error(e);
        toast.error('Gagal memuat daftar santri');

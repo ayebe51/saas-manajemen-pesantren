@@ -29,30 +29,28 @@ export function IdCardGeneratorPage() {
     try {
       if (activeTab === 'SANTRI') {
         const res = await api.get('/santri');
-        if (res.data?.data) {
-           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-           const mapped: PersonData[] = res.data.data.map((s: any) => ({
-             id: s.id,
-             name: s.name,
-             identifier: s.nisn,
-             subtitle: `Kelas: ${s.kelas} - ${s.room}`,
-             type: 'SANTRI'
-           }));
-           setDataList(mapped);
-        }
+        const raw = Array.isArray(res.data) ? res.data : (res.data?.data || []);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const mapped: PersonData[] = raw.map((s: any) => ({
+          id: s.id,
+          name: s.name,
+          identifier: s.nisn || '-',
+          subtitle: `Kelas: ${s.kelas || '-'} - ${s.room || '-'}`,
+          type: 'SANTRI' as const
+        }));
+        setDataList(mapped);
       } else {
         const res = await api.get('/employee');
-        if (res.data) {
-           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-           const mapped: PersonData[] = res.data.map((e: any) => ({
-             id: e.id,
-             name: e.name,
-             identifier: e.nip || '-',
-             subtitle: `${e.department} - ${e.position}`,
-             type: 'ASATIDZ'
-           }));
-           setDataList(mapped);
-        }
+        const raw = Array.isArray(res.data) ? res.data : (res.data?.data || []);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const mapped: PersonData[] = raw.map((e: any) => ({
+          id: e.id,
+          name: e.name,
+          identifier: e.nip || '-',
+          subtitle: `${e.department || '-'} - ${e.position || '-'}`,
+          type: 'ASATIDZ' as const
+        }));
+        setDataList(mapped);
       }
     } catch {
       toast.error('Gagal memuat data');

@@ -23,7 +23,10 @@ export function SantriFormModal({ isOpen, onClose, onSuccess, initialData }: San
     dob: '',
     kelas: '10',
     room: '',
-    address: ''
+    address: '',
+    waliName: '',
+    waliPhone: '',
+    waliRelation: 'Ayah'
   });
 
   useEffect(() => {
@@ -35,10 +38,13 @@ export function SantriFormModal({ isOpen, onClose, onSuccess, initialData }: San
         dob: initialData.dob ? new Date(initialData.dob).toISOString().split('T')[0] : '', // format YYYY-MM-DD
         kelas: initialData.kelas || '10',
         room: initialData.room || '',
-        address: initialData.address || ''
+        address: initialData.address || '',
+        waliName: initialData.waliName || '',
+        waliPhone: initialData.waliPhone || '',
+        waliRelation: initialData.waliRelation || 'Ayah'
       });
     } else if (!isOpen) {
-       setFormData({ nisn: '', name: '', gender: 'L', dob: '', kelas: '10', room: '', address: '' });
+       setFormData({ nisn: '', name: '', gender: 'L', dob: '', kelas: '10', room: '', address: '', waliName: '', waliPhone: '', waliRelation: 'Ayah' });
     }
   }, [initialData, isOpen]);
 
@@ -82,7 +88,7 @@ export function SantriFormModal({ isOpen, onClose, onSuccess, initialData }: San
       />
 
       {/* Modal Dialog */}
-      <div className="relative glass-panel w-full max-w-2xl bg-surface p-6 overflow-hidden animate-in fade-in zoom-in-95 duration-200 bg-surface">
+      <div className="relative glass-panel w-full max-w-2xl bg-surface p-6 overflow-y-auto max-h-[90vh] animate-in fade-in zoom-in-95 duration-200 bg-surface">
         
         {/* Header */}
         <div className="flex justify-between items-center mb-6 border-b pb-4 border-light">
@@ -146,6 +152,32 @@ export function SantriFormModal({ isOpen, onClose, onSuccess, initialData }: San
            <div>
               <label htmlFor="address" className="block text-sm font-medium mb-1">Alamat Domisili</label>
               <textarea id="address" className="input-base min-h-[80px]" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} placeholder="Alamat lengkap asal santri"></textarea>
+           </div>
+
+           {/* WALI SECTION */}
+           <div className="border-t border-light pt-4 mt-4">
+              <h3 className="text-sm font-bold text-primary mb-3 uppercase tracking-wider">Data Wali / Orang Tua</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                 <div>
+                    <label htmlFor="waliName" className="block text-sm font-medium mb-1">Nama Wali</label>
+                    <input id="waliName" type="text" className="input-base" value={formData.waliName} onChange={e => setFormData({...formData, waliName: e.target.value})} placeholder="Nama lengkap wali" />
+                 </div>
+                 <div>
+                    <label htmlFor="waliPhone" className="block text-sm font-medium mb-1">No. HP Wali</label>
+                    <input id="waliPhone" type="text" className="input-base" value={formData.waliPhone} onChange={e => setFormData({...formData, waliPhone: e.target.value})} placeholder="08xxxxxxxxxx" />
+                 </div>
+                 <div>
+                    <label htmlFor="waliRelation" className="block text-sm font-medium mb-1">Hubungan</label>
+                    <select id="waliRelation" title="Hubungan Wali" className="input-base" value={formData.waliRelation} onChange={e => setFormData({...formData, waliRelation: e.target.value})}>
+                      <option value="Ayah">Ayah</option>
+                      <option value="Ibu">Ibu</option>
+                      <option value="Kakak">Kakak</option>
+                      <option value="Paman">Paman</option>
+                      <option value="Bibi">Bibi</option>
+                      <option value="Lainnya">Lainnya</option>
+                    </select>
+                 </div>
+              </div>
            </div>
 
            {/* Actions Footers */}

@@ -3,6 +3,7 @@ import { QrCode, Camera, Loader2, Activity, CheckCircle, Clock, Users } from 'lu
 import { api } from '@/lib/api/client';
 import toast from 'react-hot-toast';
 import clsx from 'clsx';
+import { QrScanner } from '@/components/shared/QrScanner';
 
 interface Santri { id: string; name: string; nisn: string; kelas: string; room: string; }
 interface AttendanceLog { id: string; santriName: string; type: string; timestamp: string; }
@@ -38,10 +39,10 @@ export function PresensiPage() {
     finally { setLoading(false); }
   };
 
-  const handleScan = async () => {
-    if (!scanInput.trim()) return;
+  const handleScanById = async (id: string) => {
+    if (!id.trim()) return;
     try {
-      await api.post('/attendance/scan', { santriId: scanInput.trim(), type: 'MASUK' });
+      await api.post('/attendance/scan', { santriId: id.trim(), type: 'MASUK' });
       toast.success('Presensi berhasil dicatat!');
       setScanInput('');
       fetchData();
@@ -49,6 +50,8 @@ export function PresensiPage() {
       toast.error('Gagal mencatat presensi. ID santri tidak valid.');
     }
   };
+
+  const handleScan = () => handleScanById(scanInput);
 
   // Generate QR data URL using a simple SVG-based QR placeholder
   const generateQRSvg = (text: string) => {
@@ -136,29 +139,48 @@ export function PresensiPage() {
         </div>
       ) : tab === 'scan' ? (
         <div className="max-w-md mx-auto">
-          <div className="glass-panel p-6 text-center">
-            <div className="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-              <Camera className="w-10 h-10 text-primary" />
-            </div>
-            <h3 className="font-bold text-lg mb-2">Scan / Input Manual</h3>
-            <p className="text-sm text-muted mb-6">Scan QR code santri atau masukkan ID santri secara manual untuk mencatat presensi.</p>
-            
-            <div className="flex gap-2 mb-4">
-              <input
-                type="text"
-                value={scanInput}
-                onChange={e => setScanInput(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleScan()}
-                placeholder="Masukkan ID Santri..."
-                className="input-base flex-1"
-              />
-              <button onClick={handleScan} className="btn btn-primary shadow-glow px-5">
-                <CheckCircle className="w-4 h-4" /> Catat
-              </button>
+          <div className="glass-panel p-6 text-center space-y-6">
+            <div>
+              <h3 className="font-bold text-lg mb-2">📷 Scan QR Code Presensi</h3>
+              <p className="text-sm text-muted">Arahkan kamera ke QR Code E-ID Card santri untuk mencatat presensi otomatis.</p>
             </div>
 
-            <div className="text-xs text-muted p-3 rounded-lg bg-surface-glass">
-              💡 Untuk scan QR menggunakan kamera, gunakan aplikasi scanner built-in di perangkat Anda dan paste ID yang didapat ke kolom di atas.
+            {/* QR Camera Scanner */}
+            <QrScanner
+              onScan={(result) => {
+                try {
+                  // Try to parse JSON (from E-ID Card QR)
+                  const parsed = JSON.parse(result);
+                  if (parsed.id) {
+                    setScanInput(parsed.id);
+                    handleScanById(parsed.id);
+                    return;
+                  }
+                } catch {
+                  // Not JSON, treat as raw ID
+                }
+                setScanInput(result);
+                handleScanById(result);
+              }}
+              label="Arahkan kamera ke QR Code E-ID Card"
+            />
+
+            {/* Manual Input */}
+            <div className="border-t border-light pt-4">
+              <p className="text-xs text-muted mb-3 font-medium uppercase tracking-wider">Atau input manual</p>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={scanInput}
+                  onChange={e => setScanInput(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handleScan()}
+                  placeholder="Masukkan ID Santri..."
+                  className="input-base flex-1"
+                />
+                <button onClick={handleScan} className="btn btn-primary shadow-glow px-5">
+                  <CheckCircle className="w-4 h-4" /> Catat
+                </button>
+              </div>
             </div>
           </div>
         </div>

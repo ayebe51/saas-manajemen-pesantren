@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Search, ShoppingCart, Plus, Minus, CreditCard, ScanLine, X, UserCircle } from 'lucide-react';
+import { Search, ShoppingCart, Plus, Minus, CreditCard, ScanLine, X, UserCircle, Camera } from 'lucide-react';
 import { api } from '../../lib/api/client';
 import toast from 'react-hot-toast';
+import { QrScanner } from '@/components/shared/QrScanner';
 
 interface Item {
   id: string;
@@ -22,6 +23,8 @@ export function POSPage() {
   const [studentId, setStudentId] = useState(''); // Akan di-scan/input NISN
   const [loading, setLoading] = useState(false);
   const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
+  const [showQrScanner, setShowQrScanner] = useState(false);
+  const [showItemScanner, setShowItemScanner] = useState(false);
 
   useEffect(() => {
     fetchItems();
@@ -124,17 +127,46 @@ export function POSPage() {
         {/* Kiri: Katalog */}
         <div className="lg:col-span-2 space-y-4">
           <div className="glass-panel p-4">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Cari barang atau scan barcode SKU..."
-                className="input-base pl-10 w-full"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                autoFocus
-              />
-              <Search className="w-5 h-5 absolute left-3 top-2.5 text-muted" />
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <input
+                  type="text"
+                  placeholder="Cari barang atau scan barcode SKU..."
+                  className="input-base pl-10 w-full"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  autoFocus
+                />
+                <Search className="w-5 h-5 absolute left-3 top-2.5 text-muted" />
+              </div>
+              <button
+                onClick={() => setShowItemScanner(!showItemScanner)}
+                title="Scan Barcode Barang"
+                className={`btn ${showItemScanner ? 'btn-primary' : 'btn-outline'} px-3 flex items-center gap-2`}
+              >
+                <Camera className="w-4 h-4" /> {showItemScanner ? 'Tutup' : 'Scan'}
+              </button>
             </div>
+            {showItemScanner && (
+              <div className="mt-4 flex justify-center">
+                <QrScanner
+                  onScan={(result) => {
+                    // Match scanned barcode/SKU to item
+                    const matched = items.find(i => i.sku === result || i.id === result);
+                    if (matched) {
+                      addToCart(matched);
+                      toast.success(`${matched.name} ditambahkan ke keranjang`);
+                    } else {
+                      setSearch(result);
+                      toast('Hasil scan dimasukkan ke pencarian', { icon: '🔍' });
+                    }
+                  }}
+                  width={250}
+                  height={250}
+                  label="Scan barcode/QR barang"
+                />
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -268,8 +300,40 @@ export function POSPage() {
                   />
                   <ScanLine className="w-5 h-5 absolute left-3 top-3 text-muted" />
                 </div>
+                <button
+                  onClick={() => setShowQrScanner(!showQrScanner)}
+                  type="button"
+                  className={`btn ${showQrScanner ? 'btn-outline text-danger' : 'btn-outline'} mt-3 w-full flex items-center justify-center gap-2`}
+                >
+                  <Camera className="w-4 h-4" /> {showQrScanner ? 'Tutup Scanner' : 'Scan QR Code Santri'}
+                </button>
+                {showQrScanner && (
+                  <div className="mt-3 flex justify-center">
+                    <QrScanner
+                      onScan={(result: string) => {
+                        try {
+                          const parsed = JSON.parse(result);
+                          if (parsed.id) {
+                            setStudentId(parsed.id);
+                            setShowQrScanner(false);
+                            toast.success('ID Santri berhasil di-scan!');
+                            return;
+                          }
+                        } catch {
+                          // Not JSON
+                        }
+                        setStudentId(result);
+                        setShowQrScanner(false);
+                        toast.success('ID Santri berhasil di-scan!');
+                      }}
+                      width={240}
+                      height={240}
+                      label="Scan QR E-ID Card santri"
+                    />
+                  </div>
+                )}
                 <p className="text-xs text-muted mt-2">
-                  Saldo wallet santri ini akan dipotong secara otomatis. Kosongkan ID jika pembayaran tunai (guest).
+                  Saldo wallet santri ini akan dipotong secara otomatis.
                 </p>
               </div>
 
