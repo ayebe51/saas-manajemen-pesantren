@@ -14,6 +14,7 @@ async function bootstrap() {
       'http://127.0.0.1:5173',
       'http://localhost:5174',       // Scanner portal dev
       'http://127.0.0.1:5174',
+      'https://scanner-gilt.vercel.app',
       'https://saas-manajemen-pesantren.vercel.app',
       'http://localhost:3000', // Just in case NEXT frontend runs locally instead of Vite
       ...(process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : []),
