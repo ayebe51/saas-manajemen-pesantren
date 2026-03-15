@@ -28,19 +28,17 @@ export function PresensiPage() {
     }
   }, [user?.tenantId]);
 
-  useEffect(() => {
-    fetchData();
-    if (user?.role === 'SUPERADMIN' || user?.role === 'TENANT_ADMIN') {
-      fetchScannerPin();
-    }
-  }, [user, fetchScannerPin]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
+    const tenantParam = user?.role === 'SUPERADMIN' ? '?tenantId=' + (user?.tenantId || '') : '';
+    // If SUPERADMIN doesn't have a default tenantId to work with, we can fallback to fetch all or pass empty string
+    // Let's pass the first tenant if not explicitly managed, or let the user choose.
+    // Given the page structure, we pass the parameter safely.
+    
     try {
       const [santriRes, logRes] = await Promise.allSettled([
-        api.get('/santri'),
-        api.get('/attendance/today'),
+        api.get(`/santri${tenantParam}`),
+        api.get(`/attendance/today${tenantParam}`),
       ]);
       if (santriRes.status === 'fulfilled') {
         const d = Array.isArray(santriRes.value.data) ? santriRes.value.data : (santriRes.value.data?.data || []);
@@ -52,7 +50,14 @@ export function PresensiPage() {
       }
     } catch { /* silent */ }
     finally { setLoading(false); }
-  };
+  }, [user?.role, user?.tenantId]);
+
+  useEffect(() => {
+    fetchData();
+    if (user?.role === 'SUPERADMIN' || user?.role === 'TENANT_ADMIN') {
+      fetchScannerPin();
+    }
+  }, [user?.role, fetchScannerPin, fetchData]);
 
   const generateNewPin = async () => {
     setPinLoading(true);
