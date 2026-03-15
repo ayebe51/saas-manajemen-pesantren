@@ -13,39 +13,45 @@ export function PresensiPage() {
   const [tab, setTab] = useState<'qr' | 'log' | 'settings'>('qr');
   const [santriList, setSantriList] = useState<Santri[]>([]);
   const [logs, setLogs] = useState<AttendanceLog[]>([]);
-  const [scannerPin, setScannerPin] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [pinLoading, setPinLoading] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedTenantId, setSelectedTenantId] = useState<string | null>(user?.tenantId || null);
 
   const fetchScannerPin = useCallback(async () => {
-    // If SUPERADMIN, they need to supply their own ID to query tenant paths unless they supply ?tenantId=...
-    // But since the backend route is /tenants/:id, they can pass targetId.
-    // However, the backend @TenantId() decorator throws 401 if query.tenantId is not present for SUPERADMIN.
-    const targetId = user?.tenantId || 'all'; // Let's avoid 'me' for superadmin
-    const tenantParam = user?.role === 'SUPERADMIN' ? '?tenantId=' + targetId : '';
+    const targetId = selectedTenantId || 'me';
+    // If it's still null/me and it's a superadmin, the backend might reject it.
+    if (user?.role === 'SUPERADMIN' && !selectedTenantId) return;
+
     try {
-      // Temporary fix: if superadmin doesn't have a specific tenant, they shouldn't try to fetch a tenant-specific pin
-      // We will only fetch if they have a tenantId or we handle it gracefully.
-      if (user?.role === 'SUPERADMIN' && !user?.tenantId) {
-          // You might fetch the first tenant's PIN or better, ask them to select a tenant.
-          // For now, let's just abort to avoid 401.
-          return;
-      }
-      
-      const res = await api.get(`/tenants/${targetId}/scanner-pin${tenantParam}`);
+      const res = await api.get(`/tenants/${targetId}/scanner-pin?tenantId=${targetId}`);
       setScannerPin(res.data.scannerPin);
     } catch {
       console.error('Failed to fetch scanner PIN');
     }
-  }, [user?.role, user?.tenantId]);
+  }, [selectedTenantId, user?.role]);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
-    const tenantParam = user?.role === 'SUPERADMIN' ? '?tenantId=' + (user?.tenantId || '') : '';
-    // If SUPERADMIN doesn't have a default tenantId to work with, we can fallback to fetch all or pass empty string
-    // Let's pass the first tenant if not explicitly managed, or let the user choose.
-    // Given the page structure, we pass the parameter safely.
+    
+    let targetTenantId = selectedTenantId;
+    
+    // Fallback for Superadmin: fetch first tenant if none selected
+    if (user?.role === 'SUPERADMIN' && !targetTenantId) {
+      try {
+        const tenantsRes = await api.get('/tenants');
+        if (tenantsRes.data && tenantsRes.data.length > 0) {
+          targetTenantId = tenantsRes.data[0].id;
+          setSelectedTenantId(targetTenantId);
+        }
+      } catch {
+        console.error('Failed to fetch tenants for superadmin');
+      }
+    }
+
+    if (!targetTenantId) {
+        setLoading(false);
+        return;
+    }
+
+    const tenantParam = `?tenantId=${targetTenantId}`;
     
     try {
       const [santriRes, logRes] = await Promise.allSettled([
@@ -62,7 +68,7 @@ export function PresensiPage() {
       }
     } catch { /* silent */ }
     finally { setLoading(false); }
-  }, [user?.role, user?.tenantId]);
+  }, [user?.role, selectedTenantId]);
 
   useEffect(() => {
     fetchData();
