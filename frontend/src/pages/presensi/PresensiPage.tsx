@@ -14,6 +14,10 @@ export function PresensiPage() {
   const [santriList, setSantriList] = useState<Santri[]>([]);
   const [logs, setLogs] = useState<AttendanceLog[]>([]);
   const [selectedTenantId, setSelectedTenantId] = useState<string | null>(user?.tenantId || null);
+  const [scannerPin, setScannerPin] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [pinLoading, setPinLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const fetchScannerPin = useCallback(async () => {
     const targetId = selectedTenantId || 'me';
