@@ -19,14 +19,26 @@ export function PresensiPage() {
   const [searchTerm, setSearchTerm] = useState('');
 
   const fetchScannerPin = useCallback(async () => {
-    const targetId = user?.tenantId || 'me';
+    // If SUPERADMIN, they need to supply their own ID to query tenant paths unless they supply ?tenantId=...
+    // But since the backend route is /tenants/:id, they can pass targetId.
+    // However, the backend @TenantId() decorator throws 401 if query.tenantId is not present for SUPERADMIN.
+    const targetId = user?.tenantId || 'all'; // Let's avoid 'me' for superadmin
+    const tenantParam = user?.role === 'SUPERADMIN' ? '?tenantId=' + targetId : '';
     try {
-      const res = await api.get(`/tenants/${targetId}/scanner-pin`);
+      // Temporary fix: if superadmin doesn't have a specific tenant, they shouldn't try to fetch a tenant-specific pin
+      // We will only fetch if they have a tenantId or we handle it gracefully.
+      if (user?.role === 'SUPERADMIN' && !user?.tenantId) {
+          // You might fetch the first tenant's PIN or better, ask them to select a tenant.
+          // For now, let's just abort to avoid 401.
+          return;
+      }
+      
+      const res = await api.get(`/tenants/${targetId}/scanner-pin${tenantParam}`);
       setScannerPin(res.data.scannerPin);
     } catch {
       console.error('Failed to fetch scanner PIN');
     }
-  }, [user?.tenantId]);
+  }, [user?.role, user?.tenantId]);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -61,9 +73,17 @@ export function PresensiPage() {
 
   const generateNewPin = async () => {
     setPinLoading(true);
-    const targetId = user?.tenantId || 'me';
+    const targetId = user?.tenantId || 'all';
+    const tenantParam = user?.role === 'SUPERADMIN' ? '?tenantId=' + targetId : '';
+    
     try {
-      const res = await api.post(`/tenants/${targetId}/scanner-pin/generate`);
+      if (user?.role === 'SUPERADMIN' && !user?.tenantId) {
+        toast.error('Gunakan akun Admin Pesantren untuk generate PIN Scanner.');
+        setPinLoading(false);
+        return;
+      }
+      
+      const res = await api.post(`/tenants/${targetId}/scanner-pin/generate${tenantParam}`);
       setScannerPin(res.data.scannerPin);
       toast.success('PIN Scanner berhasil digenerate');
     } catch {
