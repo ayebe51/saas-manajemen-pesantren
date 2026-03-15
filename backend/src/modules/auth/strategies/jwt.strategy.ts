@@ -23,7 +23,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       const tenant = await this.prisma.tenant.findUnique({
         where: { id: payload.sub },
       });
-      
+
       if (!tenant) {
         throw new UnauthorizedException('Invalid scanner token or tenant does not exist');
       }
@@ -40,8 +40,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       where: { id: payload.sub },
     });
 
-    if (!user || user.tenantId !== payload.tenantId) {
+    if (!user) {
       throw new UnauthorizedException('Invalid token or user does not exist');
+    }
+
+    if (user.role !== 'SUPERADMIN' && user.tenantId !== payload.tenantId) {
+      throw new UnauthorizedException('Invalid token or tenant mismatch');
     }
 
     return {
