@@ -1,4 +1,4 @@
-import { createParamDecorator, ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { createParamDecorator, ExecutionContext, UnauthorizedException, BadRequestException } from '@nestjs/common';
 
 export const TenantId = createParamDecorator((data: unknown, ctx: ExecutionContext) => {
   const request = ctx.switchToHttp().getRequest();
@@ -18,7 +18,9 @@ export const TenantId = createParamDecorator((data: unknown, ctx: ExecutionConte
     const queryTenantId = request.query.tenantId || request.body.tenantId;
     if (queryTenantId) return queryTenantId;
 
-    throw new UnauthorizedException(
+    // Do not throw Unauthorized (401) here, as it triggers logout in the frontend.
+    // Throw BadRequest (400) or Forbidden (403) instead.
+    throw new BadRequestException(
       'Superadmin must specify tenantId in query params or body for tenant-specific actions',
     );
   }
