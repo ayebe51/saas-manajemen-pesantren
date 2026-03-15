@@ -6,21 +6,28 @@ import toast from 'react-hot-toast';
 
 export function LoginPage() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [pin, setPin] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) { toast.error('Isi email dan password'); return; }
+    if (!pin) { toast.error('Masukkan PIN Scanner'); return; }
+    
+    // Auto capitalize for consistency (though backend is case-sensitive, usually PINs are uppercase alphanumeric)
+    const formattedPin = pin.toUpperCase().trim();
+    
     setLoading(true);
     try {
-      const res = await api.post('/auth/login', { email, password });
+      const res = await api.post('/auth/scanner-login', { pin: formattedPin });
       localStorage.setItem('accessToken', res.data.accessToken);
+      // Optional: store tenantName to show in header
+      if (res.data.tenantName) {
+        localStorage.setItem('tenantName', res.data.tenantName);
+      }
       toast.success('Login berhasil!');
       navigate('/');
     } catch {
-      toast.error('Email atau password salah');
+      toast.error('PIN tidak valid atau Tidak Aktif');
     } finally { setLoading(false); }
   };
 
@@ -31,32 +38,24 @@ export function LoginPage() {
           <div style={{ width: '4rem', height: '4rem', borderRadius: '1rem', background: 'rgba(20,184,166,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
             <QrCode size={32} color="var(--primary)" />
           </div>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 800 }}>QR Scanner</h1>
-          <p className="text-muted" style={{ fontSize: '0.8125rem', marginTop: '0.25rem' }}>Portal Presensi Digital Pesantren</p>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Portal Scanner</h1>
+          <p className="text-muted" style={{ fontSize: '0.8125rem', marginTop: '0.25rem' }}>Presensi & Perizinan Pesantren</p>
         </div>
 
         <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div>
-            <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 600, marginBottom: '0.375rem' }}>Email</label>
-            <input
-              type="email"
-              className="input-field"
-              placeholder="guru@pesantren.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
-              required
-            />
-          </div>
-          <div>
-            <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 600, marginBottom: '0.375rem' }}>Password</label>
+            <label style={{ display: 'block', fontSize: '0.8125rem', fontWeight: 600, marginBottom: '0.375rem', textAlign: 'center' }}>
+              Masukkan PIN Scanner
+            </label>
             <input
               type="password"
               className="input-field"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
+              placeholder="••••••"
+              value={pin}
+              onChange={(e) => setPin(e.target.value)}
+              autoComplete="off"
+              style={{ textAlign: 'center', fontSize: '1.5rem', letterSpacing: '0.5em', fontWeight: 'bold' }}
+              maxLength={6}
               required
             />
           </div>

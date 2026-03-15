@@ -16,6 +16,7 @@ import { promisify } from 'util';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { FcmTokenDto } from './dto/fcm-token.dto';
+import { ScannerLoginDto } from './dto/scanner-login.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 
 @ApiTags('Authentication')
@@ -43,6 +44,24 @@ export class AuthController {
       message: 'Login successful',
       accessToken,
       user,
+    };
+  }
+
+  @Post('scanner-login')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Login scanner portal using PIN' })
+  @ApiResponse({ status: 200, description: 'Login successful' })
+  @ApiResponse({ status: 401, description: 'Invalid PIN' })
+  async scannerLogin(@Body() scannerLoginDto: ScannerLoginDto) {
+    const { accessToken, tenantId, tenantName } = await this.authService.scannerLogin(
+      scannerLoginDto.pin,
+    );
+
+    return {
+      message: 'Scanner login successful',
+      accessToken,
+      tenantId,
+      tenantName,
     };
   }
 

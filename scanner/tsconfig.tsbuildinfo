@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/components/qrscanner.tsx","./src/lib/api.ts","./src/pages/logpage.tsx","./src/pages/loginpage.tsx","./src/pages/rekappage.tsx","./src/pages/scannerpage.tsx"],"version":"5.9.3"}

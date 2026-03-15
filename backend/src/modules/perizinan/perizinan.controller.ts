@@ -69,10 +69,19 @@ export class PerizinanController {
     return this.perizinanService.approve(id, approveIzinDto);
   }
 
+  @Get('barcode/:qr')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS', 'SCANNER')
+  @ApiOperation({ summary: 'Get permit details by QR Code data' })
+  findByBarcode(@Param('qr') qr: string, @TenantId() tenantId: string) {
+    return this.perizinanService.findByBarcode(qr, tenantId);
+  }
+
   @Post(':id/checkout')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS')
+  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS', 'SCANNER')
   @UseInterceptors(AuditLogInterceptor)
   @ApiOperation({ summary: 'Record student leaving (Scan QR)' })
   checkout(@Param('id') id: string, @TenantId() tenantId: string, @Req() req: any) {
@@ -82,7 +91,7 @@ export class PerizinanController {
   @Post(':id/checkin')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS')
+  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS', 'SCANNER')
   @UseInterceptors(AuditLogInterceptor)
   @ApiOperation({ summary: 'Record student returning (Scan QR)' })
   checkin(@Param('id') id: string, @TenantId() tenantId: string, @Req() req: any) {

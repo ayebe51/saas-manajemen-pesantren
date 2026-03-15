@@ -1,24 +1,39 @@
-import { useState, useEffect } from 'react';
-import { QrCode, Camera, Loader2, Activity, CheckCircle, Clock, Users } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { QrCode, Loader2, Activity, Settings, Clock, Users, RefreshCw, Key } from 'lucide-react';
 import { api } from '@/lib/api/client';
 import toast from 'react-hot-toast';
 import clsx from 'clsx';
-import { QrScanner } from '@/components/shared/QrScanner';
+import { useAuthStore } from '@/lib/store/auth.store';
 
 interface Santri { id: string; name: string; nisn: string; kelas: string; room: string; }
 interface AttendanceLog { id: string; santriName: string; type: string; timestamp: string; }
 
 export function PresensiPage() {
-  const [tab, setTab] = useState<'qr' | 'scan' | 'log'>('qr');
+  const { user } = useAuthStore();
+  const [tab, setTab] = useState<'qr' | 'log' | 'settings'>('qr');
   const [santriList, setSantriList] = useState<Santri[]>([]);
   const [logs, setLogs] = useState<AttendanceLog[]>([]);
+  const [scannerPin, setScannerPin] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [scanInput, setScanInput] = useState('');
+  const [pinLoading, setPinLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+
+  const fetchScannerPin = useCallback(async () => {
+    const targetId = user?.tenantId || 'me';
+    try {
+      const res = await api.get(`/tenants/${targetId}/scanner-pin`);
+      setScannerPin(res.data.scannerPin);
+    } catch {
+      console.error('Failed to fetch scanner PIN');
+    }
+  }, [user?.tenantId]);
 
   useEffect(() => {
     fetchData();
-  }, []);
+    if (user?.role === 'SUPERADMIN' || user?.role === 'TENANT_ADMIN') {
+      fetchScannerPin();
+    }
+  }, [user, fetchScannerPin]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -39,29 +54,27 @@ export function PresensiPage() {
     finally { setLoading(false); }
   };
 
-  const handleScanById = async (id: string) => {
-    if (!id.trim()) return;
+  const generateNewPin = async () => {
+    setPinLoading(true);
+    const targetId = user?.tenantId || 'me';
     try {
-      await api.post('/attendance/scan', { santriId: id.trim(), type: 'MASUK' });
-      toast.success('Presensi berhasil dicatat!');
-      setScanInput('');
-      fetchData();
+      const res = await api.post(`/tenants/${targetId}/scanner-pin/generate`);
+      setScannerPin(res.data.scannerPin);
+      toast.success('PIN Scanner berhasil digenerate');
     } catch {
-      toast.error('Gagal mencatat presensi. ID santri tidak valid.');
+      toast.error('Gagal generate PIN Scanner');
+    } finally {
+      setPinLoading(false);
     }
   };
 
-  const handleScan = () => handleScanById(scanInput);
-
   // Generate QR data URL using a simple SVG-based QR placeholder
   const generateQRSvg = (text: string) => {
-    // Use a simple encoded SVG as QR placeholder
     const encoded = btoa(text);
     const size = 160;
     const cells = 8;
     const cellSize = size / cells;
     let rects = '';
-    // Deterministic pseudo-random pattern based on text hash
     for (let y = 0; y < cells; y++) {
       for (let x = 0; x < cells; x++) {
         const hash = (encoded.charCodeAt((x + y * cells) % encoded.length) + x * 7 + y * 13) % 3;
@@ -82,7 +95,7 @@ export function PresensiPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-main">Presensi Digital QR Code</h1>
-        <p className="text-muted text-sm mt-1">Kelola presensi santri dengan pemindaian QR code.</p>
+        <p className="text-muted text-sm mt-1">Kelola presensi santri dan pengaturan Portal Scanner.</p>
       </div>
 
       {/* Tabs */}
@@ -90,12 +103,14 @@ export function PresensiPage() {
         <button onClick={() => setTab('qr')} className={clsx('px-6 py-3 text-sm font-semibold transition-colors border-b-2 flex items-center gap-2', tab === 'qr' ? 'border-primary text-primary' : 'border-transparent text-muted hover:text-main')}>
           <QrCode className="w-4 h-4" /> QR Code Santri
         </button>
-        <button onClick={() => setTab('scan')} className={clsx('px-6 py-3 text-sm font-semibold transition-colors border-b-2 flex items-center gap-2', tab === 'scan' ? 'border-primary text-primary' : 'border-transparent text-muted hover:text-main')}>
-          <Camera className="w-4 h-4" /> Scan Presensi
-        </button>
         <button onClick={() => setTab('log')} className={clsx('px-6 py-3 text-sm font-semibold transition-colors border-b-2 flex items-center gap-2', tab === 'log' ? 'border-primary text-primary' : 'border-transparent text-muted hover:text-main')}>
           <Clock className="w-4 h-4" /> Log Hari Ini
         </button>
+        {(user?.role === 'SUPERADMIN' || user?.role === 'TENANT_ADMIN') && (
+          <button onClick={() => setTab('settings')} className={clsx('px-6 py-3 text-sm font-semibold transition-colors border-b-2 flex items-center gap-2', tab === 'settings' ? 'border-primary text-primary' : 'border-transparent text-muted hover:text-main')}>
+            <Settings className="w-4 h-4" /> Pengaturan Scanner
+          </button>
+        )}
       </div>
 
       {loading ? (
@@ -137,51 +152,38 @@ export function PresensiPage() {
             </div>
           )}
         </div>
-      ) : tab === 'scan' ? (
-        <div className="max-w-md mx-auto">
-          <div className="glass-panel p-6 text-center space-y-6">
-            <div>
-              <h3 className="font-bold text-lg mb-2">📷 Scan QR Code Presensi</h3>
-              <p className="text-sm text-muted">Arahkan kamera ke QR Code E-ID Card santri untuk mencatat presensi otomatis.</p>
+      ) : tab === 'settings' ? (
+        <div className="max-w-md mx-auto mt-8">
+          <div className="glass-panel p-6 border border-light rounded-xl space-y-6 flex flex-col items-center">
+            <div className="bg-primary/20 p-4 rounded-full text-primary">
+              <Key className="w-8 h-8" />
+            </div>
+            
+            <div className="text-center">
+              <h3 className="text-xl font-bold text-main mb-1">PIN Portal Scanner</h3>
+              <p className="text-sm text-muted">Gunakan PIN ini untuk login ke aplikasi terpisah (Scanner Portal) tanpa perlu memasukkan email/password admin.</p>
             </div>
 
-            {/* QR Camera Scanner */}
-            <QrScanner
-              onScan={(result) => {
-                try {
-                  // Try to parse JSON (from E-ID Card QR)
-                  const parsed = JSON.parse(result);
-                  if (parsed.id) {
-                    setScanInput(parsed.id);
-                    handleScanById(parsed.id);
-                    return;
-                  }
-                } catch {
-                  // Not JSON, treat as raw ID
-                }
-                setScanInput(result);
-                handleScanById(result);
-              }}
-              label="Arahkan kamera ke QR Code E-ID Card"
-            />
-
-            {/* Manual Input */}
-            <div className="border-t border-light pt-4">
-              <p className="text-xs text-muted mb-3 font-medium uppercase tracking-wider">Atau input manual</p>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={scanInput}
-                  onChange={e => setScanInput(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && handleScan()}
-                  placeholder="Masukkan ID Santri..."
-                  className="input-base flex-1"
-                />
-                <button onClick={handleScan} className="btn btn-primary shadow-glow px-5">
-                  <CheckCircle className="w-4 h-4" /> Catat
-                </button>
-              </div>
+            <div className="w-full bg-surface-glass border border-light rounded-lg p-6 text-center">
+              {scannerPin ? (
+                <div className="text-4xl font-mono font-bold tracking-[0.2em] text-primary">
+                  {scannerPin}
+                </div>
+              ) : (
+                <div className="text-muted italic flex items-center justify-center gap-2">
+                  <Activity className="w-4 h-4" /> Belum ada PIN digenerate
+                </div>
+              )}
             </div>
+
+            <button
+              onClick={generateNewPin}
+              disabled={pinLoading}
+              className="btn btn-primary w-full shadow-glow"
+            >
+              {pinLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <RefreshCw className="w-4 h-4 mr-2" />}
+              {scannerPin ? 'Generate Ulang PIN' : 'Generate PIN Scanner'}
+            </button>
           </div>
         </div>
       ) : (
@@ -209,7 +211,7 @@ export function PresensiPage() {
                 {logs.map((log, i) => (
                   <tr key={i} className="border-b last:border-0 hover:bg-surface-glass transition-colors border-light">
                     <td className="py-3 px-6 text-sm font-medium">{log.santriName}</td>
-                    <td className="py-3 px-6"><span className={`badge ${log.type === 'MASUK' ? 'badge-success' : 'badge-warning'}`}>{log.type}</span></td>
+                    <td className="py-3 px-6"><span className={`badge ${log.type === 'MASUK' || log.type === 'HADIR' ? 'badge-success' : 'badge-warning'}`}>{log.type}</span></td>
                     <td className="py-3 px-6 text-sm text-muted">{new Date(log.timestamp).toLocaleTimeString('id-ID')}</td>
                   </tr>
                 ))}

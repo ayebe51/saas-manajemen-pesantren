@@ -22,6 +22,7 @@ model Tenant {
   billingContact String?
   status         String  @default("ACTIVE") // ACTIVE, SUSPENDED, INACTIVE
   settings       String? // JSON string
+  scannerPin     String? @unique // PIN for Scanner Portal login
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -89,6 +89,21 @@ export class PerizinanService {
     return izin;
   }
 
+  async findByBarcode(qrCodeData: string, tenantId: string) {
+    const izin = await this.prisma.izin.findFirst({
+      where: { qrCodeData, tenantId },
+      include: {
+        santri: { select: { name: true, kelas: true, room: true } },
+      },
+    });
+
+    if (!izin) {
+      throw new NotFoundException('Data Izin tidak ditemukan dari QR ini');
+    }
+
+    return izin;
+  }
+
   async approve(id: string, approveIzinDto: ApproveIzinDto) {
     const izin = await this.prisma.izin.findUnique({
       where: { id },

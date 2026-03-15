@@ -63,6 +63,43 @@ export class AuthService {
     };
   }
 
+  async scannerLogin(pin: string) {
+    if (!pin) {
+      throw new UnauthorizedException('Scanner PIN is required');
+    }
+
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { scannerPin: pin },
+    });
+
+    if (!tenant) {
+      throw new UnauthorizedException('Invalid Scanner PIN');
+    }
+
+    if (tenant.status !== 'ACTIVE') {
+      throw new UnauthorizedException('Tenant is not active');
+    }
+
+    // Generate token specifically for scanner
+    const payload = {
+      sub: tenant.id,       // Use tenant ID as subject
+      email: `scanner@${tenant.id}`, // Dummy email
+      role: 'SCANNER',
+      tenantId: tenant.id,
+    };
+
+    const accessToken = this.jwtService.sign(payload, {
+      secret: this.configService.get('JWT_SECRET') || 'dev_secret_key',
+      expiresIn: '7d', // Scanner tokens can last longer, or we can use refresh mechanism
+    });
+
+    return {
+      accessToken,
+      tenantId: tenant.id,
+      tenantName: tenant.name,
+    };
+  }
+
   async refreshToken(token: string) {
     if (!token) {
       throw new UnauthorizedException('Refresh token is required');

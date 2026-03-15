@@ -55,4 +55,20 @@ export class TenantController {
   remove(@Param('id') id: string) {
     return this.tenantService.remove(id);
   }
+
+  @Get(':id/scanner-pin')
+  @Roles('SUPERADMIN', 'TENANT_ADMIN')
+  @ApiOperation({ summary: 'Get current scanner PIN for the tenant' })
+  getScannerPin(@Param('id') id: string, @TenantId() tenantId: string, @Req() req: any) {
+    const queryId = req.user.role === 'SUPERADMIN' ? id : tenantId;
+    return this.tenantService.getScannerPin(queryId);
+  }
+
+  @Post(':id/scanner-pin/generate')
+  @Roles('SUPERADMIN', 'TENANT_ADMIN')
+  @ApiOperation({ summary: 'Generate a new scanner PIN for the tenant' })
+  generateScannerPin(@Param('id') id: string, @TenantId() tenantId: string, @Req() req: any) {
+    const queryId = req.user.role === 'SUPERADMIN' ? id : tenantId;
+    return this.tenantService.generateScannerPin(queryId);
+  }
 }

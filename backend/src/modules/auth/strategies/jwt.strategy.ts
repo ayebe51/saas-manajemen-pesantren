@@ -18,6 +18,24 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
+    if (payload.role === 'SCANNER') {
+      // Bypass User check for SCANNER tokens, just ensure the tenant exists
+      const tenant = await this.prisma.tenant.findUnique({
+        where: { id: payload.sub },
+      });
+      
+      if (!tenant) {
+        throw new UnauthorizedException('Invalid scanner token or tenant does not exist');
+      }
+
+      return {
+        id: payload.sub,
+        email: payload.email,
+        role: payload.role,
+        tenantId: payload.tenantId,
+      };
+    }
+
     const user = await this.prisma.user.findUnique({
       where: { id: payload.sub },
     });

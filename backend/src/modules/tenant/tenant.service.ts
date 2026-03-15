@@ -58,6 +58,45 @@ export class TenantService {
     return tenant;
   }
 
+  async getScannerPin(id: string) {
+    const tenant = await this.findOne(id);
+    return { scannerPin: tenant.scannerPin };
+  }
+
+  async generateScannerPin(id: string) {
+    await this.findOne(id);
+    
+    // Generate a random 6-character alphanumeric PIN
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let newPin = '';
+    for (let i = 0; i < 6; i++) {
+      newPin += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+
+    // Ensure it's unique across all tenants (low collision chance but good practice)
+    let isUnique = false;
+    while (!isUnique) {
+      const existing = await this.prisma.tenant.findUnique({
+        where: { scannerPin: newPin }
+      });
+      if (existing) {
+        newPin = '';
+        for (let i = 0; i < 6; i++) {
+          newPin += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+      } else {
+        isUnique = true;
+      }
+    }
+
+    await this.prisma.tenant.update({
+      where: { id },
+      data: { scannerPin: newPin }
+    });
+
+    return { scannerPin: newPin };
+  }
+
   async update(id: string, updateTenantDto: UpdateTenantDto) {
     await this.findOne(id); // Ensure exists
 
