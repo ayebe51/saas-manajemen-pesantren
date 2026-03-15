@@ -79,17 +79,30 @@ export class SantriController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all santri for current tenant' })
+  @ApiOperation({ summary: 'Get all santri for current tenant (paginated)' })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'search', required: false, type: String })
   @ApiQuery({ name: 'kelas', required: false })
   @ApiQuery({ name: 'room', required: false })
   @ApiQuery({ name: 'waliId', required: false })
   findAll(
     @TenantId() tenantId: string,
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Query('search') search?: string,
     @Query('kelas') kelas?: string,
     @Query('room') room?: string,
     @Query('waliId') waliId?: string,
   ) {
-    return this.santriService.findAll(tenantId, { kelas, room, waliId });
+    return this.santriService.findAll(tenantId, {
+      page: page ? parseInt(page, 10) : 1,
+      limit: limit ? parseInt(limit, 10) : 10,
+      search,
+      kelas,
+      room,
+      waliId,
+    });
   }
 
   @Get(':id')

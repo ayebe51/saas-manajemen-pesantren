@@ -46,7 +46,7 @@ export function LaporanPage() {
     try {
       const endpoint = moduleId === 'keuangan' && type === 'pdf' 
         ? `/report/monthly/${user?.tenantId}` 
-        : `/reports/${type}/${moduleId}`;
+        : `/report/${type}/${moduleId}`;
 
       const dateFilter = filters[moduleId];
       const params = dateFilter ? `?from=${dateFilter.from}&to=${dateFilter.to}` : '';

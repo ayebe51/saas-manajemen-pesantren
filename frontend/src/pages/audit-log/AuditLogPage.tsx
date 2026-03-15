@@ -30,9 +30,9 @@ export function AuditLogPage() {
       
       const response = await api.get(`/audit-log?${params.toString()}`);
       
-      // Mengasumsikan response.data.data berisi array jika dari standard response
-      // Jika Backend return langsung array di response.data, maka sesuaikan:
-      setLogs(response.data.data || response.data || []);
+      const payload = response.data;
+      const data = Array.isArray(payload) ? payload : (Array.isArray(payload?.data) ? payload.data : (payload?.data?.items || payload?.items || []));
+      setLogs(data);
     } catch (error) {
       console.error('Failed to fetch audit logs', error);
     } finally {

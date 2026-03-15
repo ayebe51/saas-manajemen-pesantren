@@ -67,7 +67,7 @@ export class AttendanceService {
       const schedule = await this.prisma.academicSchedule.findFirst({
         where: { id: scheduleId, tenantId },
       });
-      
+
       if (!schedule) {
         throw new Error('Jadwal Pelajaran tidak valid.');
       }

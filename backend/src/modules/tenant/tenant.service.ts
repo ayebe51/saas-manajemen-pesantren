@@ -65,7 +65,7 @@ export class TenantService {
 
   async generateScannerPin(id: string) {
     await this.findOne(id);
-    
+
     // Generate a random 6-character alphanumeric PIN
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let newPin = '';
@@ -77,7 +77,7 @@ export class TenantService {
     let isUnique = false;
     while (!isUnique) {
       const existing = await this.prisma.tenant.findUnique({
-        where: { scannerPin: newPin }
+        where: { scannerPin: newPin },
       });
       if (existing) {
         newPin = '';
@@ -91,7 +91,7 @@ export class TenantService {
 
     await this.prisma.tenant.update({
       where: { id },
-      data: { scannerPin: newPin }
+      data: { scannerPin: newPin },
     });
 
     return { scannerPin: newPin };

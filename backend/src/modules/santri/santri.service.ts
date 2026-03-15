@@ -16,7 +16,17 @@ export class SantriService {
     });
   }
 
-  async findAll(tenantId: string, filters: { kelas?: string; room?: string; waliId?: string }) {
+  async findAll(
+    tenantId: string,
+    filters: {
+      page?: number;
+      limit?: number;
+      search?: string;
+      kelas?: string;
+      room?: string;
+      waliId?: string;
+    },
+  ) {
     const whereClause: any = { tenantId };
 
     if (filters.kelas) whereClause.kelas = filters.kelas;
@@ -26,16 +36,40 @@ export class SantriService {
         some: { wali: { userId: filters.waliId } },
       };
     }
+    if (filters.search) {
+      whereClause.OR = [
+        { name: { contains: filters.search } }, // SQLite is case-sensitive by default with contains, but Prisma abstract handles it depending on provider, we'll use simple contains
+        { nisn: { contains: filters.search } },
+      ];
+    }
 
-    return this.prisma.santri.findMany({
-      where: whereClause,
-      include: {
-        walis: {
-          include: { wali: true },
+    const page = filters.page || 1;
+    const limit = filters.limit || 10;
+    const skip = (page - 1) * limit;
+
+    const [items, total] = await Promise.all([
+      this.prisma.santri.findMany({
+        where: whereClause,
+        include: {
+          walis: {
+            include: { wali: true },
+          },
         },
+        orderBy: { name: 'asc' },
+        skip,
+        take: limit,
+      }),
+      this.prisma.santri.count({ where: whereClause }),
+    ]);
+
+    return {
+      data: items,
+      meta: {
+        total,
+        page,
+        lastPage: Math.ceil(total / limit),
       },
-      orderBy: { name: 'asc' },
-    });
+    };
   }
 
   async findOne(id: string, tenantId: string) {

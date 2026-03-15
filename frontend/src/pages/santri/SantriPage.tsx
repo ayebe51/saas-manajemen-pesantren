@@ -58,10 +58,17 @@ export function SantriPage() {
         setTotalItems(res.data.length);
         setTotalPages(1);
       } else if (res.data?.data) {
+        // Backend returns: { data: [...], meta: { total, lastPage, page } }
         setData(res.data.data.items || res.data.data);
-        if (res.data.data.meta) {
-           setTotalPages(res.data.data.meta.lastPage || 1);
-           setTotalItems(res.data.data.meta.total || res.data.data.length);
+        
+        // Setup pagination from meta
+        const meta = res.data.meta || res.data.data.meta; // Fallback just in case
+        if (meta) {
+           setTotalPages(meta.lastPage || 1);
+           setTotalItems(meta.total || res.data.data.length);
+        } else {
+           setTotalPages(1);
+           setTotalItems(res.data.data.length);
         }
       }
     } catch (error) {

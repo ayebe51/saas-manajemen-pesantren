@@ -82,7 +82,7 @@ export class AuthService {
 
     // Generate token specifically for scanner
     const payload = {
-      sub: tenant.id,       // Use tenant ID as subject
+      sub: tenant.id, // Use tenant ID as subject
       email: `scanner@${tenant.id}`, // Dummy email
       role: 'SCANNER',
       tenantId: tenant.id,

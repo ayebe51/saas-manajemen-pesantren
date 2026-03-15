@@ -12,7 +12,7 @@ async function bootstrap() {
     origin: [
       'http://localhost:5173',
       'http://127.0.0.1:5173',
-      'http://localhost:5174',       // Scanner portal dev
+      'http://localhost:5174', // Scanner portal dev
       'http://127.0.0.1:5174',
       'https://scanner-gilt.vercel.app',
       'https://saas-manajemen-pesantren.vercel.app',

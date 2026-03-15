@@ -31,7 +31,8 @@ export function HRPage() {
     setLoading(true);
     try {
       const res = await api.get('/employee');
-      const data = Array.isArray(res.data) ? res.data : (res.data.data || []);
+      const payload = res.data;
+      const data = Array.isArray(payload) ? payload : (Array.isArray(payload?.data) ? payload.data : (payload?.data?.items || payload?.items || []));
       setEmployees(data);
     } catch (error) {
       console.error('Failed to fetch employees', error);
