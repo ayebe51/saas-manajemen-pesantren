@@ -7,5 +7,6 @@ import { PrismaModule } from '../../common/prisma/prisma.module';
   imports: [PrismaModule],
   controllers: [PpdbController],
   providers: [PpdbService],
+  exports: [PpdbService],
 })
 export class PpdbModule {}

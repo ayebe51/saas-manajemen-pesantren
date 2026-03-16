@@ -109,6 +109,7 @@ export class AppModule implements NestModule {
       .exclude(
         { path: 'api/v1/auth/(.*)', method: RequestMethod.ALL },
         { path: 'api/v1/wali/(.*)', method: RequestMethod.ALL },
+        { path: 'api/v1/public/(.*)', method: RequestMethod.ALL },
       )
       .forRoutes('*'); // Apply everywhere else
   }

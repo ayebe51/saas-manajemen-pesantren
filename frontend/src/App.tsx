@@ -19,6 +19,7 @@ import { SettingsPage } from '@/pages/settings/SettingsPage';
 import { AuditLogPage } from '@/pages/audit-log/AuditLogPage';
 import { IdCardGeneratorPage } from '@/pages/id-card/IdCardGeneratorPage';
 import { PpdbPage } from '@/pages/ppdb/PpdbPage';
+import { PpdbPortalPage } from '@/pages/ppdb/PpdbPortalPage';
 import { CatatanPage } from '@/pages/catatan/CatatanPage';
 import { PembayaranPage } from '@/pages/pembayaran/PembayaranPage';
 import { AsramaPage } from '@/pages/dormitory/AsramaPage';
@@ -39,6 +40,7 @@ export default function App() {
         {/* Rute Publik */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/wali" element={<WaliPortalPage />} />
+        <Route path="/ppdb-daftar" element={<PpdbPortalPage />} />
         
         {/* Rute Terproteksi JWT (Private) */}
         <Route 
