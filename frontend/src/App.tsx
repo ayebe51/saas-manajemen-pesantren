@@ -41,6 +41,7 @@ export default function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/wali" element={<WaliPortalPage />} />
         <Route path="/ppdb-daftar" element={<PpdbPortalPage />} />
+        <Route path="/ppdb-daftar/:tenantId" element={<PpdbPortalPage />} />
         
         {/* Rute Terproteksi JWT (Private) */}
         <Route 
