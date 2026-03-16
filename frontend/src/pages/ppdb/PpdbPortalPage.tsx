@@ -1,8 +1,21 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Hash, MapPin, School, User, CheckCircle } from 'lucide-react';
+import { Hash, MapPin, School, User, CheckCircle, Upload, FileText, Loader2, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { api } from '@/lib/api/client';
+
+const REQUIRED_DOCUMENTS = [
+  { key: 'KK', label: 'Kartu Keluarga (KK)', accept: '.pdf,.jpg,.jpeg,.png' },
+  { key: 'AKTA', label: 'Akta Kelahiran', accept: '.pdf,.jpg,.jpeg,.png' },
+  { key: 'IJAZAH', label: 'Ijazah / SKHUN', accept: '.pdf,.jpg,.jpeg,.png' },
+  { key: 'PASFOTO', label: 'Pas Foto 3x4', accept: '.jpg,.jpeg,.png' },
+] as const;
+
+interface UploadedDoc {
+  key: string;
+  url: string;
+  fileName: string;
+}
 
 interface PpdbFormState {
   tenantId: string;
@@ -27,6 +40,33 @@ export const PpdbPortalPage = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successCode, setSuccessCode] = useState<string | null>(null);
+  const [uploadedDocs, setUploadedDocs] = useState<UploadedDoc[]>([]);
+  const [uploadingKey, setUploadingKey] = useState<string | null>(null);
+
+  const handleFileUpload = async (docKey: string, file: File) => {
+    setUploadingKey(docKey);
+    const formDataUpload = new FormData();
+    formDataUpload.append('file', file);
+    try {
+      const res = await api.post('/public/ppdb/upload', formDataUpload, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      const url = res.data.data.url;
+      setUploadedDocs(prev => [
+        ...prev.filter(d => d.key !== docKey),
+        { key: docKey, url, fileName: file.name },
+      ]);
+      toast.success(`${docKey} berhasil diunggah`);
+    } catch {
+      toast.error(`Gagal mengunggah ${docKey}. Pastikan ukuran < 5MB dan format JPG/PNG/PDF.`);
+    } finally {
+      setUploadingKey(null);
+    }
+  };
+
+  const removeDoc = (docKey: string) => {
+    setUploadedDocs(prev => prev.filter(d => d.key !== docKey));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,7 +78,14 @@ export const PpdbPortalPage = () => {
     
     setIsSubmitting(true);
     try {
-      const response = await api.post('/public/ppdb/register', formData);
+      const payload = {
+        ...formData,
+        documents: uploadedDocs.map(doc => ({
+          documentType: doc.key,
+          fileUrl: doc.url,
+        })),
+      };
+      const response = await api.post('/public/ppdb/register', payload);
       setSuccessCode(response.data.registrationNumber);
       toast.success('Pendaftaran berhasil dikirim!');
     } catch (error: unknown) {
@@ -225,6 +272,66 @@ export const PpdbPortalPage = () => {
                       </span>
                     </label>
                   ))}
+                </div>
+              </div>
+
+              {/* === DOKUMEN PERSYARATAN === */}
+              <div className="border-t border-gray-200 pt-6">
+                <h3 className="text-sm font-semibold text-gray-800 mb-1">Unggah Dokumen Persyaratan</h3>
+                <p className="text-xs text-gray-500 mb-4">Format: JPG, PNG, atau PDF (maks. 5MB per file)</p>
+                <div className="space-y-3">
+                  {REQUIRED_DOCUMENTS.map((doc) => {
+                    const uploaded = uploadedDocs.find(d => d.key === doc.key);
+                    const isUploading = uploadingKey === doc.key;
+                    return (
+                      <div key={doc.key} className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${
+                        uploaded ? 'bg-emerald-50 border-emerald-200' : 'bg-gray-50 border-gray-200 hover:border-emerald-300'
+                      }`}>
+                        <div className={`flex-shrink-0 h-10 w-10 rounded-lg flex items-center justify-center ${
+                          uploaded ? 'bg-emerald-100' : 'bg-gray-100'
+                        }`}>
+                          {isUploading ? (
+                            <Loader2 className="h-5 w-5 text-emerald-500 animate-spin" />
+                          ) : uploaded ? (
+                            <CheckCircle className="h-5 w-5 text-emerald-600" />
+                          ) : (
+                            <FileText className="h-5 w-5 text-gray-400" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-800">{doc.label}</p>
+                          {uploaded ? (
+                            <p className="text-xs text-emerald-600 truncate">{uploaded.fileName}</p>
+                          ) : (
+                            <p className="text-xs text-gray-400">Belum diunggah</p>
+                          )}
+                        </div>
+                        {uploaded ? (
+                          <button type="button" onClick={() => removeDoc(doc.key)} className="text-gray-400 hover:text-red-500 transition-colors" title="Hapus">
+                            <X className="h-4 w-4" />
+                          </button>
+                        ) : (
+                          <label className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-colors ${
+                            isUploading ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
+                          }`}>
+                            <Upload className="h-3.5 w-3.5" />
+                            {isUploading ? 'Mengunggah...' : 'Pilih File'}
+                            <input
+                              type="file"
+                              className="hidden"
+                              accept={doc.accept}
+                              disabled={isUploading}
+                              onChange={(e) => {
+                                const f = e.target.files?.[0];
+                                if (f) handleFileUpload(doc.key, f);
+                                e.target.value = '';
+                              }}
+                            />
+                          </label>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 

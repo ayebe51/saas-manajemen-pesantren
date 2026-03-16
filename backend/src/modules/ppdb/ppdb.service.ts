@@ -11,11 +11,24 @@ export class PpdbService {
     const count = await this.prisma.ppdbRegistration.count({ where: { tenantId } });
     const regNumber = `PPDB-${new Date().getFullYear()}-${(count + 1).toString().padStart(4, '0')}`;
 
+    const { documents, ...rest } = createPpdbDto;
+
     return this.prisma.ppdbRegistration.create({
       data: {
-        ...createPpdbDto,
+        ...rest,
         tenantId,
         registrationNumber: regNumber,
+        documents: documents
+          ? {
+              create: documents.map((doc) => ({
+                ...doc,
+                tenantId,
+              })),
+            }
+          : undefined,
+      },
+      include: {
+        documents: true,
       },
     });
   }
@@ -49,9 +62,11 @@ export class PpdbService {
   async update(tenantId: string, id: string, updatePpdbDto: UpdatePpdbDto) {
     await this.findOne(tenantId, id); // Ensure exists
 
+    const { documents, ...rest } = updatePpdbDto;
+
     return this.prisma.ppdbRegistration.update({
       where: { id },
-      data: updatePpdbDto,
+      data: rest as any, // Cast to any to bypass strict Prisma type check for the nested documents field in the DTO
     });
   }
 

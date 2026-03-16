@@ -1,52 +1,13 @@
 import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
-enum PpdbStatus {
+export enum PpdbStatus {
   PENDING = 'PENDING',
   DOCUMENTS_VERIFIED = 'DOCUMENTS_VERIFIED',
   EXAM_SCHEDULED = 'EXAM_SCHEDULED',
   PASSED = 'PASSED',
   FAILED = 'FAILED',
   ACCEPTED = 'ACCEPTED',
-}
-
-export class CreatePpdbDto {
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  fullName: string;
-
-  @ApiProperty({ enum: ['L', 'P'] })
-  @IsString()
-  @IsNotEmpty()
-  gender: string;
-
-  @ApiPropertyOptional()
-  @IsDateString()
-  @IsOptional()
-  dob?: string;
-
-  @ApiPropertyOptional()
-  @IsString()
-  @IsOptional()
-  previousSchool?: string;
-
-  @ApiPropertyOptional({ enum: ['REGULER', 'PRESTASI', 'MUTASI'], default: 'REGULER' })
-  @IsString()
-  @IsOptional()
-  pathway?: string;
-}
-
-export class UpdatePpdbDto extends PartialType(CreatePpdbDto) {
-  @ApiPropertyOptional({ enum: PpdbStatus })
-  @IsEnum(PpdbStatus)
-  @IsOptional()
-  status?: string;
-
-  @ApiPropertyOptional()
-  @IsString()
-  @IsOptional()
-  notes?: string;
 }
 
 export class AddPpdbDocumentDto {
@@ -61,29 +22,73 @@ export class AddPpdbDocumentDto {
   fileUrl: string;
 }
 
-export class AddPpdbExamDto {
-  @ApiProperty({ description: 'TES_TULIS, TES_WAWANCARA, TES_BACA_QURAN' })
+export class CreatePpdbDto {
   @IsString()
   @IsNotEmpty()
+  @ApiProperty()
+  fullName: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({ enum: ['L', 'P'] })
+  gender: string;
+
+  @IsDateString()
+  @IsOptional()
+  @ApiPropertyOptional()
+  dob?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiPropertyOptional()
+  previousSchool?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiPropertyOptional({ enum: ['REGULER', 'PRESTASI', 'MUTASI'], default: 'REGULER' })
+  pathway?: string;
+
+  @IsOptional()
+  @ApiPropertyOptional({ type: [AddPpdbDocumentDto] })
+  documents?: AddPpdbDocumentDto[];
+}
+
+export class UpdatePpdbDto extends PartialType(CreatePpdbDto) {
+  @IsEnum(PpdbStatus)
+  @IsOptional()
+  @ApiPropertyOptional({ enum: PpdbStatus })
+  status?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiPropertyOptional()
+  notes?: string;
+}
+
+export class AddPpdbExamDto {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({ description: 'TES_TULIS, TES_WAWANCARA, TES_BACA_QURAN' })
   examType: string;
 
-  @ApiProperty()
   @IsDateString()
   @IsNotEmpty()
+  @ApiProperty()
   examDate: string;
 
-  @ApiPropertyOptional()
   @IsNumber()
   @IsOptional()
+  @ApiPropertyOptional()
   score?: number;
 
-  @ApiPropertyOptional({ description: 'LULUS, TIDAK_LULUS' })
   @IsString()
   @IsOptional()
+  @ApiPropertyOptional({ description: 'LULUS, TIDAK_LULUS' })
   result?: string;
 
-  @ApiPropertyOptional()
   @IsString()
   @IsOptional()
+  @ApiPropertyOptional()
   interviewer?: string;
 }
+

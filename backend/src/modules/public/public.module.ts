@@ -7,9 +7,10 @@ import { ConfigModule } from '@nestjs/config';
 import { NotificationModule } from '../notification/notification.module';
 import { PpdbPublicController } from './ppdb-public.controller';
 import { PpdbModule } from '../ppdb/ppdb.module';
+import { UploadModule } from '../upload/upload.module';
 
 @Module({
-  imports: [PrismaModule, ConfigModule, NotificationModule, PpdbModule],
+  imports: [PrismaModule, ConfigModule, NotificationModule, PpdbModule, UploadModule],
   controllers: [PublicController, WebhookController, PpdbPublicController],
   providers: [PublicService],
   exports: [PublicService],
