@@ -7,89 +7,75 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// -----------------------------------------------------------------------------
-// CORE & MULTI-TENANT
-// -----------------------------------------------------------------------------
-
 model Tenant {
-  id             String  @id @default(uuid())
-  name           String
-  address        String?
-  phone          String?
-  adminUserId    String?
-  timezone       String  @default("Asia/Jakarta")
-  plan           String  @default("BASIC") // BASIC, PRO, ENTERPRISE
-  billingContact String?
-  status         String  @default("ACTIVE") // ACTIVE, SUSPENDED, INACTIVE
-  settings       String? // JSON string
-  scannerPin     String? @unique // PIN for Scanner Portal login
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  users         User[]
-  santri        Santri[]
-  wali          Wali[]
-  izin          Izin[]
-  catatanHarian CatatanHarian[]
-  pengumuman    Pengumuman[]
-  invoices      Invoice[]
-  pelanggaran   Pelanggaran[]
-  pembinaan     Pembinaan[]
-  kunjungan     Kunjungan[]
-  healthRecords HealthRecord[]
-  auditLogs     AuditLog[]
-  notifications Notification[]
-  webhookEvents WebhookEvent[]
-
-  // Tenants Relations for ERP Extension
-  tahfidz        Tahfidz[]
-  mutabaah       Mutabaah[]
-  wallets        Wallet[]
-  employees      Employee[]
-  payrolls       Payroll[]
-  academicScheds AcademicSchedule[]
-  attendances    Attendance[]
-  grades         Grade[]
-
-  // Tenants Relations for Phase 12 (Advanced ERP)
-  ppdbRegistrations     PpdbRegistration[]
+  id                    String                 @id @default(uuid())
+  name                  String
+  address               String?
+  phone                 String?
+  adminUserId           String?
+  timezone              String                 @default("Asia/Jakarta")
+  plan                  String                 @default("BASIC")
+  billingContact        String?
+  status                String                 @default("ACTIVE")
+  settings              String?
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  scannerPin            String?                @unique
+  academicScheds        AcademicSchedule[]
+  attendances           Attendance[]
+  auditLogs             AuditLog[]
+  buildings             Building[]
+  catatanHarian         CatatanHarian[]
+  employees             Employee[]
+  grades                Grade[]
+  healthRecords         HealthRecord[]
+  inventoryTransactions InventoryTransaction[]
+  invoices              Invoice[]
+  inventoryItems        Item[]
+  izin                  Izin[]
+  kunjungan             Kunjungan[]
+  maintenanceTickets    MaintenanceTicket[]
+  mutabaah              Mutabaah[]
+  notifications         Notification[]
+  payrolls              Payroll[]
+  pelanggaran           Pelanggaran[]
+  pembinaan             Pembinaan[]
+  pengumuman            Pengumuman[]
+  points                Point[]
   ppdbDocuments         PpdbDocument[]
   ppdbExams             PpdbExam[]
-  inventoryItems        Item[]
-  inventoryTransactions InventoryTransaction[]
-  suppliers             Supplier[]
+  ppdbRegistrations     PpdbRegistration[]
   purchaseOrders        PurchaseOrder[]
-  buildings             Building[]
-  rooms                 Room[]
   roomAssignments       RoomAssignment[]
-  maintenanceTickets    MaintenanceTicket[]
-  points                Point[]
+  rooms                 Room[]
+  santri                Santri[]
+  suppliers             Supplier[]
+  tahfidz               Tahfidz[]
+  users                 User[]
+  wali                  Wali[]
+  wallets               Wallet[]
+  webhookEvents         WebhookEvent[]
 
   @@map("tenants")
 }
 
 model User {
-  id       String  @id @default(uuid())
-  tenantId String?
-  tenant   Tenant? @relation(fields: [tenantId], references: [id])
-
-  email        String  @unique
-  passwordHash String
-  role         String  @default("PENGURUS") // SUPERADMIN, TENANT_ADMIN, PENGURUS, MUSYRIF, GURU, KESEHATAN
-  name         String
-  phone        String?
-
-  isActive  Boolean   @default(true)
-  lastLogin DateTime?
-  fcmTokens String?   // JSON Array of device tokens
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  refreshTokens RefreshToken[]
+  id            String         @id @default(uuid())
+  tenantId      String?
+  email         String         @unique
+  passwordHash  String
+  role          String         @default("PENGURUS")
+  name          String
+  phone         String?
+  isActive      Boolean        @default(true)
+  lastLogin     DateTime?
+  fcmTokens     String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
   auditLogs     AuditLog[]
   notifications Notification[]
+  refreshTokens RefreshToken[]
+  tenant        Tenant?        @relation(fields: [tenantId], references: [id])
 
   @@index([tenantId])
   @@map("users")
@@ -98,119 +84,101 @@ model User {
 model RefreshToken {
   id        String   @id @default(uuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   token     String   @unique
   expiresAt DateTime
   revoked   Boolean  @default(false)
-
   createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("refresh_tokens")
 }
 
 model Santri {
-  id       String @id @default(uuid())
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  nisn    String?
-  name    String
-  gender  String // L or P
-  dob     DateTime?
-  kelas   String?
-  room    String?
-  contact String?
-  address String?
-  photo   String?
-  status  String    @default("AKTIF") // AKTIF, LULUS, MUTASI, NONAKTIF
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  walis         SantriWali[]
-  izin          Izin[]
+  id            String          @id @default(uuid())
+  tenantId      String
+  nisn          String?
+  name          String
+  gender        String
+  dob           DateTime?
+  kelas         String?
+  room          String?
+  contact       String?
+  address       String?
+  photo         String?
+  status        String          @default("AKTIF")
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  attendances   Attendance[]    @relation("AttendanceToSantri")
   catatanHarian CatatanHarian[]
+  grades        Grade[]         @relation("GradeToSantri")
+  healthRecords HealthRecord[]
   invoices      Invoice[]
+  izin          Izin[]
+  kunjungan     Kunjungan[]
+  medications   Medication[]
+  mutabaah      Mutabaah[]      @relation("MutabaahToSantri")
   pelanggaran   Pelanggaran[]
   pembinaan     Pembinaan[]
-  kunjungan     Kunjungan[]
-  healthRecords HealthRecord[]
-  medications   Medication[]
-
-  // Back-relations for ERP Extension
-  tahfidz     Tahfidz[]    @relation("TahfidzToSantri")
-  mutabaah    Mutabaah[]   @relation("MutabaahToSantri")
-  wallet      Wallet?      @relation("WalletToSantri")
-  attendances Attendance[] @relation("AttendanceToSantri")
-  grades      Grade[]      @relation("GradeToSantri")
-  points      Point[]      @relation("PointToSantri")
+  points        Point[]         @relation("PointToSantri")
+  tenant        Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  walis         SantriWali[]
+  tahfidz       Tahfidz[]       @relation("TahfidzToSantri")
+  wallet        Wallet?         @relation("WalletToSantri")
 
   @@index([tenantId])
   @@map("santri")
 }
 
 model Wali {
-  id       String @id @default(uuid())
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  name     String
-  relation String
-  phone    String
-  email    String?
-  address  String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  santris SantriWali[]
+  id        String       @id @default(uuid())
+  tenantId  String
+  name      String
+  relation  String
+  phone     String
+  email     String?
+  address   String?
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  santris   SantriWali[]
+  tenant    Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@map("wali")
 }
 
 model SantriWali {
-  santriId String
-  santri   Santri @relation(fields: [santriId], references: [id], onDelete: Cascade)
-
-  waliId String
-  wali   Wali   @relation(fields: [waliId], references: [id], onDelete: Cascade)
-
+  santriId  String
+  waliId    String
   isPrimary Boolean @default(false)
+  santri    Santri  @relation(fields: [santriId], references: [id], onDelete: Cascade)
+  wali      Wali    @relation(fields: [waliId], references: [id], onDelete: Cascade)
 
   @@id([santriId, waliId])
   @@map("santri_wali")
 }
 
 model Izin {
-  id       String @id @default(uuid())
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  santriId String
-  santri   Santri @relation(fields: [santriId], references: [id], onDelete: Cascade)
-
-  type    String // KELUAR, SAKIT, PULANG
-  reason  String
-  startAt DateTime
-  endAt   DateTime
-
-  status String @default("PENDING") // PENDING, APPROVED, REJECTED, CHECKED_OUT, CHECKED_IN, EXPIRED
-
+  id          String    @id @default(uuid())
+  tenantId    String
+  santriId    String
+  type        String
+  reason      String
+  startAt     DateTime
+  endAt       DateTime
+  status      String    @default("PENDING")
   requestedBy String
   approvedBy  String?
   approvedAt  DateTime?
-
-  qrCodeData String? @unique
-
-  checkoutAt DateTime?
-  checkoutBy String?
-  checkinAt  DateTime?
-  checkinBy  String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  qrCodeData  String?   @unique
+  checkoutAt  DateTime?
+  checkoutBy  String?
+  checkinAt   DateTime?
+  checkinBy   String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  santri      Santri    @relation(fields: [santriId], references: [id], onDelete: Cascade)
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@index([santriId])
@@ -218,22 +186,18 @@ model Izin {
 }
 
 model CatatanHarian {
-  id       String @id @default(uuid())
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  santriId String
-  santri   Santri @relation(fields: [santriId], references: [id], onDelete: Cascade)
-
-  authorId String
-  date     DateTime @default(now())
-
+  id          String   @id @default(uuid())
+  tenantId    String
+  santriId    String
+  authorId    String
+  date        DateTime @default(now())
   content     String
   category    String
-  attachments String? // JSON string
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  attachments String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  santri      Santri   @relation(fields: [santriId], references: [id], onDelete: Cascade)
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@index([santriId])
@@ -241,39 +205,33 @@ model CatatanHarian {
 }
 
 model Pengumuman {
-  id       String @id @default(uuid())
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
+  id          String    @id @default(uuid())
+  tenantId    String
   title       String
   content     String
   audience    String
   pinnedUntil DateTime?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@map("pengumuman")
 }
 
 model Invoice {
-  id       String @id @default(uuid())
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  santriId String
-  santri   Santri @relation(fields: [santriId], references: [id], onDelete: Cascade)
-
+  id        String        @id @default(uuid())
+  tenantId  String
+  santriId  String
   amountDue Float
   dueDate   DateTime
-  status    String   @default("UNPAID") // UNPAID, PARTIAL, PAID, CANCELLED
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  lines    InvoiceLine[]
-  payments Payment[]
+  status    String        @default("UNPAID")
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  lines     InvoiceLine[]
+  santri    Santri        @relation(fields: [santriId], references: [id], onDelete: Cascade)
+  tenant    Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  payments  Payment[]
 
   @@index([tenantId])
   @@index([santriId])
@@ -281,44 +239,37 @@ model Invoice {
 }
 
 model InvoiceLine {
-  id        String  @id @default(uuid())
-  invoiceId String
-  invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
-
+  id          String  @id @default(uuid())
+  invoiceId   String
   description String
   amount      Float
   type        String
+  invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
 
   @@index([invoiceId])
   @@map("invoice_lines")
 }
 
 model Payment {
-  id        String  @id @default(uuid())
-  invoiceId String
-  invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
-
+  id             String    @id @default(uuid())
+  invoiceId      String
   method         String
   amount         Float
-  status         String    @default("PENDING") // PENDING, SUCCESS, FAILED, REFUNDED
+  status         String    @default("PENDING")
   transactionRef String?
   paidAt         DateTime?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  invoice        Invoice   @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
 
   @@index([invoiceId])
   @@map("payments")
 }
 
 model Pelanggaran {
-  id       String @id @default(uuid())
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  santriId String
-  santri   Santri @relation(fields: [santriId], references: [id], onDelete: Cascade)
-
+  id          String   @id @default(uuid())
+  tenantId    String
+  santriId    String
   recordedBy  String
   category    String
   severity    Int
@@ -326,9 +277,10 @@ model Pelanggaran {
   description String
   date        DateTime @default(now())
   resolved    Boolean  @default(false)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  santri      Santri   @relation(fields: [santriId], references: [id], onDelete: Cascade)
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@index([santriId])
@@ -336,20 +288,17 @@ model Pelanggaran {
 }
 
 model Pembinaan {
-  id       String @id @default(uuid())
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  santriId String
-  santri   Santri @relation(fields: [santriId], references: [id], onDelete: Cascade)
-
+  id         String   @id @default(uuid())
+  tenantId   String
+  santriId   String
   plan       String
   targetDate DateTime
-  status     String   @default("ONGOING") // ONGOING, COMPLETED, FAILED
+  status     String   @default("ONGOING")
   assignedTo String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  santri     Santri   @relation(fields: [santriId], references: [id], onDelete: Cascade)
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@index([santriId])
@@ -357,22 +306,18 @@ model Pembinaan {
 }
 
 model Kunjungan {
-  id       String @id @default(uuid())
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  santriId String
-  santri   Santri @relation(fields: [santriId], references: [id], onDelete: Cascade)
-
+  id           String   @id @default(uuid())
+  tenantId     String
+  santriId     String
   scheduledAt  DateTime
   slot         String
   visitorLimit Int      @default(2)
-  status       String   @default("SCHEDULED") // SCHEDULED, CHECKED_IN, COMPLETED, CANCELLED
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  tamu Tamu[]
+  status       String   @default("SCHEDULED")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  santri       Santri   @relation(fields: [santriId], references: [id], onDelete: Cascade)
+  tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tamu         Tamu[]
 
   @@index([tenantId])
   @@index([santriId])
@@ -382,35 +327,30 @@ model Kunjungan {
 model Tamu {
   id          String    @id @default(uuid())
   kunjunganId String
+  name        String
+  phone       String?
+  idNumber    String?
+  checkinAt   DateTime?
+  createdAt   DateTime  @default(now())
   kunjungan   Kunjungan @relation(fields: [kunjunganId], references: [id], onDelete: Cascade)
-
-  name      String
-  phone     String?
-  idNumber  String?
-  checkinAt DateTime?
-
-  createdAt DateTime @default(now())
 
   @@index([kunjunganId])
   @@map("tamu")
 }
 
 model HealthRecord {
-  id       String @id @default(uuid())
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  santriId String
-  santri   Santri @relation(fields: [santriId], references: [id], onDelete: Cascade)
-
+  id          String   @id @default(uuid())
+  tenantId    String
+  santriId    String
   recordedBy  String
   symptoms    String
   diagnosis   String?
   actionTaken String?
-  referred    Boolean @default(false)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  referred    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  santri      Santri   @relation(fields: [santriId], references: [id], onDelete: Cascade)
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@index([santriId])
@@ -418,41 +358,34 @@ model HealthRecord {
 }
 
 model Medication {
-  id       String @id @default(uuid())
-  santriId String
-  santri   Santri @relation(fields: [santriId], references: [id], onDelete: Cascade)
-
+  id           String    @id @default(uuid())
+  santriId     String
   medicineName String
   dose         String
   schedule     String
   givenBy      String?
   givenAt      DateTime?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  santri       Santri    @relation(fields: [santriId], references: [id], onDelete: Cascade)
 
   @@index([santriId])
   @@map("medications")
 }
 
 model AuditLog {
-  id       String  @id @default(uuid())
-  tenantId String?
-  tenant   Tenant? @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  userId String?
-  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
-
-  action   String
-  entity   String
-  entityId String
-
-  oldValue String? // JSON string
-  newValue String? // JSON string
-
-  ip String?
-
+  id        String   @id @default(uuid())
+  tenantId  String?
+  userId    String?
+  action    String
+  entity    String
+  entityId  String
+  oldValue  String?
+  newValue  String?
+  ip        String?
   createdAt DateTime @default(now())
+  tenant    Tenant?  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user      User?    @relation(fields: [userId], references: [id])
 
   @@index([tenantId])
   @@index([entity, entityId])
@@ -460,19 +393,16 @@ model AuditLog {
 }
 
 model Notification {
-  id       String @id @default(uuid())
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  type  String
-  title String
-  body  String
-  read  Boolean @default(false)
-
+  id        String   @id @default(uuid())
+  tenantId  String
+  userId    String
+  type      String
+  title     String
+  body      String
+  read      Boolean  @default(false)
   createdAt DateTime @default(now())
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@index([userId])
@@ -480,45 +410,35 @@ model Notification {
 }
 
 model WebhookEvent {
-  id       String  @id @default(uuid())
-  tenantId String?
-  tenant   Tenant? @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  eventType String
-  payload   String // JSON string
-  status    String  @default("PENDING") // PENDING, SUCCESS, FAILED
-  error     String?
-
+  id          String    @id @default(uuid())
+  tenantId    String?
+  eventType   String
+  payload     String
+  status      String    @default("PENDING")
+  error       String?
   createdAt   DateTime  @default(now())
   processedAt DateTime?
+  tenant      Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@index([status])
   @@map("webhook_events")
 }
 
-// -----------------------------------------------------------------------------
-// ERP EXTENSION: TAHFIDZ, AKADEMIK, UANG SAKU, HR
-// -----------------------------------------------------------------------------
-
 model Tahfidz {
-  id       String @id @default(uuid())
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  santriId String
-  santri   Santri @relation("TahfidzToSantri", fields: [santriId], references: [id], onDelete: Cascade)
-
-  surah String // Nama Surah atau Juz
-  ayat  String? // Rentang Ayat
-  type  String  @default("ZIYADAH") // ZIYADAH, MUROJAAH, SABAQ
-  grade String? // Nilai Mutu (A, B, C / Jayyid, Mumtaz dsb)
-  notes String?
-
-  recordedBy String // ID Musyrif/Guru
+  id         String   @id @default(uuid())
+  tenantId   String
+  santriId   String
+  surah      String
+  ayat       String?
+  type       String   @default("ZIYADAH")
+  grade      String?
+  notes      String?
+  recordedBy String
   date       DateTime @default(now())
-
-  createdAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+  santri     Santri   @relation("TahfidzToSantri", fields: [santriId], references: [id], onDelete: Cascade)
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@index([santriId])
@@ -526,25 +446,20 @@ model Tahfidz {
 }
 
 model Mutabaah {
-  id       String @id @default(uuid())
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  santriId String
-  santri   Santri @relation("MutabaahToSantri", fields: [santriId], references: [id], onDelete: Cascade)
-
-  date DateTime @default(now())
-
-  sholatWajib Boolean @default(true) // Berjamaah / Tepat waktu
-  tahajud     Boolean @default(false)
-  dhuha       Boolean @default(false)
-  puasaSunnah Boolean @default(false)
-  bacaQuran   Boolean @default(true)
-
-  notes      String?
-  recordedBy String? // UUID User pemeriksa/pengisi
-
-  createdAt DateTime @default(now())
+  id          String   @id @default(uuid())
+  tenantId    String
+  santriId    String
+  date        DateTime @default(now())
+  sholatWajib Boolean  @default(true)
+  tahajud     Boolean  @default(false)
+  dhuha       Boolean  @default(false)
+  puasaSunnah Boolean  @default(false)
+  bacaQuran   Boolean  @default(true)
+  notes       String?
+  recordedBy  String?
+  createdAt   DateTime @default(now())
+  santri      Santri   @relation("MutabaahToSantri", fields: [santriId], references: [id], onDelete: Cascade)
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@index([santriId, date])
@@ -552,90 +467,74 @@ model Mutabaah {
 }
 
 model Wallet {
-  id       String @id @default(uuid())
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  santriId String @unique
-  santri   Santri @relation("WalletToSantri", fields: [santriId], references: [id], onDelete: Cascade)
-
-  balance  Float   @default(0)
-  pin      String? // Hashed PIN untuk transaksi
-  isActive Boolean @default(true)
-
-  updatedAt DateTime @updatedAt
-
+  id           String              @id @default(uuid())
+  tenantId     String
+  santriId     String              @unique
+  balance      Float               @default(0)
+  pin          String?
+  isActive     Boolean             @default(true)
+  updatedAt    DateTime            @updatedAt
   transactions WalletTransaction[]
+  santri       Santri              @relation("WalletToSantri", fields: [santriId], references: [id], onDelete: Cascade)
+  tenant       Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@map("wallets")
 }
 
 model WalletTransaction {
-  id       String @id @default(uuid())
-  walletId String
-  wallet   Wallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
-
+  id          String   @id @default(uuid())
+  walletId    String
   amount      Float
-  type        String // DEPOSIT, WITHDRAWAL, PAYMENT
-  method      String // CASH, TRANSFER, VIRTUAL_ACCOUNT
+  type        String
+  method      String
   description String?
-
-  reference String? // ID referensi eksternal (VA / Invoice ID)
-  status    String  @default("SUCCESS") // PENDING, SUCCESS, FAILED
-  handledBy String? // UUID Petugas Kasir/Admin
-
-  createdAt DateTime @default(now())
+  reference   String?
+  status      String   @default("SUCCESS")
+  handledBy   String?
+  createdAt   DateTime @default(now())
+  wallet      Wallet   @relation(fields: [walletId], references: [id], onDelete: Cascade)
 
   @@index([walletId])
   @@map("wallet_transactions")
 }
 
 model Employee {
-  id       String @id @default(uuid())
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  userId String? @unique // Dapat ditautkan dengan tabel User Login jika ia pengguna aplikasi
-
-  nip      String? // Nomor Induk Pegawai
-  name     String
-  position String // GURU, MUSYRIF, STAF, SECURITY
-  phone    String?
-  address  String?
-  joinDate DateTime?
-  status   String    @default("AKTIF")
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  payrolls Payroll[]
+  id        String    @id @default(uuid())
+  tenantId  String
+  userId    String?   @unique
+  nip       String?
+  name      String
+  position  String
+  phone     String?
+  address   String?
+  joinDate  DateTime?
+  status    String    @default("AKTIF")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  payrolls  Payroll[]
 
   @@index([tenantId])
   @@map("employees")
 }
 
 model Payroll {
-  id       String @id @default(uuid())
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
+  id         String    @id @default(uuid())
+  tenantId   String
   employeeId String
-  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
-
-  month Int
-  year  Int
-
-  baseSalary Float @default(0)
-  allowances Float @default(0)
-  deductions Float @default(0)
+  month      Int
+  year       Int
+  baseSalary Float     @default(0)
+  allowances Float     @default(0)
+  deductions Float     @default(0)
   netAmount  Float
-
-  status String    @default("DRAFT") // DRAFT, PAID
-  paidAt DateTime?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  status     String    @default("DRAFT")
+  paidAt     DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  employee   Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  tenant     Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@index([employeeId])
@@ -643,40 +542,34 @@ model Payroll {
 }
 
 model AcademicSchedule {
-  id       String @id @default(uuid())
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
+  id        String   @id @default(uuid())
+  tenantId  String
   subject   String
-  teacherId String // NIP atau UUID Employee
+  teacherId String
   kelas     String
-  dayOfWeek Int // 1=Monday, 2=Tuesday, dll
-  startTime String // Format "07:00"
-  endTime   String // Format "08:30"
+  dayOfWeek Int
+  startTime String
+  endTime   String
   room      String?
-
   createdAt DateTime @default(now())
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@map("academic_schedules")
 }
 
 model Attendance {
-  id       String @id @default(uuid())
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  santriId String
-  santri   Santri @relation("AttendanceToSantri", fields: [santriId], references: [id], onDelete: Cascade)
-
-  scheduleId String? // Refference ke AcademicSchedule jika diperlukan
+  id         String   @id @default(uuid())
+  tenantId   String
+  santriId   String
+  scheduleId String?
   date       DateTime @default(now())
-  status     String // HADIR, SAKIT, IZIN, ALPA
+  status     String
   notes      String?
-
   recordedBy String?
-
-  createdAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+  santri     Santri   @relation("AttendanceToSantri", fields: [santriId], references: [id], onDelete: Cascade)
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@index([santriId, date])
@@ -684,53 +577,40 @@ model Attendance {
 }
 
 model Grade {
-  id       String @id @default(uuid())
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  santriId String
-  santri   Santri @relation("GradeToSantri", fields: [santriId], references: [id], onDelete: Cascade)
-
+  id           String   @id @default(uuid())
+  tenantId     String
+  santriId     String
   subject      String
-  semester     String // GANJIL/GENAP
-  academicYear String // e.g "2024/2025"
-
-  type  String // UH, UTS, UAS, PRAKTEK
-  score Float
-  notes String?
-
-  createdAt DateTime @default(now())
+  semester     String
+  academicYear String
+  type         String
+  score        Float
+  notes        String?
+  createdAt    DateTime @default(now())
+  santri       Santri   @relation("GradeToSantri", fields: [santriId], references: [id], onDelete: Cascade)
+  tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@index([santriId])
   @@map("grades")
 }
 
-// -----------------------------------------------------------------------------
-// PHASE 12: PPDB, INVENTORY & COOPERATIVE, DORMITORY
-// -----------------------------------------------------------------------------
-
-// --- PPDB (Penerimaan Peserta Didik Baru) ---
 model PpdbRegistration {
-  id       String @id @default(uuid())
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  registrationNumber String @unique
+  id                 String         @id @default(uuid())
+  tenantId           String
+  registrationNumber String         @unique
   fullName           String
-  gender             String // L or P
+  gender             String
   dob                DateTime?
   previousSchool     String?
-  pathway             String @default("REGULER") // REGULER, PRESTASI, MUTASI
-
-  status   String @default("PENDING") // PENDING, DOCUMENTS_VERIFIED, EXAM_SCHEDULED, PASSED, FAILED, ACCEPTED
-  notes    String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  documents PpdbDocument[]
-  exams     PpdbExam[]
+  pathway            String         @default("REGULER")
+  status             String         @default("PENDING")
+  notes              String?
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  documents          PpdbDocument[]
+  exams              PpdbExam[]
+  tenant             Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@map("ppdb_registrations")
@@ -739,16 +619,13 @@ model PpdbRegistration {
 model PpdbDocument {
   id             String           @id @default(uuid())
   tenantId       String
-  tenant         Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  
   registrationId String
+  documentType   String
+  fileUrl        String
+  isVerified     Boolean          @default(false)
+  createdAt      DateTime         @default(now())
   registration   PpdbRegistration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
-
-  documentType String // KK, AKTA, IJAZAH, PASFOTO
-  fileUrl      String // URL ke S3 atau lokal
-  isVerified   Boolean @default(false)
-  
-  createdAt    DateTime @default(now())
+  tenant         Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([registrationId])
   @@map("ppdb_documents")
@@ -757,63 +634,52 @@ model PpdbDocument {
 model PpdbExam {
   id             String           @id @default(uuid())
   tenantId       String
-  tenant         Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  
   registrationId String
+  examType       String
+  examDate       DateTime
+  score          Float?
+  result         String?
+  interviewer    String?
+  createdAt      DateTime         @default(now())
   registration   PpdbRegistration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
-
-  examType  String   // TES_TULIS, TES_WAWANCARA, TES_BACA_QURAN
-  examDate  DateTime
-  score     Float?
-  result    String?  // LULUS, TIDAK_LULUS
-  interviewer String? 
-  
-  createdAt DateTime @default(now())
+  tenant         Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([registrationId])
   @@map("ppdb_exams")
 }
 
-// --- Manajemen Inventori & Koperasi ---
 model Item {
-  id       String @id @default(uuid())
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  sku         String @unique
-  name        String
-  description String?
-  category    String // SERAGAM, BUKU, ALAT_TULIS, MAKANAN
-  
-  price       Float  // Harga Jual
-  costPrice   Float? // Harga Modal/Beli
-  stock       Int    @default(0)
-  minStock    Int    @default(5)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
+  id           String                 @id @default(uuid())
+  tenantId     String
+  sku          String                 @unique
+  name         String
+  description  String?
+  category     String
+  price        Float
+  costPrice    Float?
+  stock        Int                    @default(0)
+  minStock     Int                    @default(5)
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
   transactions InventoryTransaction[]
+  tenant       Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@map("items")
 }
 
 model InventoryTransaction {
-  id       String @id @default(uuid())
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  itemId String
-  item   Item   @relation(fields: [itemId], references: [id], onDelete: Cascade)
-
-  type        String // IN, OUT, ADJUSTMENT
-  quantity    Int
-  reference   String? // e.g: "Pembelian dari Toko A", "Kasir #1234"
-  notes       String?
-  handledBy   String? // ID staff/admin
-
-  date        DateTime @default(now())
+  id        String   @id @default(uuid())
+  tenantId  String
+  itemId    String
+  type      String
+  quantity  Int
+  reference String?
+  notes     String?
+  handledBy String?
+  date      DateTime @default(now())
+  item      Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@index([itemId])
@@ -821,18 +687,15 @@ model InventoryTransaction {
 }
 
 model Supplier {
-  id       String @id @default(uuid())
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  name    String
-  contact String?
-  address String?
-  email   String?
-  
-  createdAt DateTime @default(now())
-
+  id             String          @id @default(uuid())
+  tenantId       String
+  name           String
+  contact        String?
+  address        String?
+  email          String?
+  createdAt      DateTime        @default(now())
   purchaseOrders PurchaseOrder[]
+  tenant         Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@map("suppliers")
@@ -841,61 +704,49 @@ model Supplier {
 model PurchaseOrder {
   id         String   @id @default(uuid())
   tenantId   String
-  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
   supplierId String
-  supplier   Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
-
   poNumber   String   @unique
   totalCost  Float
-  status     String   @default("DRAFT") // DRAFT, SENT, RECEIVED, PARTIAL, CANCELLED
+  status     String   @default("DRAFT")
   orderDate  DateTime @default(now())
-  
   notes      String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  supplier   Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@map("purchase_orders")
 }
 
-// --- Manajemen Asrama (Dormitory) ---
 model Building {
-  id       String @id @default(uuid())
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
+  id          String   @id @default(uuid())
+  tenantId    String
   name        String
   description String?
-  gender      String  // L or P (Asrama Putra/Putri)
-  capacity    Int     @default(0)
-
+  gender      String
+  capacity    Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   rooms       Room[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
   @@index([tenantId])
   @@map("buildings")
 }
 
 model Room {
-  id         String   @id @default(uuid())
-  tenantId   String
-  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  buildingId String
-  building   Building @relation(fields: [buildingId], references: [id], onDelete: Cascade)
-
+  id          String              @id @default(uuid())
+  tenantId    String
+  buildingId  String
   name        String
   capacity    Int
-  picName     String? // Musyrif/Musyrifah Penanggung Jawab
-
-  assignments RoomAssignment[]
+  picName     String?
+  createdAt   DateTime            @default(now())
   tickets     MaintenanceTicket[]
-
-  createdAt DateTime @default(now())
+  assignments RoomAssignment[]
+  building    Building            @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  tenant      Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@index([buildingId])
@@ -903,18 +754,15 @@ model Room {
 }
 
 model RoomAssignment {
-  id       String @id @default(uuid())
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  roomId   String
-  room     Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
-
-  santriId String // Sengaja tidak hard-FK agar jika santri dihapus, riwayat kamarnya bisa tetap diakses jika butuh log, atau pakai string
-  
-  startDate DateTime @default(now())
+  id        String    @id @default(uuid())
+  tenantId  String
+  roomId    String
+  santriId  String
+  startDate DateTime  @default(now())
   endDate   DateTime?
-  status    String   @default("ACTIVE") // ACTIVE, MOVED, GRADUATED
+  status    String    @default("ACTIVE")
+  room      Room      @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@index([roomId])
@@ -922,44 +770,36 @@ model RoomAssignment {
 }
 
 model MaintenanceTicket {
-  id       String @id @default(uuid())
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  roomId   String
-  room     Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
-
+  id          String    @id @default(uuid())
+  tenantId    String
+  roomId      String
   title       String
   description String
-  priority    String @default("MEDIUM") // LOW, MEDIUM, HIGH, CRITICAL
-  status      String @default("OPEN") // OPEN, IN_PROGRESS, RESOLVED, CLOSED
-  
-  reportedBy  String // UUID Pelapor
+  priority    String    @default("MEDIUM")
+  status      String    @default("OPEN")
+  reportedBy  String
   resolvedAt  DateTime?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  room        Room      @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@index([roomId])
   @@map("maintenance_tickets")
 }
 
-// --- Sistem Poin & Reward ---
 model Point {
-  id       String @id @default(uuid())
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  santriId String
-  santri   Santri @relation("PointToSantri", fields: [santriId], references: [id], onDelete: Cascade)
-
-  category    String // HAFALAN, AKADEMIK, DISIPLIN, KEBERSIHAN, KEPEMIMPINAN, OLAHRAGA
+  id          String   @id @default(uuid())
+  tenantId    String
+  santriId    String
+  category    String
   points      Int
   description String
-
-  createdBy   String? // UUID user pencatat
+  createdBy   String?
   createdAt   DateTime @default(now())
+  santri      Santri   @relation("PointToSantri", fields: [santriId], references: [id], onDelete: Cascade)
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@index([santriId])

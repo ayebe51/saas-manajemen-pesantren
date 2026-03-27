@@ -1,8 +1,0 @@
-remote: error: Trace: af660b37fdceac4f268dd6180c71136f365c4a1f2454067cb09bd0042c16b941        
-remote: error: See https://gh.io/lfs for more information.        
-remote: error: File backend/node_modules/puppeteer/.local-chromium/win64-901912/chrome-win/chrome.dll is 155.28 MB; this exceeds GitHub's file size limit of 100.00 MB        
-remote: error: File backend/node_modules/puppeteer/.local-chromium/win64-901912/chrome-win/interactive_ui_tests.exe is 160.08 MB; this exceeds GitHub's file size limit of 100.00 MB        
-remote: error: GH001: Large files detected. You may want to try Git Large File Storage - https://git-lfs.github.com.        
-To https://github.com/ayebe51/saas-manajemen-pesantren.git
- ! [remote rejected]   main -> main (pre-receive hook declined)
-error: failed to push some refs to 'https://github.com/ayebe51/saas-manajemen-pesantren.git'
