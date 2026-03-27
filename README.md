@@ -22,16 +22,24 @@ A modern, enterprise-ready Software as a Service (SaaS) platform designed for co
 
 ### Backend
 - **Framework**: [NestJS](https://nestjs.com/) (Node.js)
+
 - **Database**: PostgreSQL (hosted on Railway)
+
 - **ORM**: Prisma
+
 - **Real-time**: Socket.io / Native WebSockets
+
 - **Tests**: Jest / Supertest
 
 ### Frontend
 - **Framework**: [React](https://react.dev/) + TypeScript + Vite
+
 - **Styling**: Vanilla CSS / CSS Modules
+
 - **State Management**: React Hooks / Context API
+
 - **Charts**: Recharts
+
 - **Icons**: Lucide React
 
 ## 📐 Architecture Overview
