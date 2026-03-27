@@ -30,7 +30,7 @@ export function LoginPage() {
       setUser(user);
       
       // Redirect ke Dashboard
-      navigate('/', { replace: true });
+      navigate('/dashboard', { replace: true });
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };
       setError(error.response?.data?.message || 'Login gagal. Periksa kembali kredensial Anda.');

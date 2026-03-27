@@ -11,25 +11,25 @@ import { useState, useEffect } from 'react';
 import { api } from '@/lib/api/client';
 
 const navItems = [
-  { path: '/', icon: Home, label: 'Beranda' },
-  { path: '/santri', icon: Users, label: 'Kesantrian' },
-  { path: '/ppdb', icon: ClipboardList, label: 'PPDB' },
-  { path: '/akademik', icon: GraduationCap, label: 'Akademik' },
-  { path: '/catatan', icon: MessageSquare, label: 'Buku Penghubung' },
-  { path: '/pelanggaran', icon: AlertTriangle, label: 'Pelanggaran' },
-  { path: '/kesehatan', icon: Heart, label: 'Kesehatan' },
-  { path: '/kunjungan', icon: UserCheck, label: 'Kunjungan' },
-  { path: '/presensi', icon: QrCode, label: 'Presensi QR' },
-  { path: '/poin-reward', icon: Trophy, label: 'Poin Reward' },
-  { path: '/finance', icon: Wallet, label: 'Keuangan' },
-  { path: '/pembayaran', icon: Receipt, label: 'Pembayaran SPP' },
-  { path: '/wallet/topup', icon: CreditCard, label: 'Top-Up Saldo' },
-  { path: '/inventory', icon: ArchiveRestore, label: 'Koperasi' },
-  { path: '/asrama', icon: Building2, label: 'Perizinan' },
-  { path: '/dormitory', icon: Building2, label: 'Asrama' },
-  { path: '/hr', icon: Briefcase, label: 'Kepegawaian' },
-  { path: '/id-card', icon: IdCard, label: 'E-ID Card' },
-  { path: '/laporan', icon: FileBarChart, label: 'Laporan' },
+  { path: '/dashboard', icon: Home, label: 'Beranda' },
+  { path: '/dashboard/santri', icon: Users, label: 'Kesantrian' },
+  { path: '/dashboard/ppdb', icon: ClipboardList, label: 'PPDB' },
+  { path: '/dashboard/akademik', icon: GraduationCap, label: 'Akademik' },
+  { path: '/dashboard/catatan', icon: MessageSquare, label: 'Buku Penghubung' },
+  { path: '/dashboard/pelanggaran', icon: AlertTriangle, label: 'Pelanggaran' },
+  { path: '/dashboard/kesehatan', icon: Heart, label: 'Kesehatan' },
+  { path: '/dashboard/kunjungan', icon: UserCheck, label: 'Kunjungan' },
+  { path: '/dashboard/presensi', icon: QrCode, label: 'Presensi QR' },
+  { path: '/dashboard/poin-reward', icon: Trophy, label: 'Poin Reward' },
+  { path: '/dashboard/finance', icon: Wallet, label: 'Keuangan' },
+  { path: '/dashboard/pembayaran', icon: Receipt, label: 'Pembayaran SPP' },
+  { path: '/dashboard/wallet/topup', icon: CreditCard, label: 'Top-Up Saldo' },
+  { path: '/dashboard/inventory', icon: ArchiveRestore, label: 'Koperasi' },
+  { path: '/dashboard/asrama', icon: Building2, label: 'Perizinan' },
+  { path: '/dashboard/dormitory', icon: Building2, label: 'Asrama' },
+  { path: '/dashboard/hr', icon: Briefcase, label: 'Kepegawaian' },
+  { path: '/dashboard/id-card', icon: IdCard, label: 'E-ID Card' },
+  { path: '/dashboard/laporan', icon: FileBarChart, label: 'Laporan' },
 ];
 
 interface Tenant { id: string; name: string; }
@@ -135,7 +135,7 @@ export function Sidebar() {
             <NavLink
               key={item.path}
               to={item.path}
-              end={item.path === '/'}
+              end={item.path === '/dashboard'}
               className={({ isActive }) =>
                 clsx(
                   'flex items-center gap-3 px-3 py-2 rounded-md transition-all font-medium text-sm',
@@ -156,14 +156,14 @@ export function Sidebar() {
       <div className="shrink-0 p-3 border-t border-light bg-app">
         <div className="flex gap-1 mb-2">
           <NavLink 
-            to="/audit-log"
+            to="/dashboard/audit-log"
             className="flex items-center gap-2 px-3 py-1.5 rounded-md text-muted hover:text-primary transition-colors font-medium text-sm flex-1"
           >
             <Shield className="w-4 h-4" />
             <span>Audit Log</span>
           </NavLink>
           <NavLink 
-            to="/settings"
+            to="/dashboard/settings"
             className="flex items-center gap-2 px-3 py-1.5 rounded-md text-muted hover:text-primary transition-colors font-medium text-sm flex-1"
           >
             <Settings className="w-4 h-4" />

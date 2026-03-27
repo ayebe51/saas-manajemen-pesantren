@@ -3,6 +3,7 @@ import { api } from '@/lib/api/client';
 import { Users, Wallet, Activity, TrendingUp, AlertCircle } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import clsx from 'clsx';
+import { motion } from 'framer-motion';
 import { socketClient } from '@/lib/socket/socket.client';
 import toast from 'react-hot-toast';
 
@@ -114,7 +115,13 @@ export function DashboardPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {statCards.map((card, idx) => (
-            <div key={idx} className="glass-panel p-6 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300 cursor-default">
+            <motion.div 
+              key={idx} 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.1 }}
+              className="glass-panel p-6 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-300 cursor-default"
+            >
               
               {/* Decorative Glow blob */}
               <div 
@@ -138,13 +145,18 @@ export function DashboardPage() {
               
               <h3 className="text-3xl font-bold mb-1">{card.value}</h3>
               <p className="text-sm font-medium text-muted">{card.title}</p>
-            </div>
+            </motion.div>
           ))}
         </div>
       )}
 
       {/* Chart Placeholder / Section 2 */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
+      <motion.div 
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8"
+      >
         <div className="glass-panel p-6 lg:col-span-2 min-h-[350px]">
              <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
                 <TrendingUp className="w-5 h-5 text-primary" />
@@ -201,7 +213,7 @@ export function DashboardPage() {
             ))}
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

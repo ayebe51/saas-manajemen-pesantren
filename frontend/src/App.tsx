@@ -29,6 +29,7 @@ import { KunjunganPage } from '@/pages/kunjungan/KunjunganPage';
 import { WaliPortalPage } from '@/pages/wali/WaliPortalPage';
 import { PresensiPage } from '@/pages/presensi/PresensiPage';
 import { PoinRewardPage } from '@/pages/poin/PoinRewardPage';
+import { LandingPage } from '@/pages/public/LandingPage';
 
 
 
@@ -38,6 +39,7 @@ export default function App() {
       <BrowserRouter>
         <Routes>
         {/* Rute Publik */}
+        <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/wali" element={<WaliPortalPage />} />
         <Route path="/ppdb-daftar" element={<PpdbPortalPage />} />
@@ -45,7 +47,7 @@ export default function App() {
         
         {/* Rute Terproteksi JWT (Private) */}
         <Route 
-          path="/" 
+          path="/dashboard" 
           element={
             <AuthGuard>
               <DashboardLayout />
@@ -58,7 +60,7 @@ export default function App() {
           <Route path="santri/:id" element={<SantriProfilPage />} />
           <Route path="akademik" element={<AkademikPage />} />
           <Route path="finance" element={<WalletPage />} />
-          <Route path="/wallet/topup" element={<TopUpPage />} />
+          <Route path="wallet/topup" element={<TopUpPage />} />
 
           <Route path="inventory">
             <Route index element={<InventoryPage />} />
