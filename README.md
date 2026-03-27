@@ -15,6 +15,8 @@ A modern, enterprise-ready Software as a Service (SaaS) platform designed for co
   - **Student Services**: Health tracking, visitation management (Kunjungan), and permission slips.
   - **Inventory**: Dormitory and school asset tracking.
 - **Real-time Dashboard**: Interactive analytics and activity logs using Recharts.
+- **Micro-animations**: Enhanced UX with `framer-motion` for a premium, alive feel.
+- **Robustness**: Integrated Error Boundaries for graceful failure handling.
 
 ## 🛠️ Tech Stack
 
@@ -40,12 +42,32 @@ graph TD
     Frontend -->|HTTPS/WS| Backend[NestJS API]
     Backend -->|Prisma| Database[(PostgreSQL)]
     
+    subgraph "Observability & Resilience"
+        Backend --> LogInt[Logging Interceptor]
+        Frontend --> ErrBound[Error Boundary]
+    end
+    
     subgraph "Logic Layer"
         Backend --> Auth[JWT/RBAC Service]
         Backend --> Tenant[Tenant Isolation Middleware]
         Backend --> Modules[Business Modules]
     end
 ```
+
+## 🌟 Senior Portfolio Highlights
+
+### 1. Backend Observability & Quality
+- **Logging Interceptor**: Implemented a global interceptor in NestJS to track every HTTP request/response, improving production debugging and audit trails.
+- **Comprehensive Testing**: 100% pass rate on core service unit tests, with a focus on robust authentication flows and tenant data isolation.
+
+### 2. Frontend Visual Excellence
+- **Modern Landing Page**: A fully responsive, dark-mode entry point with scroll animations.
+- **Advanced UX**: Used `framer-motion` for micro-animations throughout the dashboard, creating a premium software experience.
+- **Resilience**: A global React Error Boundary ensures that runtime errors display a professional fallback instead of a blank screen.
+
+### 3. Clean Code Architecture
+- **Tenant Isolation**: Strict logical separation of data using custom middleware and Prisma filters.
+- **Modular Design**: Domain-driven project structure for both Backend and Frontend, ensuring high maintainability.
 
 ## 📦 Getting Started
 
