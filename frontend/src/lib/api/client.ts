@@ -9,10 +9,11 @@ export const api = axios.create({
 });
 
 // Interceptor request: sisipkan JWT
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('accessToken');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+  const accessToken = localStorage.getItem('accessToken');
+  if (accessToken && config.headers) {
+    config.headers.Authorization = `Bearer ${accessToken}`;
   }
   return config;
 });

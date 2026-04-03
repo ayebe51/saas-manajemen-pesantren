@@ -65,6 +65,7 @@ model User {
   email         String         @unique
   passwordHash  String
   role          String         @default("PENGURUS")
+  roleId        String?
   name          String
   phone         String?
   isActive      Boolean        @default(true)
@@ -76,19 +77,22 @@ model User {
   notifications Notification[]
   refreshTokens RefreshToken[]
   tenant        Tenant?        @relation(fields: [tenantId], references: [id])
+  role_ref      Role?          @relation(fields: [roleId], references: [id])
 
   @@index([tenantId])
   @@map("users")
 }
 
 model RefreshToken {
-  id        String   @id @default(uuid())
-  userId    String
-  token     String   @unique
-  expiresAt DateTime
-  revoked   Boolean  @default(false)
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          String    @id @default(uuid())
+  userId      String
+  token       String    @unique
+  tokenHash   String?   @unique
+  expiresAt   DateTime
+  revoked     Boolean   @default(false)
+  revokedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("refresh_tokens")
@@ -374,18 +378,23 @@ model Medication {
 }
 
 model AuditLog {
-  id        String   @id @default(uuid())
-  tenantId  String?
-  userId    String?
-  action    String
-  entity    String
-  entityId  String
-  oldValue  String?
-  newValue  String?
-  ip        String?
-  createdAt DateTime @default(now())
-  tenant    Tenant?  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  user      User?    @relation(fields: [userId], references: [id])
+  id              String   @id @default(uuid())
+  tenantId        String?
+  userId          String?
+  action          String
+  entity          String
+  entityId        String
+  oldValue        String?
+  newValue        String?
+  ip              String?
+  createdAt       DateTime @default(now())
+  modul           String?
+  entitasTipe     String?
+  nilaiSebelum    Json?
+  nilaiSesudah    Json?
+  serverTimestamp DateTime @default(now())
+  tenant          Tenant?  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user            User?    @relation(fields: [userId], references: [id])
 
   @@index([tenantId])
   @@index([entity, entityId])
@@ -804,4 +813,51 @@ model Point {
   @@index([tenantId])
   @@index([santriId])
   @@map("points")
+}
+
+model Role {
+  id          String       @id @default(uuid())
+  name        String       @unique
+  description String?
+  permissions Permission[]
+  users       User[]
+  createdAt   DateTime     @default(now())
+
+  @@map("roles")
+}
+
+model Permission {
+  id       String  @id @default(uuid())
+  roleId   String
+  module   String
+  canRead  Boolean @default(false)
+  canWrite Boolean @default(false)
+  role     Role    @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, module])
+  @@map("permissions")
+}
+
+model LoginAttempt {
+  id          String   @id @default(uuid())
+  ipAddress   String
+  attemptedAt DateTime @default(now())
+  success     Boolean  @default(false)
+
+  @@index([ipAddress, attemptedAt])
+  @@map("login_attempts")
+}
+
+model License {
+  id                  String    @id @default(uuid())
+  licenseKey          String    @unique
+  hardwareFingerprint String?
+  activatedAt         DateTime?
+  lastVerifiedAt      DateTime?
+  gracePeriodDays     Int       @default(30)
+  status              String    @default("INACTIVE")
+  metadata            Json?
+  createdAt           DateTime  @default(now())
+
+  @@map("license")
 }
