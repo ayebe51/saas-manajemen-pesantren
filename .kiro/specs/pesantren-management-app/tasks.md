@@ -29,7 +29,7 @@ Implementasi dilakukan secara bertahap mengikuti urutan prioritas build order. S
   - [x] 2.3 Property test: Token lifecycle — refresh dan invalidasi setelah logout
     - **Property 2: Token Lifecycle — Refresh Setelah Expire, Invalidasi Setelah Logout**
     - **Validates: Requirements 1.3, 1.5**
-  - [ ]* 2.4 Property test: Refresh token reuse membatalkan seluruh sesi
+  - [x] 2.4 Property test: Refresh token reuse membatalkan seluruh sesi
     - **Property 3: Refresh Token Reuse Membatalkan Seluruh Sesi**
     - **Validates: Requirements 1.4**
   - [ ]* 2.5 Property test: Hash password unik per pengguna

@@ -461,3 +461,246 @@ describe('AuthService — Property 2: Token Lifecycle (PBT)', () => {
     });
   });
 });
+
+// Feature: pesantren-management-app, Property 3: Refresh Token Reuse Membatalkan Seluruh Sesi
+describe('AuthService — Property 3: Refresh Token Reuse Membatalkan Seluruh Sesi (PBT)', () => {
+  let service: AuthService;
+
+  const buildUser = (overrides: Record<string, unknown> = {}) => ({
+    id: 'user-pbt3',
+    email: 'pbt3@pesantren.com',
+    passwordHash: 'hashed_password',
+    isActive: true,
+    role: 'Admin_Pesantren',
+    tenantId: null,
+    name: 'PBT3 User',
+    role_ref: null,
+    ...overrides,
+  });
+
+  const mockPrisma = {
+    user: { findUnique: jest.fn(), update: jest.fn() },
+    refreshToken: {
+      create: jest.fn(),
+      findFirst: jest.fn(),
+      findUnique: jest.fn(),
+      update: jest.fn(),
+      updateMany: jest.fn(),
+    },
+    $transaction: jest.fn(),
+  };
+
+  const mockJwt = { sign: jest.fn(), verify: jest.fn() };
+  const mockConfig = { get: jest.fn().mockReturnValue(undefined) };
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        AuthService,
+        { provide: PrismaService, useValue: mockPrisma },
+        { provide: JwtService, useValue: mockJwt },
+        { provide: ConfigService, useValue: mockConfig },
+      ],
+    }).compile();
+
+    service = module.get<AuthService>(AuthService);
+    jest.clearAllMocks();
+  });
+
+  // ─── Arbitraries ──────────────────────────────────────────────────────────
+
+  const arbUserId = fc.uuid();
+  const arbRawToken = fc.stringMatching(/^[A-Za-z0-9._-]{20,80}$/);
+
+  // ─── Property 3a ──────────────────────────────────────────────────────────
+
+  /**
+   * **Validates: Requirements 1.4**
+   *
+   * Reuse of a revoked token always revokes ALL sessions and returns 401.
+   */
+  // Feature: pesantren-management-app, Property 3: Refresh Token Reuse Membatalkan Seluruh Sesi
+  describe('Property 3a: Reuse of a revoked token always revokes ALL sessions and returns 401', () => {
+    it('should always throw UnauthorizedException and call updateMany when revoked token is reused', async () => {
+      await fc.assert(
+        fc.asyncProperty(
+          arbUserId,
+          arbRawToken,
+          fc.integer({ min: 1, max: 10 }),
+          async (userId, rawToken, _sessionCount) => {
+            jest.clearAllMocks();
+
+            mockJwt.verify.mockReturnValue({ sub: userId });
+
+            // findFirst returns a record with revoked: true (token already used once)
+            mockPrisma.refreshToken.findFirst.mockResolvedValue({
+              id: 'rt-reused',
+              userId,
+              revoked: true,
+              expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+              user: buildUser({ id: userId }),
+            });
+
+            mockPrisma.refreshToken.updateMany.mockResolvedValue({ count: _sessionCount });
+
+            // 1. Must throw UnauthorizedException
+            await expect(service.refreshToken(rawToken)).rejects.toThrow(UnauthorizedException);
+
+            // 2. updateMany must be called with correct where clause
+            expect(mockPrisma.refreshToken.updateMany).toHaveBeenCalledWith(
+              expect.objectContaining({
+                where: expect.objectContaining({ userId, revoked: false }),
+                data: expect.objectContaining({ revoked: true }),
+              }),
+            );
+
+            // 3. Error message must contain "reuse" (case-insensitive)
+            let errorMessage = '';
+            try {
+              await service.refreshToken(rawToken);
+            } catch (err) {
+              errorMessage = (err as Error).message;
+            }
+            expect(errorMessage.toLowerCase()).toContain('reuse');
+          },
+        ),
+        { numRuns: 100 },
+      );
+    });
+  });
+
+  // ─── Property 3b ──────────────────────────────────────────────────────────
+
+  /**
+   * **Validates: Requirements 1.4**
+   *
+   * After reuse detection, subsequent refresh attempts with any token for
+   * that user also fail (all sessions revoked).
+   */
+  // Feature: pesantren-management-app, Property 3: Refresh Token Reuse Membatalkan Seluruh Sesi
+  describe('Property 3b: After reuse detection, subsequent refresh attempts also fail', () => {
+    it('should throw UnauthorizedException for both first (reuse) and second (post-revocation) calls', async () => {
+      await fc.assert(
+        fc.asyncProperty(
+          arbUserId,
+          fc.tuple(arbRawToken, arbRawToken).filter(([a, b]) => a !== b),
+          async (userId, [firstToken, secondToken]) => {
+            jest.clearAllMocks();
+
+            // ── First call: reuse detected (revoked token found by hash) ──
+            mockJwt.verify.mockReturnValue({ sub: userId });
+
+            mockPrisma.refreshToken.findFirst.mockResolvedValueOnce({
+              id: 'rt-reused',
+              userId,
+              revoked: true,
+              expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+              user: buildUser({ id: userId }),
+            });
+            mockPrisma.refreshToken.updateMany.mockResolvedValue({ count: 3 });
+
+            await expect(service.refreshToken(firstToken)).rejects.toThrow(UnauthorizedException);
+
+            // ── Second call: all sessions revoked → DB returns null ──
+            jest.clearAllMocks();
+            mockJwt.verify.mockReturnValue({ sub: userId });
+
+            // Both findFirst calls return null (all sessions revoked)
+            mockPrisma.refreshToken.findFirst.mockResolvedValue(null);
+
+            await expect(service.refreshToken(secondToken)).rejects.toThrow(UnauthorizedException);
+          },
+        ),
+        { numRuns: 100 },
+      );
+    });
+  });
+
+  // ─── Property 3c ──────────────────────────────────────────────────────────
+
+  /**
+   * **Validates: Requirements 1.4**
+   *
+   * Reuse detection via raw token fallback: hash not found, but raw token
+   * found as revoked → all sessions revoked, 401 returned.
+   */
+  // Feature: pesantren-management-app, Property 3: Refresh Token Reuse Membatalkan Seluruh Sesi
+  describe('Property 3c: Reuse detection via raw token fallback (hash not found, raw token found as revoked)', () => {
+    it('should throw UnauthorizedException and call updateMany when raw token fallback detects reuse', async () => {
+      await fc.assert(
+        fc.asyncProperty(
+          arbUserId,
+          arbRawToken,
+          async (userId, rawToken) => {
+            jest.clearAllMocks();
+
+            mockJwt.verify.mockReturnValue({ sub: userId });
+
+            // First findFirst (hash lookup) → null
+            mockPrisma.refreshToken.findFirst
+              .mockResolvedValueOnce(null)
+              // Second findFirst (raw token lookup) → revoked record
+              .mockResolvedValueOnce({ userId, revoked: true });
+
+            mockPrisma.refreshToken.updateMany.mockResolvedValue({ count: 2 });
+
+            // 1. Must throw UnauthorizedException
+            await expect(service.refreshToken(rawToken)).rejects.toThrow(UnauthorizedException);
+
+            // 2. updateMany must have been called (all sessions revoked)
+            expect(mockPrisma.refreshToken.updateMany).toHaveBeenCalled();
+          },
+        ),
+        { numRuns: 100 },
+      );
+    });
+  });
+
+  // ─── Property 3d ──────────────────────────────────────────────────────────
+
+  /**
+   * **Validates: Requirements 1.4**
+   *
+   * Valid (non-revoked) token does NOT trigger session revocation.
+   */
+  // Feature: pesantren-management-app, Property 3: Refresh Token Reuse Membatalkan Seluruh Sesi
+  describe('Property 3d: Valid (non-revoked) token does NOT trigger session revocation', () => {
+    it('should NOT call updateMany for mass revocation when token is valid', async () => {
+      await fc.assert(
+        fc.asyncProperty(
+          arbUserId,
+          arbRawToken,
+          async (userId, rawToken) => {
+            jest.clearAllMocks();
+
+            const user = buildUser({ id: userId });
+
+            mockJwt.verify.mockReturnValue({ sub: userId });
+
+            // findFirst returns a valid, non-revoked, non-expired token
+            mockPrisma.refreshToken.findFirst.mockResolvedValue({
+              id: 'rt-valid',
+              userId,
+              revoked: false,
+              expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+              user,
+            });
+
+            // Transaction succeeds (rotate: revoke old + create new)
+            mockPrisma.$transaction.mockResolvedValue([{}, {}]);
+
+            let callCount = 0;
+            mockJwt.sign.mockImplementation(() => `token.${++callCount}.${userId.slice(0, 8)}`);
+
+            // Should NOT throw
+            await expect(service.refreshToken(rawToken)).resolves.toBeDefined();
+
+            // updateMany must NOT have been called (no mass revocation)
+            expect(mockPrisma.refreshToken.updateMany).not.toHaveBeenCalled();
+          },
+        ),
+        { numRuns: 100 },
+      );
+    });
+  });
+});
