@@ -74,17 +74,17 @@ Implementasi dilakukan secara bertahap mengikuti urutan prioritas build order. S
     - **Property 9: Perubahan Permission Role Berlaku Langsung**
     - **Validates: Requirements 2.6**
 
-- [ ] 5. Implementasi modul Lisensi
-  - [ ] 5.1 Implementasi `LicenseService`: aktivasi online, verifikasi offline, grace period
+- [x] 5. Implementasi modul Lisensi
+  - [x] 5.1 Implementasi `LicenseService`: aktivasi online, verifikasi offline, grace period
     - Generate `hardware_fingerprint` (SHA-256 dari hostname + MAC + CPU model)
     - Simpan bukti aktivasi lokal (encrypted) di tabel `license`
     - Grace period 30 hari dari `last_verified_at`; setelah habis → mode read-only
     - `LicenseGuard` diintegrasikan ke pipeline request
     - _Requirements: 19.1, 19.2, 19.3, 19.4, 19.5, 19.6, 19.7_
-  - [ ]* 5.2 Property test: Grace period lisensi offline
+  - [x] 5.2 Property test: Grace period lisensi offline
     - **Property 20: Grace Period Lisensi Offline**
     - **Validates: Requirements 19.3, 19.4**
-  - [ ] 5.3 Implementasi cron job `LicenseCheckerJob`
+  - [x] 5.3 Implementasi cron job `LicenseCheckerJob`
     - Verifikasi online periodik; update `last_verified_at`; catat ke audit log
     - _Requirements: 19.6_
 
