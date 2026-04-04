@@ -64,13 +64,13 @@ Implementasi dilakukan secara bertahap mengikuti urutan prioritas build order. S
     - Dekorator `@Roles()`, `@CurrentUser()`, `@Public()`
     - Verifikasi permission dari database (bukan dari JWT payload) agar perubahan langsung berlaku
     - _Requirements: 2.3, 2.4, 2.6_
-  - [ ]* 4.3 Property test: RBAC enforcement — akses sesuai permission
+  - [x] 4.3 Property test: RBAC enforcement — akses sesuai permission
     - **Property 7: RBAC Enforcement — Akses Sesuai Permission**
     - **Validates: Requirements 2.3, 2.4**
-  - [ ]* 4.4 Property test: Satu user satu role aktif
+  - [x] 4.4 Property test: Satu user satu role aktif
     - **Property 8: Satu User Satu Role Aktif**
     - **Validates: Requirements 2.2**
-  - [ ]* 4.5 Property test: Perubahan permission role berlaku langsung
+  - [x] 4.5 Property test: Perubahan permission role berlaku langsung
     - **Property 9: Perubahan Permission Role Berlaku Langsung**
     - **Validates: Requirements 2.6**
 
