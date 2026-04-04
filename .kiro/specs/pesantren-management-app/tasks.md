@@ -88,7 +88,7 @@ Implementasi dilakukan secara bertahap mengikuti urutan prioritas build order. S
     - Verifikasi online periodik; update `last_verified_at`; catat ke audit log
     - _Requirements: 19.6_
 
-- [ ] 6. Checkpoint Fase 1 — Pastikan semua test lulus
+- [x] 6. Checkpoint Fase 1 — Pastikan semua test lulus
   - Pastikan semua unit test dan property test Fase 1 lulus, tanyakan kepada user jika ada pertanyaan.
 
 
@@ -96,15 +96,15 @@ Implementasi dilakukan secara bertahap mengikuti urutan prioritas build order. S
 
 ### Fase 2: Master Data Santri, Wali, User, Role, Permission
 
-- [ ] 7. Implementasi modul Santri dan Wali Santri
-  - [ ] 7.1 Prisma migration: tabel `santri`, `wali_santri`, `santri_wali`
+- [x] 7. Implementasi modul Santri dan Wali Santri
+  - [x] 7.1 Prisma migration: tabel `santri`, `wali_santri`, `santri_wali`
     - Kolom lengkap sesuai desain; soft delete via `deleted_at`; UNIQUE constraint pada `nis`
     - _Requirements: 3.1, 3.2, 3.3_
-  - [ ] 7.2 Implementasi `SantriService`: CRUD santri dengan soft delete
+  - [x] 7.2 Implementasi `SantriService`: CRUD santri dengan soft delete
     - Validasi NIS unik, pencarian by nama/NIS/kelas/status, relasi one-to-many wali
     - Catat perubahan ke audit log (nilai sebelum dan sesudah)
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6_
-  - [ ] 7.3 Implementasi `SantriController` dengan DTO dan validasi
+  - [x] 7.3 Implementasi `SantriController` dengan DTO dan validasi
     - Endpoint: GET `/santri`, POST `/santri`, GET `/santri/:id`, PUT `/santri/:id`, DELETE `/santri/:id`, GET `/santri/:id/history`
     - Guard: JWT + RolesGuard per endpoint
     - _Requirements: 3.1, 3.6_

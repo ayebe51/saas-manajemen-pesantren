@@ -1,134 +1,332 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  ConflictException,
+} from '@nestjs/common';
 import { Workbook, Row } from 'exceljs';
 import { PrismaService } from '../../common/prisma/prisma.service';
-import { CreateSantriDto, UpdateSantriDto, CreateWaliDto } from './dto/santri.dto';
+import { AuditLogService } from '../audit-log/audit-log.service';
+import {
+  CreateSantriDto,
+  UpdateSantriDto,
+  CreateWaliDto,
+  SantriFilterDto,
+} from './dto/santri.dto';
 
 @Injectable()
 export class SantriService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly auditLog: AuditLogService,
+  ) {}
 
-  async create(tenantId: string, createSantriDto: CreateSantriDto) {
-    return this.prisma.santri.create({
-      data: {
-        ...createSantriDto,
-        tenantId,
+  // ─── Helpers ────────────────────────────────────────────────────────────────
+
+  private async assertNisUnique(nis: string, excludeId?: string): Promise<void> {
+    const existing = await this.prisma.santri.findFirst({
+      where: {
+        nis,
+        deletedAt: null,
+        ...(excludeId ? { NOT: { id: excludeId } } : {}),
       },
     });
+    if (existing) {
+      throw new ConflictException(`NIS '${nis}' sudah digunakan oleh santri lain`);
+    }
   }
 
-  async findAll(
-    tenantId: string,
-    filters: {
-      page?: number;
-      limit?: number;
-      search?: string;
-      kelas?: string;
-      room?: string;
-      waliId?: string;
-    },
-  ) {
-    const whereClause: any = { tenantId };
-
-    if (filters.kelas) whereClause.kelas = filters.kelas;
-    if (filters.room) whereClause.room = filters.room;
-    if (filters.waliId) {
-      whereClause.walis = {
-        some: { wali: { userId: filters.waliId } },
-      };
-    }
-    if (filters.search) {
-      whereClause.OR = [
-        { name: { contains: filters.search } }, // SQLite is case-sensitive by default with contains, but Prisma abstract handles it depending on provider, we'll use simple contains
-        { nisn: { contains: filters.search } },
-      ];
-    }
-
-    const page = filters.page || 1;
-    const limit = filters.limit || 10;
-    const skip = (page - 1) * limit;
-
-    const [items, total] = await Promise.all([
-      this.prisma.santri.findMany({
-        where: whereClause,
-        include: {
-          walis: {
-            include: { wali: true },
-          },
-        },
-        orderBy: { name: 'asc' },
-        skip,
-        take: limit,
-      }),
-      this.prisma.santri.count({ where: whereClause }),
-    ]);
-
-    return {
-      data: items,
-      meta: {
-        total,
-        page,
-        lastPage: Math.ceil(total / limit),
-      },
-    };
-  }
-
-  async findOne(id: string, tenantId: string) {
+  private async assertExists(id: string, tenantId: string) {
     const santri = await this.prisma.santri.findFirst({
-      where: { id, tenantId },
+      where: { id, tenantId, deletedAt: null },
       include: {
-        walis: {
-          include: { wali: true },
-        },
-        _count: {
-          select: { izin: true, pelanggaran: true, invoices: true },
-        },
+        walis: { include: { wali: true } },
+        _count: { select: { izin: true, pelanggaran: true, invoices: true } },
+      },
+    });
+    if (!santri) {
+      throw new NotFoundException(`Santri dengan ID ${id} tidak ditemukan`);
+    }
+    return santri;
+  }
+
+  // ─── CRUD ────────────────────────────────────────────────────────────────────
+
+  async create(
+    tenantId: string,
+    dto: CreateSantriDto,
+    userId?: string,
+    ipAddress?: string,
+  ) {
+    if (dto.nis) {
+      await this.assertNisUnique(dto.nis);
+    }
+
+    const santri = await this.prisma.santri.create({
+      data: {
+        tenantId,
+        nis: dto.nis ?? null,
+        nisn: dto.nisn ?? null,
+        namaLengkap: dto.namaLengkap ?? dto.name,
+        namaPanggilan: dto.namaPanggilan ?? null,
+        name: dto.name,
+        gender: dto.gender,
+        jenisKelamin: dto.jenisKelamin ?? dto.gender,
+        dob: dto.dob ? new Date(dto.dob) : null,
+        tanggalLahir: dto.tanggalLahir ? new Date(dto.tanggalLahir) : null,
+        tempatLahir: dto.tempatLahir ?? null,
+        kelas: dto.kelas ?? null,
+        room: dto.room ?? null,
+        noHp: dto.noHp ?? dto.contact ?? null,
+        contact: dto.contact ?? dto.noHp ?? null,
+        address: dto.address ?? dto.alamat ?? null,
+        alamat: dto.alamat ?? dto.address ?? null,
+        fotoUrl: dto.fotoUrl ?? dto.photo ?? null,
+        photo: dto.photo ?? dto.fotoUrl ?? null,
+        tanggalMasuk: dto.tanggalMasuk ? new Date(dto.tanggalMasuk) : null,
+        status: dto.status ?? 'AKTIF',
       },
     });
 
-    if (!santri) {
-      throw new NotFoundException(`Santri with ID ${id} not found`);
-    }
+    await this.auditLog.log({
+      userId,
+      aksi: 'CREATE_SANTRI',
+      modul: 'santri',
+      entitasId: santri.id,
+      entitasTipe: 'Santri',
+      nilaiAfter: { id: santri.id, nis: santri.nis, name: santri.name, status: santri.status },
+      ipAddress,
+    });
 
     return santri;
   }
 
-  async update(id: string, tenantId: string, updateSantriDto: UpdateSantriDto) {
-    // Verify existence and tenant access
-    await this.findOne(id, tenantId);
+  async findAll(tenantId: string, filters: SantriFilterDto) {
+    const page = filters.page ?? 1;
+    const limit = filters.limit ?? 10;
+    const skip = (page - 1) * limit;
 
-    return this.prisma.santri.update({
+    const where: any = { tenantId, deletedAt: null };
+
+    if (filters.status) where.status = filters.status;
+    if (filters.kelas) where.kelas = filters.kelas;
+    if (filters.room) where.room = filters.room;
+
+    if (filters.waliId) {
+      where.walis = { some: { wali: { userId: filters.waliId } } };
+    }
+
+    if (filters.search) {
+      where.OR = [
+        { name: { contains: filters.search, mode: 'insensitive' } },
+        { namaLengkap: { contains: filters.search, mode: 'insensitive' } },
+        { nis: { contains: filters.search, mode: 'insensitive' } },
+        { nisn: { contains: filters.search, mode: 'insensitive' } },
+        { kelas: { contains: filters.search, mode: 'insensitive' } },
+      ];
+    }
+
+    const [items, total] = await Promise.all([
+      this.prisma.santri.findMany({
+        where,
+        include: { walis: { include: { wali: true } } },
+        orderBy: { name: 'asc' },
+        skip,
+        take: limit,
+      }),
+      this.prisma.santri.count({ where }),
+    ]);
+
+    return {
+      data: items,
+      meta: { total, page, lastPage: Math.ceil(total / limit) },
+    };
+  }
+
+  async findOne(id: string, tenantId: string) {
+    return this.assertExists(id, tenantId);
+  }
+
+  async update(
+    id: string,
+    tenantId: string,
+    dto: UpdateSantriDto,
+    userId?: string,
+    ipAddress?: string,
+  ) {
+    const before = await this.assertExists(id, tenantId);
+
+    if (dto.nis && dto.nis !== before.nis) {
+      await this.assertNisUnique(dto.nis, id);
+    }
+
+    const updated = await this.prisma.santri.update({
       where: { id },
-      data: updateSantriDto,
+      data: {
+        ...(dto.nis !== undefined && { nis: dto.nis }),
+        ...(dto.name !== undefined && { name: dto.name, namaLengkap: dto.name }),
+        ...(dto.namaLengkap !== undefined && { namaLengkap: dto.namaLengkap, name: dto.namaLengkap }),
+        ...(dto.namaPanggilan !== undefined && { namaPanggilan: dto.namaPanggilan }),
+        ...(dto.kelas !== undefined && { kelas: dto.kelas }),
+        ...(dto.room !== undefined && { room: dto.room }),
+        ...(dto.status !== undefined && { status: dto.status }),
+        ...(dto.contact !== undefined && { contact: dto.contact, noHp: dto.contact }),
+        ...(dto.noHp !== undefined && { noHp: dto.noHp, contact: dto.noHp }),
+        ...(dto.address !== undefined && { address: dto.address, alamat: dto.address }),
+        ...(dto.alamat !== undefined && { alamat: dto.alamat, address: dto.alamat }),
+        ...(dto.fotoUrl !== undefined && { fotoUrl: dto.fotoUrl, photo: dto.fotoUrl }),
+        ...(dto.photo !== undefined && { photo: dto.photo, fotoUrl: dto.photo }),
+        ...(dto.tanggalMasuk !== undefined && { tanggalMasuk: new Date(dto.tanggalMasuk) }),
+        ...(dto.tanggalKeluar !== undefined && { tanggalKeluar: new Date(dto.tanggalKeluar) }),
+      },
+    });
+
+    await this.auditLog.log({
+      userId,
+      aksi: 'UPDATE_SANTRI',
+      modul: 'santri',
+      entitasId: id,
+      entitasTipe: 'Santri',
+      nilaiBefore: { nis: before.nis, name: before.name, status: before.status, kelas: before.kelas },
+      nilaiAfter: { nis: updated.nis, name: updated.name, status: updated.status, kelas: updated.kelas },
+      ipAddress,
+    });
+
+    return updated;
+  }
+
+  /** Soft delete — sets deletedAt, preserves all historical data. Req 3.3 */
+  async remove(
+    id: string,
+    tenantId: string,
+    userId?: string,
+    ipAddress?: string,
+  ) {
+    const before = await this.assertExists(id, tenantId);
+
+    await this.prisma.santri.update({
+      where: { id },
+      data: { deletedAt: new Date() },
+    });
+
+    await this.auditLog.log({
+      userId,
+      aksi: 'DELETE_SANTRI',
+      modul: 'santri',
+      entitasId: id,
+      entitasTipe: 'Santri',
+      nilaiBefore: { nis: before.nis, name: before.name, status: before.status },
+      nilaiAfter: { deletedAt: new Date().toISOString() },
+      ipAddress,
+    });
+
+    return { message: 'Santri berhasil dihapus (soft delete)' };
+  }
+
+  /** Riwayat perubahan santri dari audit log. Req 3.5 */
+  async getHistory(id: string, tenantId: string) {
+    // Verify santri exists (including soft-deleted for history access)
+    const santri = await this.prisma.santri.findFirst({
+      where: { id, tenantId },
+    });
+    if (!santri) {
+      throw new NotFoundException(`Santri dengan ID ${id} tidak ditemukan`);
+    }
+
+    return this.prisma.auditLog.findMany({
+      where: { entityId: id, entity: 'santri' },
+      orderBy: { serverTimestamp: 'desc' },
+      include: { user: { select: { name: true, role: true } } },
     });
   }
 
-  async remove(id: string, tenantId: string) {
-    // Verify existence and tenant access
-    await this.findOne(id, tenantId);
+  // ─── Wali Management ─────────────────────────────────────────────────────────
 
-    await this.prisma.santri.delete({
-      where: { id },
+  async addWali(
+    santriId: string,
+    tenantId: string,
+    dto: CreateWaliDto,
+    userId?: string,
+    ipAddress?: string,
+  ) {
+    await this.assertExists(santriId, tenantId);
+
+    const existingCount = await this.prisma.santriWali.count({ where: { santriId } });
+    const isPrimary = existingCount === 0;
+
+    const result = await this.prisma.$transaction(async (tx) => {
+      const wali = await tx.wali.create({
+        data: {
+          tenantId,
+          name: dto.name,
+          namaLengkap: dto.namaLengkap ?? dto.name,
+          relation: dto.relation ?? dto.hubungan ?? '',
+          hubungan: dto.hubungan ?? dto.relation ?? '',
+          phone: dto.phone ?? dto.noHp ?? '',
+          noHp: dto.noHp ?? dto.phone ?? '',
+          email: dto.email ?? null,
+          address: dto.address ?? dto.alamat ?? null,
+          alamat: dto.alamat ?? dto.address ?? null,
+        },
+      });
+
+      await tx.santriWali.create({
+        data: { santriId, waliId: wali.id, isPrimary },
+      });
+
+      return wali;
     });
 
-    return { message: 'Santri berhasil dihapus' };
+    await this.auditLog.log({
+      userId,
+      aksi: 'ADD_WALI_SANTRI',
+      modul: 'santri',
+      entitasId: santriId,
+      entitasTipe: 'Santri',
+      nilaiAfter: { waliId: result.id, waliName: result.name, isPrimary },
+      ipAddress,
+    });
+
+    return result;
   }
+
+  async linkWali(santriId: string, waliId: string, tenantId: string) {
+    await this.assertExists(santriId, tenantId);
+
+    const wali = await this.prisma.wali.findFirst({ where: { id: waliId, tenantId } });
+    if (!wali) throw new NotFoundException(`Wali dengan ID ${waliId} tidak ditemukan`);
+
+    const existing = await this.prisma.santriWali.findUnique({
+      where: { santriId_waliId: { santriId, waliId } },
+    });
+    if (existing) return existing;
+
+    const count = await this.prisma.santriWali.count({ where: { santriId } });
+    return this.prisma.santriWali.create({
+      data: { santriId, waliId, isPrimary: count === 0 },
+    });
+  }
+
+  // ─── Bulk Import ─────────────────────────────────────────────────────────────
 
   async generateTemplate(): Promise<any> {
     const workbook = new Workbook();
-    const worksheet = workbook.addWorksheet('Data Santri');
+    const ws = workbook.addWorksheet('Data Santri');
 
-    worksheet.columns = [
+    ws.columns = [
+      { header: 'NIS (*)', key: 'nis', width: 15 },
       { header: 'NISN', key: 'nisn', width: 15 },
       { header: 'NAMA LENGKAP (*)', key: 'name', width: 30 },
-      { header: 'L/P', key: 'gender', width: 10 },
-      { header: 'DOB (YYYY-MM-DD)', key: 'dob', width: 25 },
+      { header: 'L/P (*)', key: 'gender', width: 8 },
+      { header: 'DOB (YYYY-MM-DD)', key: 'dob', width: 20 },
       { header: 'KELAS', key: 'kelas', width: 15 },
       { header: 'KAMAR/ASRAMA', key: 'room', width: 20 },
       { header: 'KONTAK/HP', key: 'contact', width: 20 },
       { header: 'ALAMAT', key: 'address', width: 40 },
     ];
 
-    worksheet.addRow({
+    ws.addRow({
+      nis: 'PSN-2024-001',
       nisn: '1234567890',
       name: 'Fulan bin Fulan',
       gender: 'L',
@@ -136,61 +334,49 @@ export class SantriService {
       kelas: '10',
       room: 'Abu Bakar 01',
       contact: '081234567890',
-      address: 'Jl. Raya Pesantren No. 1, Desa Suka Maju',
+      address: 'Jl. Raya Pesantren No. 1',
     });
 
-    worksheet.getRow(1).font = { bold: true };
-    worksheet.getRow(1).fill = {
-      type: 'pattern',
-      pattern: 'solid',
-      fgColor: { argb: 'FFE0E0E0' },
-    };
+    ws.getRow(1).font = { bold: true };
+    ws.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE0E0E0' } };
 
-    const buffer = await workbook.xlsx.writeBuffer();
-    return buffer as any;
+    return workbook.xlsx.writeBuffer();
   }
 
-  async bulkImport(tenantId: string, file: any) {
-    if (!file) {
-      throw new BadRequestException('File Excel wajib diunggah');
-    }
+  async bulkImport(tenantId: string, file: any, userId?: string) {
+    if (!file) throw new BadRequestException('File Excel wajib diunggah');
 
     const workbook = new Workbook();
     try {
       await workbook.xlsx.load(file.buffer);
-    } catch (e) {
+    } catch {
       throw new BadRequestException('Format file tidak valid. Pastikan file berformat .xlsx');
     }
 
-    const worksheet = workbook.worksheets[0];
-    if (!worksheet) {
-      throw new BadRequestException('Sheet utama tidak ditemukan dalam file Excel');
-    }
+    const ws = workbook.worksheets[0];
+    if (!ws) throw new BadRequestException('Sheet utama tidak ditemukan dalam file Excel');
 
     let successCount = 0;
     let failedCount = 0;
     const errors: string[] = [];
-
-    // Header Template Expected: A:NISN, B:NAMA, C:L/P, D:DOB YYYY-MM-DD, E:KELAS, F:KAMAR, G:KONTAK, H:ALAMAT
     const rows: Row[] = [];
-    worksheet.eachRow((row, rowNumber) => {
-      if (rowNumber > 1) rows.push(row);
-    });
+    ws.eachRow((row, rowNumber) => { if (rowNumber > 1) rows.push(row); });
 
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
-      const rowNumber = i + 2; // +2 offset since 0-indexed array vs 1-indexed row, and skipping first header row
+      const rowNumber = i + 2;
 
       try {
-        const nisn = row.getCell(1).text?.trim() || null;
-        const name = row.getCell(2).text?.trim();
-        const genderRaw = row.getCell(3).text?.trim()?.toUpperCase();
-        const gender = genderRaw === 'L' || genderRaw === 'P' ? genderRaw : 'L'; // Default L
-        const dobRaw = row.getCell(4).value;
-        const kelas = row.getCell(5).text?.trim() || null;
-        const room = row.getCell(6).text?.trim() || null;
-        const contact = row.getCell(7).text?.trim() || null;
-        const address = row.getCell(8).text?.trim() || null;
+        const nis = row.getCell(1).text?.trim() || null;
+        const nisn = row.getCell(2).text?.trim() || null;
+        const name = row.getCell(3).text?.trim();
+        const genderRaw = row.getCell(4).text?.trim()?.toUpperCase();
+        const gender = genderRaw === 'L' || genderRaw === 'P' ? genderRaw : 'L';
+        const dobRaw = row.getCell(5).value;
+        const kelas = row.getCell(6).text?.trim() || null;
+        const room = row.getCell(7).text?.trim() || null;
+        const contact = row.getCell(8).text?.trim() || null;
+        const address = row.getCell(9).text?.trim() || null;
 
         if (!name) {
           errors.push(`Baris ${rowNumber}: Nama wajib diisi`);
@@ -198,108 +384,44 @@ export class SantriService {
           continue;
         }
 
+        if (nis) {
+          const nisExists = await this.prisma.santri.findFirst({
+            where: { nis, deletedAt: null },
+          });
+          if (nisExists) {
+            errors.push(`Baris ${rowNumber}: NIS '${nis}' sudah digunakan`);
+            failedCount++;
+            continue;
+          }
+        }
+
         let dob: Date | null = null;
-        if (dobRaw instanceof Date) {
-          dob = dobRaw;
-        } else if (typeof dobRaw === 'string') {
+        if (dobRaw instanceof Date) dob = dobRaw;
+        else if (typeof dobRaw === 'string') {
           const parsed = new Date(dobRaw);
           if (!isNaN(parsed.getTime())) dob = parsed;
         }
 
-        // Process directly to database to catch distinct DB errors (e.g. unique NISN constraints)
-        await this.prisma.santri.create({
-          data: {
-            tenantId,
-            nisn,
-            name,
-            gender,
-            dob,
-            kelas,
-            room,
-            contact,
-            address,
-            status: 'AKTIF',
-          },
+        const santri = await this.prisma.santri.create({
+          data: { tenantId, nis, nisn, name, namaLengkap: name, gender, jenisKelamin: gender, dob, tanggalLahir: dob, kelas, room, contact, noHp: contact, address, alamat: address, status: 'AKTIF' },
+        });
+
+        await this.auditLog.log({
+          userId,
+          aksi: 'BULK_IMPORT_SANTRI',
+          modul: 'santri',
+          entitasId: santri.id,
+          entitasTipe: 'Santri',
+          nilaiAfter: { nis: santri.nis, name: santri.name },
         });
 
         successCount++;
       } catch (err: any) {
-        errors.push(`Baris ${rowNumber}: Gagal menyimpan (${err.message.substring(0, 100)}...)`);
+        errors.push(`Baris ${rowNumber}: Gagal menyimpan (${String(err.message).substring(0, 100)})`);
         failedCount++;
       }
     }
 
-    return {
-      message: 'Impor data massal selesai diproses',
-      successCount,
-      failedCount,
-      errors,
-    };
-  }
-
-  async addWali(santriId: string, tenantId: string, createWaliDto: CreateWaliDto) {
-    // Verify santri belongs to tenant
-    await this.findOne(santriId, tenantId);
-
-    // Is this the first wali? Make it primary if so
-    const existingLinks = await this.prisma.santriWali.count({
-      where: { santriId },
-    });
-    const isPrimary = existingLinks === 0;
-
-    // Create wali and link in transaction
-    return this.prisma.$transaction(async (prisma) => {
-      const wali = await prisma.wali.create({
-        data: {
-          ...createWaliDto,
-          tenantId,
-        },
-      });
-
-      await prisma.santriWali.create({
-        data: {
-          santriId,
-          waliId: wali.id,
-          isPrimary,
-        },
-      });
-
-      return wali;
-    });
-  }
-
-  async linkWali(santriId: string, waliId: string, tenantId: string) {
-    // Verify santri
-    await this.findOne(santriId, tenantId);
-
-    // Verify wali belongs to tenant
-    const wali = await this.prisma.wali.findFirst({
-      where: { id: waliId, tenantId },
-    });
-
-    if (!wali) {
-      throw new NotFoundException(`Wali with ID ${waliId} not found`);
-    }
-
-    // Check if link already exists
-    const existingLink = await this.prisma.santriWali.findUnique({
-      where: { santriId_waliId: { santriId, waliId } },
-    });
-
-    if (existingLink) {
-      return existingLink; // Already linked
-    }
-
-    const existingLinksCount = await this.prisma.santriWali.count({
-      where: { santriId },
-    });
-
-    return this.prisma.santriWali.create({
-      data: {
-        santriId,
-        waliId,
-        isPrimary: existingLinksCount === 0,
-      },
-    });
+    return { message: 'Impor data massal selesai', successCount, failedCount, errors };
   }
 }

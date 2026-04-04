@@ -99,53 +99,73 @@ model RefreshToken {
 }
 
 model Santri {
-  id            String          @id @default(uuid())
-  tenantId      String
-  nisn          String?
-  name          String
-  gender        String
-  dob           DateTime?
-  kelas         String?
-  room          String?
-  contact       String?
-  address       String?
-  photo         String?
-  status        String          @default("AKTIF")
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  attendances   Attendance[]    @relation("AttendanceToSantri")
-  catatanHarian CatatanHarian[]
-  grades        Grade[]         @relation("GradeToSantri")
-  healthRecords HealthRecord[]
-  invoices      Invoice[]
-  izin          Izin[]
-  kunjungan     Kunjungan[]
-  medications   Medication[]
-  mutabaah      Mutabaah[]      @relation("MutabaahToSantri")
-  pelanggaran   Pelanggaran[]
-  pembinaan     Pembinaan[]
-  points        Point[]         @relation("PointToSantri")
-  tenant        Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  walis         SantriWali[]
-  tahfidz       Tahfidz[]       @relation("TahfidzToSantri")
-  wallet        Wallet?         @relation("WalletToSantri")
+  id             String          @id @default(uuid())
+  tenantId       String
+  nis            String?         @unique  // Nomor Induk Santri — unique per pesantren
+  nisn           String?
+  namaLengkap    String?
+  namaPanggilan  String?
+  name           String
+  gender         String
+  jenisKelamin   String?
+  dob            DateTime?
+  tanggalLahir   DateTime?
+  tempatLahir    String?
+  kelas          String?
+  kelasId        String?
+  room           String?
+  contact        String?
+  noHp           String?
+  address        String?
+  alamat         String?
+  photo          String?
+  fotoUrl        String?
+  tanggalMasuk   DateTime?
+  tanggalKeluar  DateTime?
+  status         String          @default("AKTIF")  // AKTIF, ALUMNI, KELUAR
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  deletedAt      DateTime?       // soft delete
+  attendances    Attendance[]    @relation("AttendanceToSantri")
+  catatanHarian  CatatanHarian[]
+  grades         Grade[]         @relation("GradeToSantri")
+  healthRecords  HealthRecord[]
+  invoices       Invoice[]
+  izin           Izin[]
+  kunjungan      Kunjungan[]
+  medications    Medication[]
+  mutabaah       Mutabaah[]      @relation("MutabaahToSantri")
+  pelanggaran    Pelanggaran[]
+  pembinaan      Pembinaan[]
+  points         Point[]         @relation("PointToSantri")
+  tenant         Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  walis          SantriWali[]
+  tahfidz        Tahfidz[]       @relation("TahfidzToSantri")
+  wallet         Wallet?         @relation("WalletToSantri")
 
   @@index([tenantId])
+  @@index([nis])
+  @@index([deletedAt])
   @@map("santri")
 }
 
 model Wali {
-  id        String       @id @default(uuid())
-  tenantId  String
-  name      String
-  relation  String
-  phone     String
-  email     String?
-  address   String?
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
-  santris   SantriWali[]
-  tenant    Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  id           String       @id @default(uuid())
+  tenantId     String
+  userId       String?      // linked User account if wali has portal access
+  namaLengkap  String?
+  name         String
+  hubungan     String?
+  relation     String
+  noHp         String?
+  phone        String
+  email        String?
+  address      String?
+  alamat       String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  santris      SantriWali[]
+  tenant       Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@map("wali")

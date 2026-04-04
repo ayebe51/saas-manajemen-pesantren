@@ -10,25 +10,30 @@ import {
   UseGuards,
   UseInterceptors,
   UploadedFile,
-  BadRequestException,
   Res,
+  Req,
 } from '@nestjs/common';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiTags,
   ApiOperation,
   ApiBearerAuth,
-  ApiQuery,
   ApiConsumes,
   ApiBody,
 } from '@nestjs/swagger';
 import { SantriService } from './santri.service';
-import { CreateSantriDto, UpdateSantriDto, CreateWaliDto } from './dto/santri.dto';
+import {
+  CreateSantriDto,
+  UpdateSantriDto,
+  CreateWaliDto,
+  SantriFilterDto,
+} from './dto/santri.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { TenantId } from '../../common/decorators/tenant-id.decorator';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { AuditLogInterceptor } from '../../common/interceptors/audit-log.interceptor';
 
 @ApiTags('Santri')
@@ -39,15 +44,40 @@ import { AuditLogInterceptor } from '../../common/interceptors/audit-log.interce
 export class SantriController {
   constructor(private readonly santriService: SantriService) {}
 
+  // ─── Santri CRUD ─────────────────────────────────────────────────────────────
+
+  /**
+   * POST /santri
+   * Req 3.1, 3.2 — Buat santri baru; validasi NIS unik
+   */
   @Post()
-  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS')
-  @ApiOperation({ summary: 'Create a new santri' })
-  async create(@TenantId() tenantId: string, @Body() createSantriDto: CreateSantriDto) {
-    return this.santriService.create(tenantId, createSantriDto);
+  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS', 'Super_Admin', 'Admin_Pesantren')
+  @ApiOperation({ summary: 'Buat data santri baru' })
+  async create(
+    @TenantId() tenantId: string,
+    @Body() dto: CreateSantriDto,
+    @CurrentUser() user: any,
+    @Req() req: Request,
+  ) {
+    return this.santriService.create(tenantId, dto, user?.id, req.ip);
   }
 
+  /**
+   * GET /santri
+   * Req 3.6 — Pencarian berdasarkan nama, NIS, kelas, status
+   */
+  @Get()
+  @ApiOperation({ summary: 'Daftar santri dengan filter dan paginasi' })
+  findAll(@TenantId() tenantId: string, @Query() filters: SantriFilterDto) {
+    return this.santriService.findAll(tenantId, filters);
+  }
+
+  /**
+   * GET /santri/template
+   * Download template Excel untuk bulk import
+   */
   @Get('template')
-  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS')
+  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS', 'Super_Admin', 'Admin_Pesantren')
   @ApiOperation({ summary: 'Unduh template Excel untuk import data santri' })
   async downloadTemplate(@Res() res: Response) {
     const buffer = await this.santriService.generateTemplate();
@@ -58,93 +88,109 @@ export class SantriController {
     res.send(buffer);
   }
 
+  /**
+   * POST /santri/import/bulk
+   * Bulk import via Excel
+   */
   @Post('import/bulk')
-  @Roles('SUPERADMIN', 'TENANT_ADMIN')
-  @ApiOperation({ summary: 'Bulk Create/Import Santri via Excel File' })
+  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'Super_Admin', 'Admin_Pesantren')
+  @ApiOperation({ summary: 'Bulk import santri via file Excel' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
       type: 'object',
-      properties: {
-        file: {
-          type: 'string',
-          format: 'binary',
-        },
-      },
+      properties: { file: { type: 'string', format: 'binary' } },
     },
   })
   @UseInterceptors(FileInterceptor('file'))
-  async bulkImport(@UploadedFile() file: any, @TenantId() tenantId: string) {
-    return this.santriService.bulkImport(tenantId, file);
-  }
-
-  @Get()
-  @ApiOperation({ summary: 'Get all santri for current tenant (paginated)' })
-  @ApiQuery({ name: 'page', required: false, type: Number })
-  @ApiQuery({ name: 'limit', required: false, type: Number })
-  @ApiQuery({ name: 'search', required: false, type: String })
-  @ApiQuery({ name: 'kelas', required: false })
-  @ApiQuery({ name: 'room', required: false })
-  @ApiQuery({ name: 'waliId', required: false })
-  findAll(
+  async bulkImport(
+    @UploadedFile() file: any,
     @TenantId() tenantId: string,
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
-    @Query('search') search?: string,
-    @Query('kelas') kelas?: string,
-    @Query('room') room?: string,
-    @Query('waliId') waliId?: string,
+    @CurrentUser() user: any,
   ) {
-    return this.santriService.findAll(tenantId, {
-      page: page ? parseInt(page, 10) : 1,
-      limit: limit ? parseInt(limit, 10) : 10,
-      search,
-      kelas,
-      room,
-      waliId,
-    });
+    return this.santriService.bulkImport(tenantId, file, user?.id);
   }
 
+  /**
+   * GET /santri/:id
+   * Req 3.1 — Detail santri beserta info wali
+   */
   @Get(':id')
-  @ApiOperation({ summary: 'Get santri details with wali info' })
+  @ApiOperation({ summary: 'Detail santri beserta data wali' })
   findOne(@Param('id') id: string, @TenantId() tenantId: string) {
     return this.santriService.findOne(id, tenantId);
   }
 
+  /**
+   * PUT /santri/:id
+   * Req 3.5 — Update santri; catat ke audit log (nilai sebelum & sesudah)
+   */
   @Put(':id')
-  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS')
-  @ApiOperation({ summary: 'Update santri' })
+  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS', 'Super_Admin', 'Admin_Pesantren')
+  @ApiOperation({ summary: 'Update data santri' })
   update(
     @Param('id') id: string,
-    @Body() updateSantriDto: UpdateSantriDto,
+    @Body() dto: UpdateSantriDto,
     @TenantId() tenantId: string,
+    @CurrentUser() user: any,
+    @Req() req: Request,
   ) {
-    return this.santriService.update(id, tenantId, updateSantriDto);
+    return this.santriService.update(id, tenantId, dto, user?.id, req.ip);
   }
 
+  /**
+   * DELETE /santri/:id
+   * Req 3.3 — Soft delete; data historis tetap tersimpan
+   */
   @Delete(':id')
-  @Roles('SUPERADMIN', 'TENANT_ADMIN')
-  @ApiOperation({ summary: 'Delete a santri permanently' })
-  async remove(@Param('id') id: string, @TenantId() tenantId: string) {
-    return this.santriService.remove(id, tenantId);
+  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'Super_Admin', 'Admin_Pesantren')
+  @ApiOperation({ summary: 'Soft delete santri (data historis tetap tersimpan)' })
+  async remove(
+    @Param('id') id: string,
+    @TenantId() tenantId: string,
+    @CurrentUser() user: any,
+    @Req() req: Request,
+  ) {
+    return this.santriService.remove(id, tenantId, user?.id, req.ip);
   }
 
-  // Wali Management for Santri
+  /**
+   * GET /santri/:id/history
+   * Req 3.5 — Riwayat perubahan data santri dari audit log
+   */
+  @Get(':id/history')
+  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS', 'Super_Admin', 'Admin_Pesantren', 'Owner')
+  @ApiOperation({ summary: 'Riwayat perubahan data santri (dari audit log)' })
+  getHistory(@Param('id') id: string, @TenantId() tenantId: string) {
+    return this.santriService.getHistory(id, tenantId);
+  }
 
+  // ─── Wali Management ─────────────────────────────────────────────────────────
+
+  /**
+   * POST /santri/:id/wali
+   * Req 3.4 — Tambah wali baru dan hubungkan ke santri
+   */
   @Post(':id/wali')
-  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS')
-  @ApiOperation({ summary: 'Add a new wali and link to santri' })
+  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS', 'Super_Admin', 'Admin_Pesantren')
+  @ApiOperation({ summary: 'Tambah wali baru dan hubungkan ke santri' })
   addWali(
     @Param('id') santriId: string,
-    @Body() createWaliDto: CreateWaliDto,
+    @Body() dto: CreateWaliDto,
     @TenantId() tenantId: string,
+    @CurrentUser() user: any,
+    @Req() req: Request,
   ) {
-    return this.santriService.addWali(santriId, tenantId, createWaliDto);
+    return this.santriService.addWali(santriId, tenantId, dto, user?.id, req.ip);
   }
 
+  /**
+   * POST /santri/:id/wali/:waliId/link
+   * Hubungkan wali yang sudah ada ke santri ini
+   */
   @Post(':id/wali/:waliId/link')
-  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS')
-  @ApiOperation({ summary: 'Link an existing wali to this santri' })
+  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS', 'Super_Admin', 'Admin_Pesantren')
+  @ApiOperation({ summary: 'Hubungkan wali yang sudah ada ke santri ini' })
   linkExistingWali(
     @Param('id') santriId: string,
     @Param('waliId') waliId: string,
