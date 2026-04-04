@@ -23,7 +23,7 @@ Implementasi dilakukan secara bertahap mengikuti urutan prioritas build order. S
     - Simpan refresh token sebagai hash di tabel `refresh_tokens`
     - Deteksi reuse refresh token: batalkan seluruh sesi user
     - _Requirements: 1.1, 1.3, 1.4, 1.5, 1.7_
-  - [ ]* 2.2 Property test: Kredensial invalid selalu 401 tanpa detail akun
+  - [x] 2.2 Property test: Kredensial invalid selalu 401 tanpa detail akun
     - **Property 1: Kredensial Invalid Selalu Menghasilkan 401 Tanpa Detail Akun**
     - **Validates: Requirements 1.2**
   - [ ]* 2.3 Property test: Token lifecycle — refresh dan invalidasi setelah logout
