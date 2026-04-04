@@ -3,6 +3,7 @@ import {
   NotFoundException,
   BadRequestException,
   ConflictException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { Workbook, Row } from 'exceljs';
 import { PrismaService } from '../../common/prisma/prisma.service';
@@ -101,7 +102,7 @@ export class SantriService {
     return santri;
   }
 
-  async findAll(tenantId: string, filters: SantriFilterDto) {
+  async findAll(tenantId: string, filters: SantriFilterDto, requestingUser?: { id: string; role: string }) {
     const page = filters.page ?? 1;
     const limit = filters.limit ?? 10;
     const skip = (page - 1) * limit;
@@ -114,6 +115,11 @@ export class SantriService {
 
     if (filters.waliId) {
       where.walis = { some: { wali: { userId: filters.waliId } } };
+    }
+
+    // Req 2.7 — Wali_Santri hanya melihat santri tanggungannya
+    if (requestingUser?.role === 'Wali_Santri') {
+      where.walis = { some: { wali: { userId: requestingUser.id } } };
     }
 
     if (filters.search) {
@@ -143,8 +149,23 @@ export class SantriService {
     };
   }
 
-  async findOne(id: string, tenantId: string) {
-    return this.assertExists(id, tenantId);
+  async findOne(id: string, tenantId: string, requestingUser?: { id: string; role: string }) {
+    const santri = await this.assertExists(id, tenantId);
+
+    // Req 2.7 — Wali_Santri hanya boleh mengakses santri tanggungannya
+    if (requestingUser?.role === 'Wali_Santri') {
+      const link = await this.prisma.santriWali.findFirst({
+        where: {
+          santriId: id,
+          wali: { userId: requestingUser.id },
+        },
+      });
+      if (!link) {
+        throw new ForbiddenException('Anda tidak memiliki akses ke data santri ini');
+      }
+    }
+
+    return santri;
   }
 
   async update(

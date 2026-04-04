@@ -65,11 +65,16 @@ export class SantriController {
   /**
    * GET /santri
    * Req 3.6 — Pencarian berdasarkan nama, NIS, kelas, status
+   * Req 2.7 — Wali_Santri hanya melihat santri tanggungannya
    */
   @Get()
   @ApiOperation({ summary: 'Daftar santri dengan filter dan paginasi' })
-  findAll(@TenantId() tenantId: string, @Query() filters: SantriFilterDto) {
-    return this.santriService.findAll(tenantId, filters);
+  findAll(
+    @TenantId() tenantId: string,
+    @Query() filters: SantriFilterDto,
+    @CurrentUser() user: any,
+  ) {
+    return this.santriService.findAll(tenantId, filters, user);
   }
 
   /**
@@ -114,11 +119,16 @@ export class SantriController {
   /**
    * GET /santri/:id
    * Req 3.1 — Detail santri beserta info wali
+   * Req 2.7 — Wali_Santri hanya boleh mengakses santri tanggungannya
    */
   @Get(':id')
   @ApiOperation({ summary: 'Detail santri beserta data wali' })
-  findOne(@Param('id') id: string, @TenantId() tenantId: string) {
-    return this.santriService.findOne(id, tenantId);
+  findOne(
+    @Param('id') id: string,
+    @TenantId() tenantId: string,
+    @CurrentUser() user: any,
+  ) {
+    return this.santriService.findOne(id, tenantId, user);
   }
 
   /**

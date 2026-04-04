@@ -112,8 +112,8 @@ Implementasi dilakukan secara bertahap mengikuti urutan prioritas build order. S
     - Test validasi NIS duplikat, soft delete tidak menghapus data historis
     - _Requirements: 3.2, 3.3, 3.5_
 
-- [ ] 8. Implementasi pembatasan akses Wali Santri
-  - [ ] 8.1 Implementasi filter data santri berdasarkan relasi `santri_wali` untuk role Wali_Santri
+- [x] 8. Implementasi pembatasan akses Wali Santri
+  - [x] 8.1 Implementasi filter data santri berdasarkan relasi `santri_wali` untuk role Wali_Santri
     - Middleware/guard yang memastikan Wali_Santri hanya melihat santri tanggungannya
     - _Requirements: 2.7_
   - [ ]* 8.2 Property test: Wali santri hanya akses data santri sendiri

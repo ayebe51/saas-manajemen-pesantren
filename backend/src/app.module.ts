@@ -40,6 +40,9 @@ import { PaymentModule } from './modules/payment/payment.module';
 import { WaliPortalModule } from './modules/wali-portal/wali-portal.module';
 import { AttendanceModule } from './modules/attendance/attendance.module';
 import { PointsModule } from './modules/points/points.module';
+import { RbacModule } from './modules/rbac/rbac.module';
+import { LicenseModule } from './modules/license/license.module';
+import { LicenseGuard } from './common/guards/license.guard';
 
 @Module({
   imports: [
@@ -94,6 +97,8 @@ import { PointsModule } from './modules/points/points.module';
     WaliPortalModule,
     AttendanceModule,
     PointsModule,
+    RbacModule,
+    LicenseModule,
   ],
   providers: [
     {
@@ -105,6 +110,12 @@ import { PointsModule } from './modules/points/points.module';
     {
       provide: APP_GUARD,
       useClass: TenantGuard,
+    },
+    // LicenseGuard enforces read-only mode when license is EXPIRED/REVOKED/INACTIVE.
+    // Applied after JwtAuthGuard and RolesGuard in the pipeline — Requirements 19.3, 19.4
+    {
+      provide: APP_GUARD,
+      useClass: LicenseGuard,
     },
   ],
 })

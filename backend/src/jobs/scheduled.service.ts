@@ -1,12 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from '../common/prisma/prisma.service';
+import { LicenseService } from '../modules/license/license.service';
 
 @Injectable()
 export class ScheduledTasksService {
   private readonly logger = new Logger(ScheduledTasksService.name);
 
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly licenseService: LicenseService,
+  ) {}
 
   @Cron(CronExpression.EVERY_DAY_AT_8AM)
   async handlePaymentReminders() {
@@ -67,5 +71,30 @@ export class ScheduledTasksService {
     });
 
     this.logger.log(`Marked ${expired.count} izin requests as expired.`);
+  }
+
+  /**
+   * LicenseCheckerJob — runs daily at 2 AM.
+   * Verifies license online, updates last_verified_at, logs to audit log.
+   * If offline, updates status to GRACE_PERIOD or EXPIRED based on grace period.
+   * Requirements: 19.6
+   */
+  @Cron('0 2 * * *')
+  async handleLicenseCheck() {
+    this.logger.log('Running daily license verification check...');
+    try {
+      const result = await this.licenseService.verifyLicense();
+      this.logger.log(`License check complete. Status: ${result.status}`);
+
+      if (result.status === 'GRACE_PERIOD') {
+        this.logger.warn(
+          `License in grace period. ${result.daysRemaining ?? 0} day(s) remaining before read-only mode.`,
+        );
+      } else if (result.status === 'EXPIRED') {
+        this.logger.error('License has EXPIRED. System is now in read-only mode.');
+      }
+    } catch (err) {
+      this.logger.error(`License check job failed: ${err.message}`, err.stack);
+    }
   }
 }
