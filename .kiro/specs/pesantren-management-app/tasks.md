@@ -18,7 +18,7 @@ Implementasi dilakukan secara bertahap mengikuti urutan prioritas build order. S
   - _Requirements: 22.4, 22.5_
 
 - [ ] 2. Implementasi modul Auth
-  - [ ] 2.1 Implementasi `AuthService`: login, refresh token, logout
+  - [x] 2.1 Implementasi `AuthService`: login, refresh token, logout
     - Validasi kredensial, hash bcrypt/argon2 (cost factor 12), penerbitan JWT access token (15 menit) + refresh token (7 hari)
     - Simpan refresh token sebagai hash di tabel `refresh_tokens`
     - Deteksi reuse refresh token: batalkan seluruh sesi user
