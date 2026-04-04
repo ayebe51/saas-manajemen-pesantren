@@ -120,75 +120,75 @@ Implementasi dilakukan secara bertahap mengikuti urutan prioritas build order. S
     - **Property 10: Wali Santri Hanya Akses Data Santri Sendiri**
     - **Validates: Requirements 2.7**
 
-- [ ] 9. Implementasi manajemen User dan audit RBAC
-  - [ ] 9.1 Implementasi endpoint manajemen user: buat, update, nonaktifkan
+- [x] 9. Implementasi manajemen User dan audit RBAC
+  - [x] 9.1 Implementasi endpoint manajemen user: buat, update, nonaktifkan
     - Saat user dinonaktifkan: revoke semua refresh token aktif
     - Catat perubahan RBAC ke audit log
     - _Requirements: 2.8, 16.2_
   - [ ]* 9.2 Unit test: Nonaktifkan user merevoke sesi aktif
     - _Requirements: 16.2_
 
-- [ ] 10. Checkpoint Fase 2 — Pastikan semua test lulus
+- [x] 10. Checkpoint Fase 2 — Pastikan semua test lulus
   - Pastikan semua unit test dan property test Fase 2 lulus, tanyakan kepada user jika ada pertanyaan.
 
 ---
 
 ### Fase 3: Presensi QR + GPS + Audit
 
-- [ ] 11. Implementasi modul Presensi
-  - [ ] 11.1 Prisma migration: tabel `presensi_sessions`, `presensi_records`
+- [x] 11. Implementasi modul Presensi
+  - [x] 11.1 Prisma migration: tabel `presensi_sessions`, `presensi_records`
     - UNIQUE constraint `(session_id, santri_id)` untuk idempotency
     - _Requirements: 5.1, 5.8_
-  - [ ] 11.2 Implementasi `QrTokenService`: generate dan validasi QR token
+  - [x] 11.2 Implementasi `QrTokenService`: generate dan validasi QR token
     - QR token unik, TTL 5 menit berdasarkan `server_timestamp`
     - Simpan token di Redis dengan TTL; tandai sebagai used setelah scan pertama
     - _Requirements: 5.1, 5.2, 5.3_
-  - [ ] 11.3 Implementasi `GpsValidatorService`: validasi koordinat GPS
+  - [x] 11.3 Implementasi `GpsValidatorService`: validasi koordinat GPS
     - Hitung jarak Haversine dari koordinat sesi; tolak jika di luar radius
     - Tandai PENDING_REVIEW jika akurasi GPS > 50 meter
     - _Requirements: 5.4, 5.5, 5.6_
-  - [ ] 11.4 Implementasi `PresensiService` dan `PresensiController`
+  - [x] 11.4 Implementasi `PresensiService` dan `PresensiController`
     - Endpoint: POST `/attendance/sessions`, GET `/attendance/sessions/:id/qr`, POST `/attendance/scan`, GET `/attendance/sessions/:id/records`, GET `/attendance/santri/:id`
     - Gunakan `server_timestamp` (bukan client timestamp) untuk semua record
     - Idempotency: scan ulang sesi yang sama mengembalikan record existing
     - Catat semua percobaan presensi ke audit log
     - _Requirements: 5.7, 5.8, 5.9, 5.11_
-  - [ ]* 11.5 Property test: QR token idempotency dan one-time-use
+  - [x]* 11.5 Property test: QR token idempotency dan one-time-use
     - **Property 11: QR Token Idempotency dan One-Time-Use**
     - **Validates: Requirements 5.1, 5.2, 5.3, 5.8**
-  - [ ]* 11.6 Property test: GPS validation konsisten dengan radius konfigurasi
+  - [x]* 11.6 Property test: GPS validation konsisten dengan radius konfigurasi
     - **Property 12: GPS Validation Konsisten dengan Radius Konfigurasi**
     - **Validates: Requirements 5.4, 5.5, 5.6**
-  - [ ]* 11.7 Property test: Server timestamp selalu digunakan untuk presensi
+  - [x]* 11.7 Property test: Server timestamp selalu digunakan untuk presensi
     - **Property 13: Server Timestamp Selalu Digunakan untuk Presensi**
     - **Validates: Requirements 5.7**
-  - [ ]* 11.8 Unit test: QR expired → 410, scan duplikat → idempotent, GPS di luar radius → ditolak
+  - [x]* 11.8 Unit test: QR expired → 410, scan duplikat → idempotent, GPS di luar radius → ditolak
     - _Requirements: 5.3, 5.6, 5.8_
 
-- [ ] 12. Checkpoint Fase 3 — Pastikan semua test lulus
+- [x] 12. Checkpoint Fase 3 — Pastikan semua test lulus
   - Pastikan semua unit test dan property test Fase 3 lulus, tanyakan kepada user jika ada pertanyaan.
 
 ---
 
 ### Fase 4: WhatsApp Queue Engine
 
-- [ ] 13. Implementasi modul WA Engine
-  - [ ] 13.1 Prisma migration: tabel `wa_queue` dengan index `(status, next_retry_at)`
+- [x] 13. Implementasi modul WA Engine
+  - [x] 13.1 Prisma migration: tabel `wa_queue` dengan index `(status, next_retry_at)`
     - Status: PENDING, RETRYING, SENT, FAILED, DLQ
     - _Requirements: 18.1, 18.4_
-  - [ ] 13.2 Implementasi `WaQueueService`: enqueue pesan ke tabel `wa_queue`
+  - [x] 13.2 Implementasi `WaQueueService`: enqueue pesan ke tabel `wa_queue`
     - Insert asinkron; tidak memblokir operasi bisnis utama
     - _Requirements: 18.1_
-  - [ ] 13.3 Implementasi `WaWorker` dengan BullMQ
+  - [x] 13.3 Implementasi `WaWorker` dengan BullMQ
     - Poll pesan PENDING/RETRYING; kirim via `ProviderAdapter`
     - Update status ke SENT atau RETRYING dengan `next_retry_at` (exponential backoff + jitter 10%)
     - Setelah 5 kali gagal: pindahkan ke DLQ
     - _Requirements: 18.2, 18.3_
-  - [ ] 13.4 Implementasi `ProviderAdapter` interface dan minimal satu implementasi konkret
+  - [x] 13.4 Implementasi `ProviderAdapter` interface dan minimal satu implementasi konkret
     - Interface: `send(to, message)`, `getStatus(messageId)`
     - Implementasi: `FonnteAdapter` atau `CustomHttpAdapter` (dikonfigurasi via `WA_PROVIDER` env)
     - _Requirements: 18.6, 18.7_
-  - [ ] 13.5 Implementasi `TemplateEngine`: render template dengan variabel dinamis
+  - [x] 13.5 Implementasi `TemplateEngine`: render template dengan variabel dinamis
     - Template disimpan di database; variabel `{{variable}}`
     - Minimal 8 jenis notifikasi: presensi, pembayaran, pelanggaran, reward, izin, kunjungan, buku penghubung, top-up
     - _Requirements: 18.5, 18.8_

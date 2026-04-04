@@ -26,6 +26,7 @@ import { NotificationModule } from './modules/notification/notification.module';
 import { JobsModule } from './jobs/jobs.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { ExternalNotificationModule } from './modules/external-notification/external-notification.module';
+import { WaEngineModule } from './modules/wa-engine/wa-engine.module';
 import { TahfidzModule } from './modules/tahfidz/tahfidz.module';
 import { WalletModule } from './modules/wallet/wallet.module';
 import { AcademicModule } from './modules/academic/academic.module';
@@ -83,6 +84,7 @@ import { LicenseGuard } from './common/guards/license.guard';
     JobsModule,
     UploadModule,
     ExternalNotificationModule,
+    WaEngineModule,
     TahfidzModule,
     WalletModule,
     AcademicModule,

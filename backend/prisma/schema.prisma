@@ -55,6 +55,7 @@ model Tenant {
   wali                  Wali[]
   wallets               Wallet[]
   webhookEvents         WebhookEvent[]
+  presensiSessions      PresensiSession[]
 
   @@map("tenants")
 }
@@ -142,6 +143,7 @@ model Santri {
   walis          SantriWali[]
   tahfidz        Tahfidz[]       @relation("TahfidzToSantri")
   wallet         Wallet?         @relation("WalletToSantri")
+  presensiRecords PresensiRecord[] @relation("PresensiRecordToSantri")
 
   @@index([tenantId])
   @@index([nis])
@@ -880,4 +882,78 @@ model License {
   createdAt           DateTime  @default(now())
 
   @@map("license")
+}
+
+// ─── WhatsApp Queue Engine ────────────────────────────────────────────────────
+
+model WaQueue {
+  id               String    @id @default(uuid())
+  tipeNotifikasi   String    // presensi, pembayaran, pelanggaran, reward, izin, kunjungan, buku_penghubung, topup
+  noTujuan         String    // nomor WA tujuan
+  templateKey      String    // key template yang digunakan
+  payload          Json      // variabel untuk render template
+  status           String    @default("PENDING") // PENDING, RETRYING, SENT, FAILED, DLQ
+  retryCount       Int       @default(0)
+  nextRetryAt      DateTime?
+  sentAt           DateTime?
+  errorMessage     String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@index([status, nextRetryAt])
+  @@map("wa_queue")
+}
+
+model WaTemplate {
+  id        String   @id @default(uuid())
+  key       String   @unique // e.g. PRESENSI_MASUK, PEMBAYARAN_BERHASIL
+  body      String   // template dengan variabel {{variable}}
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("wa_templates")
+}
+
+// ─── Presensi (Attendance QR + GPS) ─────────────────────────────────────────
+
+model PresensiSession {
+  id            String            @id @default(uuid())
+  tenantId      String
+  namaSesi      String
+  tipe          String            // MASUK, KELUAR, SHOLAT, dll
+  qrToken       String?           @unique
+  qrExpiresAt   DateTime?
+  lokasiLat     Decimal?          @db.Decimal(10, 8)
+  lokasiLng     Decimal?          @db.Decimal(11, 8)
+  radiusMeter   Int               @default(100)
+  createdBy     String
+  createdAt     DateTime          @default(now())
+  closedAt      DateTime?
+  tenant        Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  records       PresensiRecord[]
+
+  @@index([tenantId])
+  @@index([qrToken])
+  @@map("presensi_sessions")
+}
+
+model PresensiRecord {
+  id              String          @id @default(uuid())
+  sessionId       String
+  santriId        String
+  status          String          // HADIR, PENDING_REVIEW, DITOLAK
+  gpsLat          Decimal?        @db.Decimal(10, 8)
+  gpsLng          Decimal?        @db.Decimal(11, 8)
+  gpsAccuracy     Decimal?        @db.Decimal(8, 2)
+  serverTimestamp DateTime        @default(now())
+  clientTimestamp DateTime?
+  faceVerified    Boolean         @default(false)
+  session         PresensiSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  santri          Santri          @relation("PresensiRecordToSantri", fields: [santriId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, santriId])  // idempotency — Requirement 5.8
+  @@index([santriId])
+  @@index([sessionId])
+  @@map("presensi_records")
 }
