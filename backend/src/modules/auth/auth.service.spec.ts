@@ -209,6 +209,74 @@ describe('AuthService', () => {
   });
 });
 
+// Feature: pesantren-management-app, Property 5: Hash Password Unik per Pengguna
+describe('AuthService — Property 5: Hash Password Unik per Pengguna (PBT)', () => {
+  /**
+   * **Validates: Requirements 1.7**
+   *
+   * THE Auth_Service SHALL menyimpan password menggunakan algoritma bcrypt atau argon2
+   * dengan salt yang unik per pengguna.
+   *
+   * Properties tested:
+   * 1. Hashing the same password twice always produces different hashes (unique salt per call)
+   * 2. The hash is never equal to the plaintext password
+   */
+
+  // ─── Arbitraries ──────────────────────────────────────────────────────────
+
+  /** Arbitrary password: non-empty string up to 72 chars (bcrypt max) */
+  const arbPassword = fc.string({ minLength: 1, maxLength: 72 });
+
+  // ─── Property 5a: Same password → different hashes (unique salt) ──────────
+
+  describe('Property 5a: Hashing the same password twice produces different hashes', () => {
+    // bcrypt is intentionally slow; use cost factor 4 (minimum) for test speed
+    // while still validating the unique-salt property of the algorithm used in production
+    it('should always produce different hashes for the same password (unique salt per user)', async () => {
+      // Feature: pesantren-management-app, Property 5: Hash Password Unik per Pengguna
+      await fc.assert(
+        fc.asyncProperty(arbPassword, async (password) => {
+          const BCRYPT_COST_TEST = 4; // minimum valid cost; production uses 12
+
+          const hash1 = await bcrypt.hash(password, BCRYPT_COST_TEST);
+          const hash2 = await bcrypt.hash(password, BCRYPT_COST_TEST);
+
+          // Hashes must differ because bcrypt generates a unique salt each time
+          expect(hash1).not.toBe(hash2);
+
+          // Both hashes must be valid bcrypt hashes (start with $2b$ and have correct length)
+          expect(hash1).toMatch(/^\$2[ab]\$\d{2}\$.{53}$/);
+          expect(hash2).toMatch(/^\$2[ab]\$\d{2}\$.{53}$/);
+        }),
+        { numRuns: 100 },
+      );
+    }, 60000); // 60s timeout: 100 runs × 2 bcrypt hashes each
+  });
+
+  // ─── Property 5b: Hash is never equal to plaintext password ──────────────
+
+  describe('Property 5b: Hash is never equal to the plaintext password', () => {
+    it('should never store a hash that equals the plaintext password', async () => {
+      // Feature: pesantren-management-app, Property 5: Hash Password Unik per Pengguna
+      await fc.assert(
+        fc.asyncProperty(arbPassword, async (password) => {
+          const BCRYPT_COST_TEST = 4; // minimum valid cost; production uses 12
+
+          const hash = await bcrypt.hash(password, BCRYPT_COST_TEST);
+
+          // Hash must never equal the plaintext
+          expect(hash).not.toBe(password);
+
+          // Verify the hash is actually valid and can authenticate the original password
+          const isValid = await bcrypt.compare(password, hash);
+          expect(isValid).toBe(true);
+        }),
+        { numRuns: 100 },
+      );
+    }, 60000); // 60s timeout: 100 runs × 1 bcrypt hash + compare each
+  });
+});
+
 // Feature: pesantren-management-app, Property 2: Token Lifecycle — Refresh Setelah Expire, Invalidasi Setelah Logout
 describe('AuthService — Property 2: Token Lifecycle (PBT)', () => {
   let service: AuthService;

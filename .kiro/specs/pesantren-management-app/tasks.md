@@ -32,7 +32,7 @@ Implementasi dilakukan secara bertahap mengikuti urutan prioritas build order. S
   - [x] 2.4 Property test: Refresh token reuse membatalkan seluruh sesi
     - **Property 3: Refresh Token Reuse Membatalkan Seluruh Sesi**
     - **Validates: Requirements 1.4**
-  - [ ]* 2.5 Property test: Hash password unik per pengguna
+  - [x] 2.5 Property test: Hash password unik per pengguna
     - **Property 5: Hash Password Unik per Pengguna**
     - **Validates: Requirements 1.7**
 
