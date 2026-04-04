@@ -6,6 +6,8 @@ import * as bcrypt from 'bcrypt';
 import * as fc from 'fast-check';
 import { AuthService } from './auth.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
+import { AuditLogService } from '../audit-log/audit-log.service';
+import { LoginRateLimiterService } from './login-rate-limiter.service';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -33,6 +35,9 @@ describe('AuthService', () => {
       update: jest.fn(),
       updateMany: jest.fn(),
     },
+    loginAttempt: {
+      create: jest.fn(),
+    },
     $transaction: jest.fn(),
   };
 
@@ -45,6 +50,17 @@ describe('AuthService', () => {
     get: jest.fn().mockReturnValue(undefined),
   };
 
+  const mockAuditLogService = {
+    log: jest.fn().mockResolvedValue(undefined),
+  };
+
+  const mockLoginRateLimiter = {
+    isLockedOut: jest.fn().mockResolvedValue(false),
+    recordFailedAttempt: jest.fn().mockResolvedValue(1),
+    resetAttempts: jest.fn().mockResolvedValue(undefined),
+    getLockoutTtl: jest.fn().mockResolvedValue(0),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -52,12 +68,18 @@ describe('AuthService', () => {
         { provide: PrismaService, useValue: mockPrismaService },
         { provide: JwtService, useValue: mockJwtService },
         { provide: ConfigService, useValue: mockConfigService },
+        { provide: AuditLogService, useValue: mockAuditLogService },
+        { provide: LoginRateLimiterService, useValue: mockLoginRateLimiter },
       ],
     }).compile();
 
     service = module.get<AuthService>(AuthService);
     jest.clearAllMocks();
     mockJwtService.sign.mockReturnValue('mock.jwt.token');
+    mockLoginRateLimiter.isLockedOut.mockResolvedValue(false);
+    mockLoginRateLimiter.recordFailedAttempt.mockResolvedValue(1);
+    mockLoginRateLimiter.resetAttempts.mockResolvedValue(undefined);
+    mockAuditLogService.log.mockResolvedValue(undefined);
   });
 
   it('should be defined', () => {
@@ -96,6 +118,7 @@ describe('AuthService', () => {
       jest.spyOn(bcrypt, 'compare').mockResolvedValue(true as never);
       mockPrismaService.refreshToken.create.mockResolvedValue({});
       mockPrismaService.user.update.mockResolvedValue(mockUser);
+      mockPrismaService.loginAttempt.create.mockResolvedValue({});
 
       const result = await service.login(loginDto);
 
@@ -109,6 +132,7 @@ describe('AuthService', () => {
       jest.spyOn(bcrypt, 'compare').mockResolvedValue(true as never);
       mockPrismaService.refreshToken.create.mockResolvedValue({});
       mockPrismaService.user.update.mockResolvedValue(mockUser);
+      mockPrismaService.loginAttempt.create.mockResolvedValue({});
 
       await service.login(loginDto);
 
@@ -302,6 +326,7 @@ describe('AuthService — Property 2: Token Lifecycle (PBT)', () => {
       update: jest.fn(),
       updateMany: jest.fn(),
     },
+    loginAttempt: { create: jest.fn() },
     $transaction: jest.fn(),
   };
 
@@ -314,6 +339,14 @@ describe('AuthService — Property 2: Token Lifecycle (PBT)', () => {
     get: jest.fn().mockReturnValue(undefined),
   };
 
+  const mockAuditLog = { log: jest.fn().mockResolvedValue(undefined) };
+  const mockRateLimiter = {
+    isLockedOut: jest.fn().mockResolvedValue(false),
+    recordFailedAttempt: jest.fn().mockResolvedValue(1),
+    resetAttempts: jest.fn().mockResolvedValue(undefined),
+    getLockoutTtl: jest.fn().mockResolvedValue(0),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -321,11 +354,17 @@ describe('AuthService — Property 2: Token Lifecycle (PBT)', () => {
         { provide: PrismaService, useValue: mockPrisma },
         { provide: JwtService, useValue: mockJwt },
         { provide: ConfigService, useValue: mockConfig },
+        { provide: AuditLogService, useValue: mockAuditLog },
+        { provide: LoginRateLimiterService, useValue: mockRateLimiter },
       ],
     }).compile();
 
     service = module.get<AuthService>(AuthService);
     jest.clearAllMocks();
+    mockAuditLog.log.mockResolvedValue(undefined);
+    mockRateLimiter.isLockedOut.mockResolvedValue(false);
+    mockRateLimiter.recordFailedAttempt.mockResolvedValue(1);
+    mockRateLimiter.resetAttempts.mockResolvedValue(undefined);
   });
 
   // ─── Arbitraries ──────────────────────────────────────────────────────────
@@ -555,11 +594,19 @@ describe('AuthService — Property 3: Refresh Token Reuse Membatalkan Seluruh Se
       update: jest.fn(),
       updateMany: jest.fn(),
     },
+    loginAttempt: { create: jest.fn() },
     $transaction: jest.fn(),
   };
 
   const mockJwt = { sign: jest.fn(), verify: jest.fn() };
   const mockConfig = { get: jest.fn().mockReturnValue(undefined) };
+  const mockAuditLog3 = { log: jest.fn().mockResolvedValue(undefined) };
+  const mockRateLimiter3 = {
+    isLockedOut: jest.fn().mockResolvedValue(false),
+    recordFailedAttempt: jest.fn().mockResolvedValue(1),
+    resetAttempts: jest.fn().mockResolvedValue(undefined),
+    getLockoutTtl: jest.fn().mockResolvedValue(0),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -568,11 +615,17 @@ describe('AuthService — Property 3: Refresh Token Reuse Membatalkan Seluruh Se
         { provide: PrismaService, useValue: mockPrisma },
         { provide: JwtService, useValue: mockJwt },
         { provide: ConfigService, useValue: mockConfig },
+        { provide: AuditLogService, useValue: mockAuditLog3 },
+        { provide: LoginRateLimiterService, useValue: mockRateLimiter3 },
       ],
     }).compile();
 
     service = module.get<AuthService>(AuthService);
     jest.clearAllMocks();
+    mockAuditLog3.log.mockResolvedValue(undefined);
+    mockRateLimiter3.isLockedOut.mockResolvedValue(false);
+    mockRateLimiter3.recordFailedAttempt.mockResolvedValue(1);
+    mockRateLimiter3.resetAttempts.mockResolvedValue(undefined);
   });
 
   // ─── Arbitraries ──────────────────────────────────────────────────────────

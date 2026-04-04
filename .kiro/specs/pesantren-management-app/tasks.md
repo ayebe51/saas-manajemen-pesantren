@@ -36,15 +36,15 @@ Implementasi dilakukan secara bertahap mengikuti urutan prioritas build order. S
     - **Property 5: Hash Password Unik per Pengguna**
     - **Validates: Requirements 1.7**
 
-- [ ] 3. Implementasi rate limiting login dan audit log auth
-  - [ ] 3.1 Implementasi rate limiting login: 10 percobaan gagal/menit per IP → lockout 15 menit
+- [x] 3. Implementasi rate limiting login dan audit log auth
+  - [x] 3.1 Implementasi rate limiting login: 10 percobaan gagal/menit per IP → lockout 15 menit
     - Gunakan tabel `login_attempts` + Redis counter
     - `ThrottlerGuard` untuk endpoint publik (100 req/menit user, 30 req/menit IP)
     - _Requirements: 1.6, 22.7_
   - [ ]* 3.2 Property test: Rate limiting login berlaku konsisten per IP
     - **Property 4: Rate Limiting Login Berlaku Konsisten per IP**
     - **Validates: Requirements 1.6**
-  - [ ] 3.3 Implementasi `AuditLogService` dan `AuditLogInterceptor`
+  - [x] 3.3 Implementasi `AuditLogService` dan `AuditLogInterceptor`
     - Insert-only ke tabel `audit_logs` dengan `server_timestamp`, `user_id`, `ip_address`, `aksi`, `nilai_sebelum`, `nilai_sesudah`
     - Catat login berhasil, login gagal, logout
     - _Requirements: 1.8, 20.1, 20.2, 20.4_

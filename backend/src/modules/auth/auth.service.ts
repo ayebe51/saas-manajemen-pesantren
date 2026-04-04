@@ -1,6 +1,8 @@
 import {
   Injectable,
   UnauthorizedException,
+  HttpException,
+  HttpStatus,
   Logger,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -8,6 +10,8 @@ import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { PrismaService } from '../../common/prisma/prisma.service';
+import { AuditLogService } from '../audit-log/audit-log.service';
+import { LoginRateLimiterService } from './login-rate-limiter.service';
 import { LoginDto } from './dto/login.dto';
 
 @Injectable()
@@ -18,10 +22,24 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly auditLogService: AuditLogService,
+    private readonly loginRateLimiter: LoginRateLimiterService,
   ) {}
 
-  async login(loginDto: LoginDto) {
+  async login(loginDto: LoginDto, ipAddress?: string) {
     const { email, password } = loginDto;
+    const ip = ipAddress || 'unknown';
+
+    // ── Rate limiting check — Requirement 1.6 ────────────────────────────────
+    const isLocked = await this.loginRateLimiter.isLockedOut(ip);
+    if (isLocked) {
+      const ttl = await this.loginRateLimiter.getLockoutTtl(ip);
+      const minutes = Math.ceil(ttl / 60);
+      throw new HttpException(
+        `Too many login attempts. Try again in ${minutes} minute(s).`,
+        HttpStatus.TOO_MANY_REQUESTS,
+      );
+    }
 
     // Find user by email — always use same generic error to avoid account enumeration
     const user = await this.prisma.user.findUnique({
@@ -32,14 +50,24 @@ export class AuthService {
     const isPasswordValid =
       user != null && (await bcrypt.compare(password, user.passwordHash));
 
-    if (!user || !isPasswordValid) {
+    if (!user || !isPasswordValid || !user.isActive) {
+      // Record failed attempt in Redis + login_attempts table
+      await this.loginRateLimiter.recordFailedAttempt(ip);
+      await this.recordLoginAttempt(ip, false);
+
+      // Audit log — Requirement 1.8
+      await this.auditLogService.log({
+        aksi: 'LOGIN_FAILED',
+        modul: 'auth',
+        ipAddress: ip,
+        metadata: { email, reason: !user ? 'user_not_found' : !isPasswordValid ? 'invalid_password' : 'account_inactive' },
+      });
+
       // Generic error — Requirements 1.2: no detail about whether account exists
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    if (!user.isActive) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
+    // ── Successful login ──────────────────────────────────────────────────────
 
     // Generate tokens
     const accessToken = this.generateAccessToken(user);
@@ -60,6 +88,19 @@ export class AuthService {
     await this.prisma.user.update({
       where: { id: user.id },
       data: { lastLogin: new Date() },
+    });
+
+    // Record successful attempt + reset rate limiter
+    await this.recordLoginAttempt(ip, true);
+    await this.loginRateLimiter.resetAttempts(ip);
+
+    // Audit log — Requirement 1.8
+    await this.auditLogService.log({
+      aksi: 'LOGIN_SUCCESS',
+      modul: 'auth',
+      userId: user.id,
+      ipAddress: ip,
+      metadata: { email: user.email },
     });
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -145,13 +186,21 @@ export class AuthService {
     };
   }
 
-  async logout(userId: string, refreshToken: string) {
+  async logout(userId: string, refreshToken: string, ipAddress?: string) {
     try {
       const tokenHash = this.hashToken(refreshToken);
       // Revoke the specific token — Requirements 1.5
       await this.prisma.refreshToken.updateMany({
         where: { userId, tokenHash, revoked: false },
         data: { revoked: true, revokedAt: new Date() },
+      });
+
+      // Audit log — Requirement 1.8
+      await this.auditLogService.log({
+        aksi: 'LOGOUT',
+        modul: 'auth',
+        userId,
+        ipAddress: ipAddress || 'unknown',
       });
     } catch (error) {
       this.logger.error(`Logout error: ${error.message}`);
@@ -213,6 +262,21 @@ export class AuthService {
   }
 
   // ─── Private helpers ────────────────────────────────────────────────────────
+
+  /** Record a login attempt to the login_attempts table for audit purposes */
+  private async recordLoginAttempt(ip: string, success: boolean): Promise<void> {
+    try {
+      await this.prisma.loginAttempt.create({
+        data: {
+          ipAddress: ip,
+          success,
+          attemptedAt: new Date(),
+        },
+      });
+    } catch (err) {
+      this.logger.warn(`Failed to record login attempt: ${err.message}`);
+    }
+  }
 
   private generateAccessToken(user: any): string {
     const payload = {

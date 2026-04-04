@@ -50,8 +50,14 @@ import { PointsModule } from './modules/points/points.module';
     }),
     ThrottlerModule.forRoot([
       {
+        name: 'short',
         ttl: 60000,
-        limit: 100, // 100 requests per minute
+        limit: 30,   // 30 req/min per IP for public endpoints — Requirement 22.7
+      },
+      {
+        name: 'medium',
+        ttl: 60000,
+        limit: 100,  // 100 req/min per user
       },
     ]),
     CacheModule.register({

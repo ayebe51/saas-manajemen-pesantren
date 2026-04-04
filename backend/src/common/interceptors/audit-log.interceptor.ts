@@ -1,53 +1,56 @@
 import { Injectable, CallHandler, ExecutionContext, NestInterceptor } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { PrismaService } from '../prisma/prisma.service';
+import { AuditLogService } from '../../modules/audit-log/audit-log.service';
 
+/**
+ * AuditLogInterceptor — general-purpose interceptor for modules that opt in.
+ * Logs POST/PUT/PATCH/DELETE actions via AuditLogService (insert-only).
+ * Requirements: 20.1, 20.2, 20.4
+ */
 @Injectable()
 export class AuditLogInterceptor implements NestInterceptor {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly auditLogService: AuditLogService) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const request = context.switchToHttp().getRequest();
-    const { method, url, user, body, tenantId } = request;
+    const { method, url, user, body } = request;
 
     return next.handle().pipe(
       tap(async (response) => {
-        // Only log meaningful actions (POST, PUT, DELETE, PATCH)
-        if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(method)) {
-          try {
-            // Extract entity name from URL, e.g. /api/v1/santri -> Santri
-            const pathParts = url.split('?')[0].split('/');
-            const entityPart = pathParts[3] || 'unknown';
+        if (!['POST', 'PUT', 'DELETE', 'PATCH'].includes(method)) return;
 
-            // Map common actions
-            let action = method;
-            if (method === 'POST') action = 'CREATE';
-            if (method === 'PUT' || method === 'PATCH') action = 'UPDATE';
-            if (method === 'DELETE') action = 'DELETE';
+        try {
+          const pathParts = url.split('?')[0].split('/');
+          const modul = pathParts[3] || 'unknown';
 
-            // Determine if there's a specific ID in path
-            let entityId = 'unknown';
-            if (pathParts.length > 4 && pathParts[4].length > 10) {
-              entityId = pathParts[4];
-            } else if (response && response.id) {
-              entityId = response.id;
-            }
+          let aksi = method;
+          if (method === 'POST') aksi = 'CREATE';
+          if (method === 'PUT' || method === 'PATCH') aksi = 'UPDATE';
+          if (method === 'DELETE') aksi = 'DELETE';
 
-            await this.prisma.auditLog.create({
-              data: {
-                tenantId: tenantId || (user ? user.tenantId : null),
-                userId: user ? user.id : null,
-                action,
-                entity: entityPart.toUpperCase(),
-                entityId,
-                newValue: JSON.stringify(method !== 'DELETE' ? body : {}),
-                ip: request.ip || request.connection.remoteAddress,
-              },
-            });
-          } catch (e) {
-            console.error('Audit Log failed', e);
+          let entitasId: string | undefined;
+          if (pathParts.length > 4 && pathParts[4]?.length > 10) {
+            entitasId = pathParts[4];
+          } else if (response?.id) {
+            entitasId = response.id;
           }
+
+          const ipAddress =
+            request.ip ||
+            request.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
+            request.connection?.remoteAddress;
+
+          await this.auditLogService.log({
+            userId: user?.id,
+            aksi,
+            modul: modul.toUpperCase(),
+            entitasId,
+            nilaiAfter: method !== 'DELETE' ? body : undefined,
+            ipAddress,
+          });
+        } catch (e) {
+          // Interceptor errors must never break the response
         }
       }),
     );

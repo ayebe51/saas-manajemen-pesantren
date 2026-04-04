@@ -17,6 +17,8 @@ import * as bcrypt from 'bcrypt';
 import * as fc from 'fast-check';
 import { AuthService } from './auth.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
+import { AuditLogService } from '../audit-log/audit-log.service';
+import { LoginRateLimiterService } from './login-rate-limiter.service';
 
 // ─── Discriminating phrases that must NOT appear in error messages ────────────
 const DISCRIMINATING_PHRASES = [
@@ -90,6 +92,7 @@ describe('AuthService — Property 1: Kredensial Invalid Selalu Menghasilkan 401
       update: jest.fn(),
       updateMany: jest.fn(),
     },
+    loginAttempt: { create: jest.fn() },
     $transaction: jest.fn(),
   };
 
@@ -102,6 +105,14 @@ describe('AuthService — Property 1: Kredensial Invalid Selalu Menghasilkan 401
     get: jest.fn().mockReturnValue(undefined),
   };
 
+  const mockAuditLogService = { log: jest.fn().mockResolvedValue(undefined) };
+  const mockLoginRateLimiter = {
+    isLockedOut: jest.fn().mockResolvedValue(false),
+    recordFailedAttempt: jest.fn().mockResolvedValue(1),
+    resetAttempts: jest.fn().mockResolvedValue(undefined),
+    getLockoutTtl: jest.fn().mockResolvedValue(0),
+  };
+
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -109,6 +120,8 @@ describe('AuthService — Property 1: Kredensial Invalid Selalu Menghasilkan 401
         { provide: PrismaService, useValue: mockPrismaService },
         { provide: JwtService, useValue: mockJwtService },
         { provide: ConfigService, useValue: mockConfigService },
+        { provide: AuditLogService, useValue: mockAuditLogService },
+        { provide: LoginRateLimiterService, useValue: mockLoginRateLimiter },
       ],
     }).compile();
 
@@ -118,6 +131,10 @@ describe('AuthService — Property 1: Kredensial Invalid Selalu Menghasilkan 401
   beforeEach(() => {
     jest.clearAllMocks();
     mockJwtService.sign.mockReturnValue('mock.jwt.token');
+    mockAuditLogService.log.mockResolvedValue(undefined);
+    mockLoginRateLimiter.isLockedOut.mockResolvedValue(false);
+    mockLoginRateLimiter.recordFailedAttempt.mockResolvedValue(1);
+    mockLoginRateLimiter.resetAttempts.mockResolvedValue(undefined);
   });
 
   // ─── Scenario A: Non-existent user (prisma returns null) ─────────────────

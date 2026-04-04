@@ -29,8 +29,17 @@ export class AuthController {
   @ApiOperation({ summary: 'Login user and get access token' })
   @ApiResponse({ status: 200, description: 'Login successful' })
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
-  async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) response: Response) {
-    const { accessToken, refreshToken, user } = await this.authService.login(loginDto);
+  @ApiResponse({ status: 429, description: 'Too many login attempts' })
+  async login(
+    @Body() loginDto: LoginDto,
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const ip =
+      (request.headers as any)['x-forwarded-for']?.split(',')[0]?.trim() ||
+      (request as any).ip ||
+      'unknown';
+    const { accessToken, refreshToken, user } = await this.authService.login(loginDto, ip);
 
     // Set refresh token in secure httpOnly cookie
     response.cookie('refresh_token', refreshToken, {
@@ -98,9 +107,13 @@ export class AuthController {
   @ApiOperation({ summary: 'Logout user and revoke refresh token' })
   async logout(@Req() request: any, @Res({ passthrough: true }) response: Response) {
     const refreshToken = request.cookies['refresh_token'];
+    const ip =
+      request.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
+      request.ip ||
+      'unknown';
 
     if (refreshToken) {
-      await this.authService.logout(request.user.id, refreshToken);
+      await this.authService.logout(request.user.id, refreshToken, ip);
     }
 
     response.clearCookie('refresh_token', {
