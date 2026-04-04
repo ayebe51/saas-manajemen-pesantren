@@ -17,7 +17,7 @@ Implementasi dilakukan secara bertahap mengikuti urutan prioritas build order. S
   - Buat file `.env.example` dengan semua variabel yang diperlukan
   - _Requirements: 22.4, 22.5_
 
-- [ ] 2. Implementasi modul Auth
+- [x] 2. Implementasi modul Auth
   - [x] 2.1 Implementasi `AuthService`: login, refresh token, logout
     - Validasi kredensial, hash bcrypt/argon2 (cost factor 12), penerbitan JWT access token (15 menit) + refresh token (7 hari)
     - Simpan refresh token sebagai hash di tabel `refresh_tokens`
@@ -41,26 +41,26 @@ Implementasi dilakukan secara bertahap mengikuti urutan prioritas build order. S
     - Gunakan tabel `login_attempts` + Redis counter
     - `ThrottlerGuard` untuk endpoint publik (100 req/menit user, 30 req/menit IP)
     - _Requirements: 1.6, 22.7_
-  - [ ]* 3.2 Property test: Rate limiting login berlaku konsisten per IP
+  - [x] 3.2 Property test: Rate limiting login berlaku konsisten per IP
     - **Property 4: Rate Limiting Login Berlaku Konsisten per IP**
     - **Validates: Requirements 1.6**
   - [x] 3.3 Implementasi `AuditLogService` dan `AuditLogInterceptor`
     - Insert-only ke tabel `audit_logs` dengan `server_timestamp`, `user_id`, `ip_address`, `aksi`, `nilai_sebelum`, `nilai_sesudah`
     - Catat login berhasil, login gagal, logout
     - _Requirements: 1.8, 20.1, 20.2, 20.4_
-  - [ ]* 3.4 Property test: Audit log mencatat semua aksi auth
+  - [x] 3.4 Property test: Audit log mencatat semua aksi auth
     - **Property 6: Audit Log Mencatat Semua Aksi Auth**
     - **Validates: Requirements 1.8, 20.2**
-  - [ ]* 3.5 Property test: Audit log immutable
+  - [x] 3.5 Property test: Audit log immutable
     - **Property 21: Audit Log Immutable**
     - **Validates: Requirements 20.3**
 
-- [ ] 4. Implementasi modul RBAC
-  - [ ] 4.1 Implementasi `RbacService`: CRUD role dan permission
+- [x] 4. Implementasi modul RBAC
+  - [x] 4.1 Implementasi `RbacService`: CRUD role dan permission
     - Seed 9 role default: Super_Admin, Admin_Pesantren, Wali_Kelas, Petugas_Keuangan, Petugas_Kesehatan, Petugas_Asrama, Santri, Wali_Santri, Owner
     - Matriks permission per modul (can_read, can_write) untuk 19 modul
     - _Requirements: 2.1, 2.5_
-  - [ ] 4.2 Implementasi `RolesGuard` dan `JwtAuthGuard`
+  - [x] 4.2 Implementasi `RolesGuard` dan `JwtAuthGuard`
     - Dekorator `@Roles()`, `@CurrentUser()`, `@Public()`
     - Verifikasi permission dari database (bukan dari JWT payload) agar perubahan langsung berlaku
     - _Requirements: 2.3, 2.4, 2.6_
