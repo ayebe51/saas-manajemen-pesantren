@@ -1,46 +1,110 @@
-import { IsString, IsNotEmpty, IsNumber, IsOptional, IsBoolean } from 'class-validator';
+import { IsString, IsOptional, IsInt, IsEnum, IsUUID, Min, Max } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+
+export enum TingkatKeparahanDto {
+  RINGAN = 'RINGAN',
+  SEDANG = 'SEDANG',
+  BERAT = 'BERAT',
+}
 
 export class CreatePelanggaranDto {
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
+  @IsUUID()
   santriId: string;
 
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  category: string; // RINGAN, SEDANG, BERAT
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsUUID()
+  kategoriId?: string;
+
+  @ApiProperty({ enum: TingkatKeparahanDto })
+  @IsEnum(TingkatKeparahanDto)
+  tingkatKeparahan: TingkatKeparahanDto;
+
+  @ApiProperty({ description: 'Poin pelanggaran (0-100)', minimum: 0, maximum: 100 })
+  @IsInt()
+  @Min(0)
+  @Max(100)
+  poin: number;
 
   @ApiProperty()
-  @IsNumber()
-  @IsNotEmpty()
-  severity: number; // 1-5
+  @IsString()
+  category: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  keterangan?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  description?: string;
+}
+
+export class CreateRewardPoinDto {
+  @ApiProperty()
+  @IsUUID()
+  santriId: string;
+
+  @ApiProperty({ description: 'Poin reward (1-100)', minimum: 1, maximum: 100 })
+  @IsInt()
+  @Min(1)
+  @Max(100)
+  poin: number;
 
   @ApiProperty()
   @IsString()
-  @IsNotEmpty()
-  description: string;
+  keterangan: string;
+}
+
+export class CreateKategoriPelanggaranDto {
+  @ApiProperty()
+  @IsString()
+  nama: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  deskripsi?: string;
+
+  @ApiProperty({ enum: TingkatKeparahanDto })
+  @IsEnum(TingkatKeparahanDto)
+  tingkatKeparahan: TingkatKeparahanDto;
+
+  @ApiPropertyOptional({ default: 0 })
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  poinDefault?: number;
 }
 
 export class CreatePembinaanDto {
   @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
+  @IsUUID()
   santriId: string;
 
   @ApiProperty()
   @IsString()
-  @IsNotEmpty()
   plan: string;
 
   @ApiProperty()
   @IsString()
-  @IsNotEmpty()
-  targetDate: string; // ISO Date
+  targetDate: string;
 
   @ApiProperty()
   @IsString()
-  @IsNotEmpty()
-  assignedTo: string; // User ID
+  assignedTo: string;
+}
+
+export class QueryPelanggaranDto {
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsUUID()
+  santriId?: string;
+
+  @ApiPropertyOptional({ enum: TingkatKeparahanDto })
+  @IsOptional()
+  @IsEnum(TingkatKeparahanDto)
+  tingkatKeparahan?: TingkatKeparahanDto;
 }

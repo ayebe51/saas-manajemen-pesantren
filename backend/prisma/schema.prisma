@@ -80,8 +80,10 @@ model User {
   refreshTokens RefreshToken[]
   tenant        Tenant?        @relation(fields: [tenantId], references: [id])
   role_ref      Role?          @relation(fields: [roleId], references: [id])
-  perizinanApproved Perizinan[] @relation("PerizinanApprover")
-  perizinanCreated  Perizinan[] @relation("PerizinanCreator")
+  perizinanApproved  Perizinan[]    @relation("PerizinanApprover")
+  perizinanCreated   Perizinan[]    @relation("PerizinanCreator")
+  pelanggaranDibuat  Pelanggaran[]  @relation("PelanggaranCreatedBy")
+  rewardDibuat       RewardPoin[]   @relation("RewardPoinCreatedBy")
 
   @@index([tenantId])
   @@map("users")
@@ -148,6 +150,7 @@ model Santri {
   wallet         Wallet?         @relation("WalletToSantri")
   presensiRecords PresensiRecord[] @relation("PresensiRecordToSantri")
   perizinan       Perizinan[]      @relation("PerizinanToSantri")
+  rewardPoin      RewardPoin[]
 
   @@index([tenantId])
   @@index([nis])
@@ -306,20 +309,28 @@ model Payment {
 }
 
 model Pelanggaran {
-  id          String   @id @default(uuid())
-  tenantId    String
-  santriId    String
-  recordedBy  String
-  category    String
-  severity    Int
-  points      Int      @default(0)
-  description String
-  date        DateTime @default(now())
-  resolved    Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  santri      Santri   @relation(fields: [santriId], references: [id], onDelete: Cascade)
-  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  id               String           @id @default(uuid())
+  tenantId         String
+  santriId         String
+  kategoriId       String?
+  recordedBy       String
+  category         String
+  tingkatKeparahan TingkatKeparahan?
+  severity         Int
+  poin             Int              @default(0)
+  points           Int              @default(0)
+  keterangan       String?
+  description      String
+  serverTimestamp  DateTime         @default(now())
+  date             DateTime         @default(now())
+  resolved         Boolean          @default(false)
+  createdBy        String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  santri           Santri           @relation(fields: [santriId], references: [id], onDelete: Cascade)
+  kategori         KategoriPelanggaran? @relation(fields: [kategoriId], references: [id])
+  creator          User?            @relation("PelanggaranCreatedBy", fields: [createdBy], references: [id])
+  tenant           Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
   @@index([santriId])
@@ -1012,4 +1023,41 @@ model Perizinan {
   @@index([status])
   @@index([tanggalSelesai])
   @@map("perizinan")
+}
+
+// ─── Pelanggaran & Reward Poin ────────────────────────────────────────────────
+
+enum TingkatKeparahan {
+  RINGAN
+  SEDANG
+  BERAT
+}
+
+model KategoriPelanggaran {
+  id               String           @id @default(uuid())
+  nama             String           @unique
+  deskripsi        String?
+  tingkatKeparahan TingkatKeparahan
+  poinDefault      Int              @default(0)
+  isActive         Boolean          @default(true)
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  pelanggaran      Pelanggaran[]
+
+  @@map("kategori_pelanggaran")
+}
+
+model RewardPoin {
+  id              String   @id @default(uuid())
+  santriId        String
+  poin            Int
+  keterangan      String
+  serverTimestamp DateTime @default(now())
+  createdBy       String
+  createdAt       DateTime @default(now())
+  santri          Santri   @relation(fields: [santriId], references: [id], onDelete: Cascade)
+  creator         User     @relation("RewardPoinCreatedBy", fields: [createdBy], references: [id])
+
+  @@index([santriId])
+  @@map("reward_poin")
 }

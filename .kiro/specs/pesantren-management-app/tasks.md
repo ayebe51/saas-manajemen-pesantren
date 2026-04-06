@@ -270,11 +270,11 @@ Implementasi dilakukan secara bertahap mengikuti urutan prioritas build order. S
   - [ ]* 17.6 Unit test: Transisi status tidak valid → 400, notifikasi WA saat APPROVED/REJECTED
     - _Requirements: 14.1, 14.3_
 
-- [ ] 18. Implementasi modul Pelanggaran dan Poin Reward
-  - [ ] 18.1 Prisma migration: tabel `pelanggaran`, `reward_poin`, `kategori_pelanggaran`
+- [x] 18. Implementasi modul Pelanggaran dan Poin Reward
+  - [x] 18.1 Prisma migration: tabel `pelanggaran`, `reward_poin`, `kategori_pelanggaran`
     - Kolom: `santri_id`, `kategori_id`, `tingkat_keparahan`, `poin`, `server_timestamp`, `created_by`
     - _Requirements: 8.1, 8.4_
-  - [ ] 18.2 Implementasi `PelanggaranService` dan `RewardService`
+  - [x] 18.2 Implementasi `PelanggaranService` dan `RewardService`
     - Hitung akumulasi poin pelanggaran per santri; trigger tindakan otomatis saat ambang batas tercapai
     - Kirim notifikasi WA ke Wali_Santri saat pelanggaran/reward dicatat
     - Catat ke audit log
@@ -282,7 +282,7 @@ Implementasi dilakukan secara bertahap mengikuti urutan prioritas build order. S
   - [ ]* 18.3 Unit test: Akumulasi poin, trigger ambang batas, notifikasi WA
     - _Requirements: 8.2, 8.3_
 
-- [ ] 19. Checkpoint Fase 6 — Pastikan semua test lulus
+- [x] 19. Checkpoint Fase 6 — Pastikan semua test lulus
   - Pastikan semua unit test dan property test Fase 6 lulus, tanyakan kepada user jika ada pertanyaan.
 
 ---
