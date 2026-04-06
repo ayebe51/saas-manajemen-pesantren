@@ -289,31 +289,31 @@ Implementasi dilakukan secara bertahap mengikuti urutan prioritas build order. S
 
 ### Fase 7: Kesehatan + Kunjungan + Asrama
 
-- [ ] 20. Implementasi modul Kesehatan
-  - [ ] 20.1 Prisma migration: tabel `rekam_medis`, `kunjungan_klinik`
+- [x] 20. Implementasi modul Kesehatan
+  - [x] 20.1 Prisma migration: tabel `rekam_medis`, `kunjungan_klinik`
     - Kolom rekam medis: `santri_id`, `riwayat_penyakit`, `alergi`, `catatan`
     - Kolom kunjungan: `santri_id`, `keluhan`, `diagnosis`, `tindakan`, `server_timestamp`
     - _Requirements: 9.1, 9.2_
-  - [ ] 20.2 Implementasi `KesehatanService` dan `KesehatanController`
+  - [x] 20.2 Implementasi `KesehatanService` dan `KesehatanController`
     - Batasi akses hanya untuk Petugas_Kesehatan, Admin_Pesantren, Super_Admin
     - Kirim notifikasi WA untuk kondisi yang memerlukan perhatian khusus
     - _Requirements: 9.2, 9.3, 9.4_
   - [ ]* 20.3 Unit test: Akses rekam medis oleh role tidak berwenang → 403
     - _Requirements: 9.4_
 
-- [ ] 21. Implementasi modul Kunjungan Tamu
-  - [ ] 21.1 Prisma migration: tabel `kunjungan_tamu`
+- [x] 21. Implementasi modul Kunjungan Tamu
+  - [x] 21.1 Prisma migration: tabel `kunjungan_tamu`
     - Kolom: `santri_id`, `nama_tamu`, `hubungan`, `waktu_masuk`, `waktu_keluar`
     - _Requirements: 10.1_
-  - [ ] 21.2 Implementasi `KunjunganService` dan `KunjunganController`
+  - [x] 21.2 Implementasi `KunjunganService` dan `KunjunganController`
     - Kirim notifikasi WA ke Wali_Santri saat kunjungan dicatat
     - _Requirements: 10.1, 10.2_
 
-- [ ] 22. Implementasi modul Asrama
-  - [ ] 22.1 Prisma migration: tabel `asrama`, `kamar`, `penempatan_santri`
+- [x] 22. Implementasi modul Asrama
+  - [x] 22.1 Prisma migration: tabel `asrama`, `kamar`, `penempatan_santri`
     - Kolom kamar: `nama`, `kapasitas`, `lantai`, `status`; riwayat penempatan dengan `tanggal_masuk`, `tanggal_keluar`
     - _Requirements: 15.1, 15.4_
-  - [ ] 22.2 Implementasi `AsramaService` dan `AsramaController`
+  - [x] 22.2 Implementasi `AsramaService` dan `AsramaController`
     - Validasi kapasitas kamar sebelum penempatan; tolak jika penuh (HTTP 422)
     - Catat riwayat perpindahan kamar tanpa menghapus data lama
     - _Requirements: 15.2, 15.3, 15.4_

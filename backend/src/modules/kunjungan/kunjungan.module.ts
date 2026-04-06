@@ -2,9 +2,10 @@ import { Module } from '@nestjs/common';
 import { KunjunganService } from './kunjungan.service';
 import { KunjunganController } from './kunjungan.controller';
 import { PrismaModule } from '../../common/prisma/prisma.module';
+import { AuditLogModule } from '../audit-log/audit-log.module';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, AuditLogModule],
   controllers: [KunjunganController],
   providers: [KunjunganService],
   exports: [KunjunganService],

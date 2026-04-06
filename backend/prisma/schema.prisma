@@ -57,6 +57,8 @@ model Tenant {
   webhookEvents         WebhookEvent[]
   presensiSessions      PresensiSession[]
   perizinan             Perizinan[]            @relation("PerizinanToTenant")
+  kunjunganTamu         KunjunganTamu[]        @relation("KunjunganTamuToTenant")
+  asrama                Asrama[]
 
   @@map("tenants")
 }
@@ -84,6 +86,7 @@ model User {
   perizinanCreated   Perizinan[]    @relation("PerizinanCreator")
   pelanggaranDibuat  Pelanggaran[]  @relation("PelanggaranCreatedBy")
   rewardDibuat       RewardPoin[]   @relation("RewardPoinCreatedBy")
+  kunjunganKlinik    KunjunganKlinik[] @relation("KunjunganKlinikCreatedBy")
 
   @@index([tenantId])
   @@map("users")
@@ -151,6 +154,10 @@ model Santri {
   presensiRecords PresensiRecord[] @relation("PresensiRecordToSantri")
   perizinan       Perizinan[]      @relation("PerizinanToSantri")
   rewardPoin      RewardPoin[]
+  rekamMedis      RekamMedis?
+  kunjunganKlinik KunjunganKlinik[]
+  kunjunganTamu   KunjunganTamu[]  @relation("KunjunganTamuToSantri")
+  penempatan      PenempatanSantri[]
 
   @@index([tenantId])
   @@index([nis])
@@ -1060,4 +1067,113 @@ model RewardPoin {
 
   @@index([santriId])
   @@map("reward_poin")
+}
+
+// ─── Kesehatan (Health Module) ────────────────────────────────────────────────
+// Requirements: 9.1, 9.2
+
+model RekamMedis {
+  id               String   @id @default(uuid())
+  santriId         String   @unique
+  riwayatPenyakit  String?
+  alergi           String?
+  catatan          String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  santri           Santri   @relation(fields: [santriId], references: [id], onDelete: Cascade)
+
+  @@index([santriId])
+  @@map("rekam_medis")
+}
+
+model KunjunganKlinik {
+  id               String   @id @default(uuid())
+  santriId         String
+  keluhan          String
+  diagnosis        String?
+  tindakan         String?
+  serverTimestamp  DateTime @default(now())
+  createdBy        String
+  createdAt        DateTime @default(now())
+  santri           Santri   @relation(fields: [santriId], references: [id], onDelete: Cascade)
+  creator          User     @relation("KunjunganKlinikCreatedBy", fields: [createdBy], references: [id])
+
+  @@index([santriId])
+  @@index([createdBy])
+  @@map("kunjungan_klinik")
+}
+
+// ─── Kunjungan Tamu (Guest Visits) ───────────────────────────────────────────
+// Requirements: 10.1, 10.2
+
+model KunjunganTamu {
+  id              String    @id @default(uuid())
+  tenantId        String
+  santriId        String
+  namaTamu        String
+  hubungan        String    // Ayah, Ibu, Kakak, Paman, dll
+  waktuMasuk      DateTime  @default(now())
+  waktuKeluar     DateTime?
+  keterangan      String?
+  createdBy       String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  santri          Santri    @relation("KunjunganTamuToSantri", fields: [santriId], references: [id], onDelete: Cascade)
+  tenant          Tenant    @relation("KunjunganTamuToTenant", fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([santriId])
+  @@index([waktuMasuk])
+  @@map("kunjungan_tamu")
+}
+
+// ─── Asrama (Dormitory Module) ────────────────────────────────────────────────
+// Requirements: 15.1, 15.2, 15.3, 15.4
+
+model Asrama {
+  id          String   @id @default(uuid())
+  tenantId    String
+  nama        String
+  deskripsi   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  kamar       Kamar[]
+
+  @@index([tenantId])
+  @@map("asrama")
+}
+
+model Kamar {
+  id          String              @id @default(uuid())
+  asramaId    String
+  nama        String
+  kapasitas   Int
+  lantai      Int?
+  status      String              @default("TERSEDIA") // TERSEDIA, PENUH, MAINTENANCE
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  asrama      Asrama              @relation(fields: [asramaId], references: [id], onDelete: Cascade)
+  penempatan  PenempatanSantri[]
+
+  @@index([asramaId])
+  @@map("kamar")
+}
+
+model PenempatanSantri {
+  id            String    @id @default(uuid())
+  santriId      String
+  kamarId       String
+  tanggalMasuk  DateTime  @default(now())
+  tanggalKeluar DateTime?
+  isAktif       Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  santri        Santri    @relation(fields: [santriId], references: [id], onDelete: Cascade)
+  kamar         Kamar     @relation(fields: [kamarId], references: [id], onDelete: Cascade)
+
+  @@index([santriId])
+  @@index([kamarId])
+  @@index([isAktif])
+  @@map("penempatan_santri")
 }
