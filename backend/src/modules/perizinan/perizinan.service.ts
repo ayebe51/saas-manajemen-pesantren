@@ -1,77 +1,50 @@
-import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  Logger,
+} from '@nestjs/common';
 import { PrismaService } from '../../common/prisma/prisma.service';
-import { CreateIzinDto, ApproveIzinDto } from './dto/izin.dto';
-import * as crypto from 'crypto';
+import { AuditLogService } from '../audit-log/audit-log.service';
+import { WaQueueService } from '../wa-engine/wa-queue.service';
+import { CreatePerizinanDto } from './dto/create-perizinan.dto';
+import { QueryPerizinanDto } from './dto/query-perizinan.dto';
+
+// ─── State Machine ────────────────────────────────────────────────────────────
+// Valid transitions — Requirements: 14.1
+const VALID_TRANSITIONS: Record<string, string[]> = {
+  DRAFT: ['SUBMITTED', 'CANCELLED'],
+  SUBMITTED: ['APPROVED', 'REJECTED', 'CANCELLED'],
+  APPROVED: ['COMPLETED', 'TERLAMBAT'],
+  TERLAMBAT: ['COMPLETED'],
+  REJECTED: [],
+  COMPLETED: [],
+  CANCELLED: [],
+};
 
 @Injectable()
 export class PerizinanService {
   private readonly logger = new Logger(PerizinanService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly auditLog: AuditLogService,
+    private readonly waQueue: WaQueueService,
+  ) {}
 
-  async create(tenantId: string, createIzinDto: CreateIzinDto, requestedBy: string) {
-    // Basic verification
-    const santri = await this.prisma.santri.findFirst({
-      where: { id: createIzinDto.santriId, tenantId },
-      include: {
-        walis: {
-          where: { isPrimary: true },
-          include: { wali: true },
-        },
-      },
-    });
+  // ─── Helpers ────────────────────────────────────────────────────────────────
 
-    if (!santri) {
-      throw new NotFoundException('Santri not found');
-    }
-
-    // Generate unique QR code data
-    const qrCodeData = `IZIN-${tenantId.substring(0, 8)}-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`;
-
-    // Workflow: Sakit -> POSKESTREN dulu. Keluar/Pulang -> MUSYRIF dulu.
-    const initialStatus = createIzinDto.type === 'SAKIT' ? 'PENDING_POSKESTREN' : 'PENDING_MUSYRIF';
-
-    const izin = await this.prisma.izin.create({
-      data: {
-        tenantId,
-        santriId: createIzinDto.santriId,
-        type: createIzinDto.type,
-        reason: createIzinDto.reason,
-        startAt: new Date(createIzinDto.startAt),
-        endAt: new Date(createIzinDto.endAt),
-        status: initialStatus,
-        requestedBy,
-        qrCodeData,
-      },
-    });
-
-    // Background Job triggering would happen here (e.g., Send WA to Wali via BullMQ)
-    if (santri.walis.length > 0) {
-      this.logger.log(
-        `[Job Trigger] Send WA approval link to Wali: ${santri.walis[0].wali.phone} for Izin ${izin.id}`,
+  private assertTransition(current: string, next: string): void {
+    const allowed = VALID_TRANSITIONS[current] ?? [];
+    if (!allowed.includes(next)) {
+      throw new BadRequestException(
+        `Transisi status tidak valid: ${current} → ${next}`,
       );
     }
-
-    return izin;
   }
 
-  async findAll(tenantId: string, filters: { status?: string; santriId?: string }) {
-    const whereClause: any = { tenantId };
-
-    if (filters.status) whereClause.status = filters.status;
-    if (filters.santriId) whereClause.santriId = filters.santriId;
-
-    return this.prisma.izin.findMany({
-      where: whereClause,
-      include: {
-        santri: { select: { name: true, kelas: true, room: true } },
-      },
-      orderBy: { createdAt: 'desc' },
-    });
-  }
-
-  async findOne(id: string, tenantId: string) {
-    const izin = await this.prisma.izin.findFirst({
+  private async findOrFail(id: string, tenantId: string) {
+    const perizinan = await this.prisma.perizinan.findFirst({
       where: { id, tenantId },
       include: {
         santri: {
@@ -81,102 +54,293 @@ export class PerizinanService {
         },
       },
     });
-
-    if (!izin) {
-      throw new NotFoundException(`Izin with ID ${id} not found`);
-    }
-
-    return izin;
+    if (!perizinan) throw new NotFoundException(`Perizinan ${id} tidak ditemukan`);
+    return perizinan;
   }
 
-  async findByBarcode(qrCodeData: string, tenantId: string) {
-    const izin = await this.prisma.izin.findFirst({
-      where: { qrCodeData, tenantId },
+  /** Kirim notifikasi WA ke wali santri */
+  private notifyWali(
+    perizinan: any,
+    templateKey: string,
+    extraPayload: Record<string, string | number> = {},
+  ): void {
+    const walis: any[] = perizinan.santri?.walis ?? [];
+    for (const sw of walis) {
+      const phone = sw.wali?.noHp ?? sw.wali?.phone;
+      if (!phone) continue;
+      this.waQueue.enqueue({
+        tipeNotifikasi: 'izin',
+        noTujuan: phone,
+        templateKey,
+        payload: {
+          namaSantri: perizinan.santri?.name ?? '',
+          tipe: perizinan.tipe,
+          tanggalMulai: perizinan.tanggalMulai.toISOString(),
+          tanggalSelesai: perizinan.tanggalSelesai.toISOString(),
+          status: perizinan.status,
+          ...extraPayload,
+        },
+      });
+    }
+  }
+
+  // ─── CRUD ────────────────────────────────────────────────────────────────────
+
+  /**
+   * Buat perizinan baru dengan status DRAFT.
+   * Requirements: 14.1, 14.2
+   */
+  async create(dto: CreatePerizinanDto, userId: string, tenantId: string) {
+    const santri = await this.prisma.santri.findFirst({
+      where: { id: dto.santriId, tenantId, deletedAt: null },
+    });
+    if (!santri) throw new NotFoundException('Santri tidak ditemukan');
+
+    const perizinan = await this.prisma.perizinan.create({
+      data: {
+        tenantId,
+        santriId: dto.santriId,
+        tipe: dto.tipe,
+        alasan: dto.alasan,
+        tanggalMulai: new Date(dto.tanggalMulai),
+        tanggalSelesai: new Date(dto.tanggalSelesai),
+        status: 'DRAFT',
+        createdBy: userId,
+      },
+      include: { santri: { select: { name: true, nis: true } } },
+    });
+
+    await this.auditLog.log({
+      userId,
+      aksi: 'CREATE_PERIZINAN',
+      modul: 'perizinan',
+      entitasId: perizinan.id,
+      entitasTipe: 'Perizinan',
+      nilaiAfter: { status: 'DRAFT', tipe: dto.tipe, santriId: dto.santriId },
+    });
+
+    return perizinan;
+  }
+
+  /**
+   * Daftar perizinan dengan filter.
+   * Requirements: 14.2
+   */
+  async findAll(tenantId: string, query: QueryPerizinanDto) {
+    const { santriId, status, tanggalDari, tanggalSampai, page = 1, limit = 20 } = query;
+    const where: any = { tenantId };
+
+    if (santriId) where.santriId = santriId;
+    if (status) where.status = status;
+    if (tanggalDari || tanggalSampai) {
+      where.tanggalMulai = {};
+      if (tanggalDari) where.tanggalMulai.gte = new Date(tanggalDari);
+      if (tanggalSampai) where.tanggalMulai.lte = new Date(tanggalSampai);
+    }
+
+    const [data, total] = await Promise.all([
+      this.prisma.perizinan.findMany({
+        where,
+        include: { santri: { select: { name: true, nis: true, kelas: true } } },
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      this.prisma.perizinan.count({ where }),
+    ]);
+
+    return { data, meta: { total, page, limit } };
+  }
+
+  /**
+   * Detail satu perizinan.
+   * Requirements: 14.2
+   */
+  async findOne(id: string, tenantId: string) {
+    return this.findOrFail(id, tenantId);
+  }
+
+  // ─── State Transitions ───────────────────────────────────────────────────────
+
+  /**
+   * DRAFT → SUBMITTED (by santri/wali)
+   * Requirements: 14.1, 14.2
+   */
+  async submit(id: string, userId: string, tenantId: string) {
+    const perizinan = await this.findOrFail(id, tenantId);
+    this.assertTransition(perizinan.status, 'SUBMITTED');
+
+    const updated = await this.prisma.perizinan.update({
+      where: { id },
+      data: { status: 'SUBMITTED', updatedAt: new Date() },
+    });
+
+    await this.auditLog.log({
+      userId,
+      aksi: 'SUBMIT_PERIZINAN',
+      modul: 'perizinan',
+      entitasId: id,
+      entitasTipe: 'Perizinan',
+      nilaiBefore: { status: perizinan.status },
+      nilaiAfter: { status: 'SUBMITTED' },
+    });
+
+    return updated;
+  }
+
+  /**
+   * SUBMITTED → APPROVED (by admin) + kirim WA
+   * Requirements: 14.1, 14.3, 14.5
+   */
+  async approve(id: string, userId: string, tenantId: string) {
+    const perizinan = await this.findOrFail(id, tenantId);
+    this.assertTransition(perizinan.status, 'APPROVED');
+
+    const now = new Date();
+    const updated = await this.prisma.perizinan.update({
+      where: { id },
+      data: {
+        status: 'APPROVED',
+        approvedBy: userId,
+        approvedAt: now,
+        updatedAt: now,
+      },
       include: {
-        santri: { select: { name: true, kelas: true, room: true } },
+        santri: { include: { walis: { include: { wali: true } } } },
       },
     });
 
-    if (!izin) {
-      throw new NotFoundException('Data Izin tidak ditemukan dari QR ini');
-    }
-
-    return izin;
-  }
-
-  async approve(id: string, approveIzinDto: ApproveIzinDto) {
-    const izin = await this.prisma.izin.findUnique({
-      where: { id },
+    await this.auditLog.log({
+      userId,
+      aksi: 'APPROVE_PERIZINAN',
+      modul: 'perizinan',
+      entitasId: id,
+      entitasTipe: 'Perizinan',
+      nilaiBefore: { status: perizinan.status },
+      nilaiAfter: { status: 'APPROVED', approvedBy: userId, approvedAt: now.toISOString() },
     });
 
-    if (!izin) throw new NotFoundException('Izin request not found');
+    // Kirim notifikasi WA — Requirement 14.3
+    this.notifyWali(updated, 'IZIN_APPROVED');
 
-    if (izin.status === 'APPROVED_WAITING_CHECKOUT' || izin.status === 'REJECTED') {
-      throw new BadRequestException(`Izin is already ${izin.status}`);
-    }
-
-    // Role-based verification can be added here if needed
-    // e.g. checking if approverId is a Wali / Musyrif / Poskestren
-
-    let nextStatus = approveIzinDto.status;
-
-    // Auto-escalation Logic
-    if (approveIzinDto.status === 'APPROVED') {
-      if (izin.status === 'PENDING_POSKESTREN') {
-        nextStatus = 'PENDING_MUSYRIF'; // Poskestren setuju -> lanjut ke Musyrif
-      } else if (izin.status === 'PENDING_MUSYRIF') {
-        nextStatus = 'APPROVED_WAITING_CHECKOUT'; // Musyrif setuju -> Izin Valid
-      }
-    }
-
-    return this.prisma.izin.update({
-      where: { id },
-      data: {
-        status: nextStatus,
-        approvedBy: approveIzinDto.approverId,
-        approvedAt: new Date(),
-        reason: approveIzinDto.notes
-          ? `${izin.reason} | Note: ${approveIzinDto.notes}`
-          : izin.reason,
-      },
-    });
+    return updated;
   }
 
-  async checkout(id: string, tenantId: string, operatorId: string) {
-    const izin = await this.findOne(id, tenantId);
-
-    if (izin.status !== 'APPROVED_WAITING_CHECKOUT') {
-      throw new BadRequestException(`Cannot check out. Izin status is ${izin.status}`);
-    }
-
-    // Ensure start time is valid (allow slightly early checkout in reality)
-    const now = new Date();
-
-    return this.prisma.izin.update({
-      where: { id },
-      data: {
-        status: 'CHECKED_OUT',
-        checkoutAt: now,
-        checkoutBy: operatorId,
-      },
-    });
-  }
-
-  async checkin(id: string, tenantId: string, operatorId: string) {
-    const izin = await this.findOne(id, tenantId);
-
-    if (izin.status !== 'CHECKED_OUT') {
-      throw new BadRequestException(`Cannot check in. Izin status is ${izin.status}`);
-    }
+  /**
+   * SUBMITTED → REJECTED (by admin) + kirim WA
+   * Requirements: 14.1, 14.3, 14.5
+   */
+  async reject(id: string, userId: string, alasan: string, tenantId: string) {
+    const perizinan = await this.findOrFail(id, tenantId);
+    this.assertTransition(perizinan.status, 'REJECTED');
 
     const now = new Date();
-
-    return this.prisma.izin.update({
+    const updated = await this.prisma.perizinan.update({
       where: { id },
       data: {
-        status: 'CHECKED_IN',
-        checkinAt: now,
-        checkinBy: operatorId,
+        status: 'REJECTED',
+        approvedBy: userId,
+        approvedAt: now,
+        updatedAt: now,
+      },
+      include: {
+        santri: { include: { walis: { include: { wali: true } } } },
+      },
+    });
+
+    await this.auditLog.log({
+      userId,
+      aksi: 'REJECT_PERIZINAN',
+      modul: 'perizinan',
+      entitasId: id,
+      entitasTipe: 'Perizinan',
+      nilaiBefore: { status: perizinan.status },
+      nilaiAfter: { status: 'REJECTED', rejectedBy: userId, alasan },
+    });
+
+    // Kirim notifikasi WA — Requirement 14.3
+    this.notifyWali(updated, 'IZIN_REJECTED', { alasanPenolakan: alasan });
+
+    return updated;
+  }
+
+  /**
+   * APPROVED/TERLAMBAT → COMPLETED (santri kembali)
+   * Requirements: 14.1, 14.4, 14.5
+   */
+  async complete(id: string, userId: string, tenantId: string) {
+    const perizinan = await this.findOrFail(id, tenantId);
+    this.assertTransition(perizinan.status, 'COMPLETED');
+
+    const now = new Date();
+    const updated = await this.prisma.perizinan.update({
+      where: { id },
+      data: {
+        status: 'COMPLETED',
+        kembaliAt: now,
+        updatedAt: now,
+      },
+    });
+
+    await this.auditLog.log({
+      userId,
+      aksi: 'COMPLETE_PERIZINAN',
+      modul: 'perizinan',
+      entitasId: id,
+      entitasTipe: 'Perizinan',
+      nilaiBefore: { status: perizinan.status },
+      nilaiAfter: { status: 'COMPLETED', kembaliAt: now.toISOString() },
+    });
+
+    return updated;
+  }
+
+  /**
+   * APPROVED → TERLAMBAT (digunakan oleh cron job)
+   * Requirements: 14.1, 14.6
+   */
+  async markLate(id: string) {
+    const perizinan = await this.prisma.perizinan.findUnique({ where: { id } });
+    if (!perizinan) throw new NotFoundException(`Perizinan ${id} tidak ditemukan`);
+    this.assertTransition(perizinan.status, 'TERLAMBAT');
+
+    const updated = await this.prisma.perizinan.update({
+      where: { id },
+      data: {
+        status: 'TERLAMBAT',
+        terlambat: true,
+        updatedAt: new Date(),
+      },
+      include: {
+        santri: { include: { walis: { include: { wali: true } } } },
+      },
+    });
+
+    await this.auditLog.log({
+      aksi: 'MARK_LATE_PERIZINAN',
+      modul: 'perizinan',
+      entitasId: id,
+      entitasTipe: 'Perizinan',
+      nilaiBefore: { status: perizinan.status },
+      nilaiAfter: { status: 'TERLAMBAT', terlambat: true },
+    });
+
+    return updated;
+  }
+
+  /**
+   * Cari semua perizinan APPROVED yang sudah melewati tanggal selesai.
+   * Digunakan oleh PerizinanLateCheckJob — Requirement 14.6
+   */
+  async findOverdueApproved(): Promise<{ id: string; tenantId: string; santri: any }[]> {
+    const now = new Date();
+    return this.prisma.perizinan.findMany({
+      where: {
+        status: 'APPROVED',
+        tanggalSelesai: { lt: now },
+      },
+      include: {
+        santri: { include: { walis: { include: { wali: true } } } },
       },
     });
   }

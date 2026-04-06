@@ -2,99 +2,122 @@ import {
   Controller,
   Get,
   Post,
+  Put,
   Body,
   Param,
-  Put,
   Query,
   UseGuards,
-  UseInterceptors,
-  Req,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { PerizinanService } from './perizinan.service';
-import { CreateIzinDto, ApproveIzinDto } from './dto/izin.dto';
+import { CreatePerizinanDto } from './dto/create-perizinan.dto';
+import { QueryPerizinanDto } from './dto/query-perizinan.dto';
+import { RejectPerizinanDto } from './dto/reject-perizinan.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { TenantId } from '../../common/decorators/tenant-id.decorator';
-import { Public } from '../../common/decorators/public.decorator';
-import { AuditLogInterceptor } from '../../common/interceptors/audit-log.interceptor';
 
 @ApiTags('Perizinan')
-@Controller('izin')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
+@Controller('perizinan')
 export class PerizinanController {
   constructor(private readonly perizinanService: PerizinanService) {}
 
+  /**
+   * POST /perizinan — buat izin baru (JWT required)
+   * Requirements: 14.2
+   */
   @Post()
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS', 'MUSYRIF')
-  @UseInterceptors(AuditLogInterceptor)
-  @ApiOperation({ summary: 'Submit a new leave permit (Izin)' })
-  create(@Body() createIzinDto: CreateIzinDto, @TenantId() tenantId: string, @Req() req: any) {
-    return this.perizinanService.create(tenantId, createIzinDto, req.user.id);
-  }
-
-  @Get()
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @ApiOperation({ summary: 'Get all permits' })
-  @ApiQuery({
-    name: 'status',
-    required: false,
-    enum: ['PENDING', 'APPROVED', 'REJECTED', 'CHECKED_OUT', 'CHECKED_IN', 'EXPIRED'],
-  })
-  @ApiQuery({ name: 'santriId', required: false })
-  findAll(
+  @ApiOperation({ summary: 'Buat pengajuan izin baru (status DRAFT)' })
+  create(
+    @Body() dto: CreatePerizinanDto,
+    @CurrentUser() user: any,
     @TenantId() tenantId: string,
-    @Query('status') status?: string,
-    @Query('santriId') santriId?: string,
   ) {
-    return this.perizinanService.findAll(tenantId, { status, santriId });
+    return this.perizinanService.create(dto, user.id, tenantId);
   }
 
+  /**
+   * GET /perizinan — list izin dengan filter (JWT + R)
+   * Requirements: 14.2
+   */
+  @Get()
+  @ApiOperation({ summary: 'Daftar perizinan dengan filter' })
+  findAll(@TenantId() tenantId: string, @Query() query: QueryPerizinanDto) {
+    return this.perizinanService.findAll(tenantId, query);
+  }
+
+  /**
+   * GET /perizinan/:id — detail izin (JWT + R)
+   * Requirements: 14.2
+   */
   @Get(':id')
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Get permit details' })
+  @ApiOperation({ summary: 'Detail perizinan' })
   findOne(@Param('id') id: string, @TenantId() tenantId: string) {
     return this.perizinanService.findOne(id, tenantId);
   }
 
-  @Post(':id/approve')
-  @Public() // Public so Wali can approve via link from WA without login
-  @ApiOperation({ summary: 'Approve or Reject permit (Wali)' })
-  approve(@Param('id') id: string, @Body() approveIzinDto: ApproveIzinDto) {
-    // In a real app, we'd verify the token provided in DTO
-    return this.perizinanService.approve(id, approveIzinDto);
+  /**
+   * PUT /perizinan/:id/submit — submit izin DRAFT → SUBMITTED (JWT)
+   * Requirements: 14.2
+   */
+  @Put(':id/submit')
+  @ApiOperation({ summary: 'Submit izin (DRAFT → SUBMITTED)' })
+  submit(
+    @Param('id') id: string,
+    @CurrentUser() user: any,
+    @TenantId() tenantId: string,
+  ) {
+    return this.perizinanService.submit(id, user.id, tenantId);
   }
 
-  @Get('barcode/:qr')
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS', 'SCANNER')
-  @ApiOperation({ summary: 'Get permit details by QR Code data' })
-  findByBarcode(@Param('qr') qr: string, @TenantId() tenantId: string) {
-    return this.perizinanService.findByBarcode(qr, tenantId);
+  /**
+   * PUT /perizinan/:id/approve — setujui izin (JWT + W, Admin role)
+   * Requirements: 14.4
+   */
+  @Put(':id/approve')
+  @UseGuards(RolesGuard)
+  @Roles('Admin_Pesantren', 'SUPERADMIN', 'Super_Admin', 'TENANT_ADMIN')
+  @ApiOperation({ summary: 'Setujui izin (SUBMITTED → APPROVED)' })
+  approve(
+    @Param('id') id: string,
+    @CurrentUser() user: any,
+    @TenantId() tenantId: string,
+  ) {
+    return this.perizinanService.approve(id, user.id, tenantId);
   }
 
-  @Post(':id/checkout')
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS', 'SCANNER')
-  @UseInterceptors(AuditLogInterceptor)
-  @ApiOperation({ summary: 'Record student leaving (Scan QR)' })
-  checkout(@Param('id') id: string, @TenantId() tenantId: string, @Req() req: any) {
-    return this.perizinanService.checkout(id, tenantId, req.user.id);
+  /**
+   * PUT /perizinan/:id/reject — tolak izin (JWT + W, Admin role)
+   * Requirements: 14.4
+   */
+  @Put(':id/reject')
+  @UseGuards(RolesGuard)
+  @Roles('Admin_Pesantren', 'SUPERADMIN', 'Super_Admin', 'TENANT_ADMIN')
+  @ApiOperation({ summary: 'Tolak izin (SUBMITTED → REJECTED)' })
+  reject(
+    @Param('id') id: string,
+    @Body() dto: RejectPerizinanDto,
+    @CurrentUser() user: any,
+    @TenantId() tenantId: string,
+  ) {
+    return this.perizinanService.reject(id, user.id, dto.alasan, tenantId);
   }
 
-  @Post(':id/checkin')
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS', 'SCANNER')
-  @UseInterceptors(AuditLogInterceptor)
-  @ApiOperation({ summary: 'Record student returning (Scan QR)' })
-  checkin(@Param('id') id: string, @TenantId() tenantId: string, @Req() req: any) {
-    return this.perizinanService.checkin(id, tenantId, req.user.id);
+  /**
+   * PUT /perizinan/:id/complete — tandai santri sudah kembali (JWT + W)
+   * Requirements: 14.4
+   */
+  @Put(':id/complete')
+  @ApiOperation({ summary: 'Tandai santri kembali (APPROVED/TERLAMBAT → COMPLETED)' })
+  complete(
+    @Param('id') id: string,
+    @CurrentUser() user: any,
+    @TenantId() tenantId: string,
+  ) {
+    return this.perizinanService.complete(id, user.id, tenantId);
   }
 }

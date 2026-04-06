@@ -56,6 +56,7 @@ model Tenant {
   wallets               Wallet[]
   webhookEvents         WebhookEvent[]
   presensiSessions      PresensiSession[]
+  perizinan             Perizinan[]            @relation("PerizinanToTenant")
 
   @@map("tenants")
 }
@@ -79,6 +80,8 @@ model User {
   refreshTokens RefreshToken[]
   tenant        Tenant?        @relation(fields: [tenantId], references: [id])
   role_ref      Role?          @relation(fields: [roleId], references: [id])
+  perizinanApproved Perizinan[] @relation("PerizinanApprover")
+  perizinanCreated  Perizinan[] @relation("PerizinanCreator")
 
   @@index([tenantId])
   @@map("users")
@@ -144,6 +147,7 @@ model Santri {
   tahfidz        Tahfidz[]       @relation("TahfidzToSantri")
   wallet         Wallet?         @relation("WalletToSantri")
   presensiRecords PresensiRecord[] @relation("PresensiRecordToSantri")
+  perizinan       Perizinan[]      @relation("PerizinanToSantri")
 
   @@index([tenantId])
   @@index([nis])
@@ -976,4 +980,36 @@ model PresensiRecord {
   @@index([santriId])
   @@index([sessionId])
   @@map("presensi_records")
+}
+
+// ─── Perizinan (Leave Permits) ────────────────────────────────────────────────
+// Status enum: DRAFT, SUBMITTED, APPROVED, REJECTED, COMPLETED, CANCELLED, TERLAMBAT
+// State machine — Requirements: 14.1
+
+model Perizinan {
+  id             String    @id @default(uuid())
+  tenantId       String
+  santriId       String
+  tipe           String    // PULANG, KELUAR_KOTA, LAINNYA
+  alasan         String
+  tanggalMulai   DateTime
+  tanggalSelesai DateTime
+  status         String    @default("DRAFT") // DRAFT, SUBMITTED, APPROVED, REJECTED, COMPLETED, CANCELLED, TERLAMBAT
+  approvedBy     String?   // FK → users (nullable)
+  approvedAt     DateTime?
+  kembaliAt      DateTime?
+  terlambat      Boolean   @default(false)
+  createdBy      String    // FK → users NOT NULL
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  santri         Santri    @relation("PerizinanToSantri", fields: [santriId], references: [id], onDelete: Cascade)
+  tenant         Tenant    @relation("PerizinanToTenant", fields: [tenantId], references: [id], onDelete: Cascade)
+  approver       User?     @relation("PerizinanApprover", fields: [approvedBy], references: [id])
+  creator        User      @relation("PerizinanCreator", fields: [createdBy], references: [id])
+
+  @@index([tenantId])
+  @@index([santriId])
+  @@index([status])
+  @@index([tanggalSelesai])
+  @@map("perizinan")
 }

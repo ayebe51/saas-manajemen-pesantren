@@ -3,6 +3,8 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from '../common/prisma/prisma.service';
 import { LicenseService } from '../modules/license/license.service';
 import { InvoiceService } from '../modules/pembayaran/invoice.service';
+import { PerizinanService } from '../modules/perizinan/perizinan.service';
+import { WaQueueService } from '../modules/wa-engine/wa-queue.service';
 
 @Injectable()
 export class ScheduledTasksService {
@@ -12,6 +14,8 @@ export class ScheduledTasksService {
     private prisma: PrismaService,
     private readonly licenseService: LicenseService,
     private readonly invoiceService: InvoiceService,
+    private readonly perizinanService: PerizinanService,
+    private readonly waQueue: WaQueueService,
   ) {}
 
   @Cron(CronExpression.EVERY_DAY_AT_8AM)
@@ -113,6 +117,62 @@ export class ScheduledTasksService {
       this.logger.log(`InvoiceExpiryJob: marked ${count} invoice(s) as EXPIRED`);
     } catch (err) {
       this.logger.error(`InvoiceExpiryJob failed: ${err.message}`, err.stack);
+    }
+  }
+
+  /**
+   * PerizinanLateCheckJob — runs every hour.
+   * Cari semua perizinan APPROVED yang sudah melewati tanggal_selesai,
+   * tandai sebagai TERLAMBAT, dan kirim notifikasi WA ke Admin_Pesantren.
+   * Requirements: 14.6
+   */
+  @Cron(CronExpression.EVERY_HOUR)
+  async handlePerizinanLateCheck() {
+    this.logger.log('Running hourly perizinan late check...');
+    try {
+      const overdue = await this.perizinanService.findOverdueApproved();
+      if (overdue.length === 0) return;
+
+      this.logger.log(`PerizinanLateCheckJob: found ${overdue.length} overdue perizinan`);
+
+      for (const perizinan of overdue) {
+        try {
+          await this.perizinanService.markLate(perizinan.id);
+
+          // Kirim notifikasi WA ke Admin_Pesantren — Requirement 14.6
+          // Cari admin pesantren di tenant yang sama
+          const admins = await this.prisma.user.findMany({
+            where: {
+              tenantId: perizinan.tenantId,
+              role: { in: ['Admin_Pesantren', 'TENANT_ADMIN'] },
+              isActive: true,
+            },
+            select: { phone: true, name: true },
+          });
+
+          for (const admin of admins) {
+            if (!admin.phone) continue;
+            this.waQueue.enqueue({
+              tipeNotifikasi: 'izin',
+              noTujuan: admin.phone,
+              templateKey: 'IZIN_TERLAMBAT_ADMIN',
+              payload: {
+                namaSantri: perizinan.santri?.name ?? '',
+                perizinanId: perizinan.id,
+                tanggalSelesai: (perizinan as any).tanggalSelesai?.toISOString() ?? '',
+              },
+            });
+          }
+        } catch (err) {
+          this.logger.error(
+            `PerizinanLateCheckJob: failed to mark ${perizinan.id} as late: ${err.message}`,
+          );
+        }
+      }
+
+      this.logger.log(`PerizinanLateCheckJob: marked ${overdue.length} perizinan as TERLAMBAT`);
+    } catch (err) {
+      this.logger.error(`PerizinanLateCheckJob failed: ${err.message}`, err.stack);
     }
   }
 }

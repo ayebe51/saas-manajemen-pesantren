@@ -249,19 +249,19 @@ Implementasi dilakukan secara bertahap mengikuti urutan prioritas build order. S
 
 ### Fase 6: Perizinan + Pelanggaran + Reward
 
-- [ ] 17. Implementasi modul Perizinan
-  - [ ] 17.1 Prisma migration: tabel `perizinan`
+- [x] 17. Implementasi modul Perizinan
+  - [x] 17.1 Prisma migration: tabel `perizinan`
     - Status: DRAFT, SUBMITTED, APPROVED, REJECTED, COMPLETED, CANCELLED, TERLAMBAT
     - _Requirements: 14.1_
-  - [ ] 17.2 Implementasi `PerizinanService`: state machine izin
+  - [x] 17.2 Implementasi `PerizinanService`: state machine izin
     - Transisi status sesuai state machine; tolak transisi tidak valid (HTTP 400)
     - Kirim notifikasi WA saat APPROVED/REJECTED
     - Catat setiap perubahan status ke audit log
     - _Requirements: 14.1, 14.2, 14.3, 14.4, 14.5_
-  - [ ] 17.3 Implementasi `PerizinanController` dengan DTO
+  - [x] 17.3 Implementasi `PerizinanController` dengan DTO
     - Endpoint: POST `/perizinan`, GET `/perizinan`, PUT `/perizinan/:id/approve`, PUT `/perizinan/:id/reject`, PUT `/perizinan/:id/complete`
     - _Requirements: 14.2, 14.4_
-  - [ ] 17.4 Implementasi cron job `PerizinanLateCheckJob`
+  - [x] 17.4 Implementasi cron job `PerizinanLateCheckJob`
     - Tandai izin APPROVED yang melewati `tanggal_selesai` sebagai TERLAMBAT; kirim notifikasi ke Admin_Pesantren
     - _Requirements: 14.6_
   - [ ]* 17.5 Property test: Transisi status perizinan mengikuti state machine
