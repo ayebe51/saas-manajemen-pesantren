@@ -328,11 +328,11 @@ Implementasi dilakukan secara bertahap mengikuti urutan prioritas build order. S
 
 ### Fase 8: Akademik + Buku Penghubung + E-ID Card
 
-- [ ] 24. Implementasi modul Akademik
-  - [ ] 24.1 Prisma migration: tabel `kelas`, `mata_pelajaran`, `jadwal_pelajaran`, `nilai_santri`
+- [x] 24. Implementasi modul Akademik
+  - [x] 24.1 Prisma migration: tabel `kelas`, `mata_pelajaran`, `jadwal_pelajaran`, `nilai_santri`
     - Kolom nilai: `santri_id`, `mapel_id`, `periode`, `nilai` (CHECK 0–100), `created_by`
     - _Requirements: 6.1, 6.2_
-  - [ ] 24.2 Implementasi `AkademikService` dan `AkademikController`
+  - [x] 24.2 Implementasi `AkademikService` dan `AkademikController`
     - Validasi nilai dalam rentang yang dikonfigurasi (default 0–100)
     - Validasi konflik jadwal untuk kelas dan pengajar yang sama
     - _Requirements: 6.2, 6.4_

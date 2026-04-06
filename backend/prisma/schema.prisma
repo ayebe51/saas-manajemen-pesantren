@@ -158,6 +158,7 @@ model Santri {
   kunjunganKlinik KunjunganKlinik[]
   kunjunganTamu   KunjunganTamu[]  @relation("KunjunganTamuToSantri")
   penempatan      PenempatanSantri[]
+  nilaiSantri     NilaiSantri[]    @relation("NilaiSantriToSantri")
 
   @@index([tenantId])
   @@index([nis])
@@ -1125,6 +1126,88 @@ model KunjunganTamu {
   @@index([santriId])
   @@index([waktuMasuk])
   @@map("kunjungan_tamu")
+}
+
+// ─── Akademik (Academic Module) ──────────────────────────────────────────────
+// Requirements: 6.1, 6.2, 6.4
+
+model Kelas {
+  id              String            @id @default(uuid())
+  tenantId        String
+  nama            String            // e.g. "Kelas 7A", "Kelas 8B"
+  tingkat         String?           // e.g. "7", "8", "9"
+  waliKelasId     String?           // FK → users (wali kelas)
+  tahunAjaran     String?           // e.g. "2024/2025"
+  isActive        Boolean           @default(true)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  jadwal          JadwalPelajaran[]
+  nilaiSantri     NilaiSantri[]
+
+  @@index([tenantId])
+  @@map("kelas")
+}
+
+model MataPelajaran {
+  id          String            @id @default(uuid())
+  tenantId    String
+  nama        String            // e.g. "Matematika", "Fiqih"
+  kode        String?           // e.g. "MTK", "FQH"
+  deskripsi   String?
+  isActive    Boolean           @default(true)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  jadwal      JadwalPelajaran[]
+  nilaiSantri NilaiSantri[]
+
+  @@index([tenantId])
+  @@map("mata_pelajaran")
+}
+
+model JadwalPelajaran {
+  id            String        @id @default(uuid())
+  tenantId      String
+  kelasId       String
+  mapelId       String
+  pengajarId    String        // FK → users (teacher)
+  hariKe        Int           // 1=Senin, 2=Selasa, ..., 7=Ahad
+  jamMulai      String        // "07:00"
+  jamSelesai    String        // "08:30"
+  ruangan       String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  kelas         Kelas         @relation(fields: [kelasId], references: [id], onDelete: Cascade)
+  mapel         MataPelajaran @relation(fields: [mapelId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([kelasId])
+  @@index([mapelId])
+  @@index([pengajarId])
+  @@map("jadwal_pelajaran")
+}
+
+model NilaiSantri {
+  id          String        @id @default(uuid())
+  tenantId    String
+  santriId    String
+  mapelId     String
+  kelasId     String?
+  periode     String        // e.g. "GANJIL 2024/2025" or "GENAP 2024/2025"
+  tipeNilai   String        // UH, UTS, UAS, PRAKTEK, TUGAS
+  nilai       Decimal       @db.Decimal(5, 2) // CHECK 0–100 enforced in service — Requirement 6.2
+  keterangan  String?
+  createdBy   String        // FK → users
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  santri      Santri        @relation("NilaiSantriToSantri", fields: [santriId], references: [id], onDelete: Cascade)
+  mapel       MataPelajaran @relation(fields: [mapelId], references: [id], onDelete: Cascade)
+  kelas       Kelas?        @relation(fields: [kelasId], references: [id])
+
+  @@index([tenantId])
+  @@index([santriId])
+  @@index([mapelId])
+  @@index([periode])
+  @@map("nilai_santri")
 }
 
 // ─── Asrama (Dormitory Module) ────────────────────────────────────────────────
