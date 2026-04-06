@@ -17,6 +17,7 @@ import { SantriModule } from './modules/santri/santri.module';
 import { PerizinanModule } from './modules/perizinan/perizinan.module';
 import { CatatanModule } from './modules/catatan/catatan.module';
 import { PembayaranModule } from './modules/pembayaran/pembayaran.module';
+import { PembayaranSppModule } from './modules/pembayaran/pembayaran-spp.module';
 import { PelanggaranModule } from './modules/pelanggaran/pelanggaran.module';
 import { KunjunganModule } from './modules/kunjungan/kunjungan.module';
 import { KesehatanModule } from './modules/kesehatan/kesehatan.module';
@@ -75,6 +76,7 @@ import { LicenseGuard } from './common/guards/license.guard';
     PerizinanModule,
     CatatanModule,
     PembayaranModule,
+    PembayaranSppModule,
     PelanggaranModule,
     KunjunganModule,
     KesehatanModule,

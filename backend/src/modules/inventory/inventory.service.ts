@@ -152,7 +152,11 @@ export class InventoryService {
           data: {
             walletId: wallet.id,
             amount: dto.totalAmount,
+            jumlah: dto.totalAmount,
+            saldoSebelum: wallet.balance,
+            saldoSesudah: wallet.balance - dto.totalAmount,
             type: 'DEBIT',
+            tipe: 'DEBIT',
             method: 'KOPERASI',
             description: 'Pembelian di Koperasi',
             status: 'SUCCESS',

@@ -76,7 +76,11 @@ export class WalletService {
       data: {
         walletId: wallet.id,
         amount: finalAmount,
+        jumlah: finalAmount,
+        saldoSebelum: wallet.balance,
+        saldoSesudah: wallet.balance, // pending — saldo not yet updated
         type: 'DEPOSIT',
+        tipe: 'TOPUP',
         method: 'TRANSFER',
         status: 'PENDING',
         description: dto.description || `Top up via transfer bank sejumlah IDR ${finalAmount}`,
@@ -144,7 +148,11 @@ export class WalletService {
         data: {
           walletId: wallet.id,
           amount: dto.amount,
+          jumlah: dto.amount,
+          saldoSebelum: wallet.balance,
+          saldoSesudah: wallet.balance - dto.amount,
           type: 'PAYMENT',
+          tipe: 'DEBIT',
           method: 'POS/CASHLESS',
           status: 'SUCCESS',
           description: dto.description,
@@ -236,7 +244,11 @@ export class WalletService {
         data: {
           walletId: wallet.id,
           amount: dto.totalAmount,
+          jumlah: dto.totalAmount,
+          saldoSebelum: wallet.balance,
+          saldoSesudah: wallet.balance - dto.totalAmount,
           type: 'PAYMENT',
+          tipe: 'DEBIT',
           method: 'POS/CASHLESS',
           status: 'SUCCESS',
           description: `Pembelian Koperasi (${dto.items.length} item)`,

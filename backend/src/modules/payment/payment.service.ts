@@ -126,11 +126,19 @@ export class PaymentService {
           }
 
           // B. Buat riwayat Mutasi TopUp
+          // Get current wallet balance for saldo tracking
+          const currentWallet = await prisma.wallet.findUnique({ where: { id: walletId } });
+          const currentBalance = currentWallet?.balance ?? 0;
+
           await prisma.walletTransaction.create({
             data: {
               walletId: walletId,
               amount: grossAmount,
+              jumlah: grossAmount,
+              saldoSebelum: currentBalance,
+              saldoSesudah: currentBalance + grossAmount,
               type: 'TOPUP',
+              tipe: 'TOPUP',
               status: 'SUCCESS',
               description: `Top-Up Mandiri via Midtrans Payment (#${orderId})`,
               reference: orderId,

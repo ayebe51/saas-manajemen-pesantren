@@ -198,7 +198,7 @@ Implementasi dilakukan secara bertahap mengikuti urutan prioritas build order. S
   - [ ]* 13.7 Unit test: Kegagalan WA tidak menggagalkan operasi bisnis utama
     - _Requirements: 18.7_
 
-- [ ] 14. Checkpoint Fase 4 — Pastikan semua test lulus
+- [x] 14. Checkpoint Fase 4 — Pastikan semua test lulus
   - Pastikan semua unit test dan property test Fase 4 lulus, tanyakan kepada user jika ada pertanyaan.
 
 
@@ -206,25 +206,25 @@ Implementasi dilakukan secara bertahap mengikuti urutan prioritas build order. S
 
 ### Fase 5: Keuangan + SPP + Top-Up
 
-- [ ] 15. Implementasi modul Pembayaran dan Wallet
-  - [ ] 15.1 Prisma migration: tabel `invoices`, `wallets`, `wallet_transactions`
+- [x] 15. Implementasi modul Pembayaran dan Wallet
+  - [x] 15.1 Prisma migration: tabel `invoices`, `wallets`, `wallet_transactions`
     - UNIQUE constraint pada `invoice_number`; CHECK constraint `saldo >= 0` pada `wallets`
     - _Requirements: 11.1, 12.2_
-  - [ ] 15.2 Implementasi `InvoiceService`: buat invoice, konfirmasi pembayaran
+  - [x] 15.2 Implementasi `InvoiceService`: buat invoice, konfirmasi pembayaran
     - Generate nomor invoice unik (format: INV-YYYYMM-XXXXX)
     - Konfirmasi pembayaran: gunakan `SELECT FOR UPDATE` + idempotency key (`X-Idempotency-Key` header) untuk mencegah race condition
     - Transisi status sesuai state machine: PENDING → PAID/EXPIRED/CANCELLED, PAID → REFUNDED
     - Catat semua transaksi ke audit log
     - _Requirements: 11.1, 11.2, 11.3, 11.4, 11.6_
-  - [ ] 15.3 Implementasi `WalletService`: top-up dan debit saldo secara atomik
+  - [x] 15.3 Implementasi `WalletService`: top-up dan debit saldo secara atomik
     - Gunakan database transaction untuk atomicity; insert `wallet_transactions` bersamaan dengan update `wallets.saldo`
     - Tolak debit jika saldo tidak cukup (HTTP 422)
     - _Requirements: 12.2, 13.2, 13.3_
-  - [ ] 15.4 Implementasi `PembayaranController` dengan DTO dan validasi
+  - [x] 15.4 Implementasi `PembayaranController` dengan DTO dan validasi
     - Endpoint: POST `/pembayaran/invoices`, GET `/pembayaran/invoices`, POST `/pembayaran/invoices/:id/confirm`, POST `/pembayaran/topup`, GET `/pembayaran/wallet/:santriId`
     - Kirim notifikasi WA setelah pembayaran berhasil dan top-up berhasil
     - _Requirements: 11.5, 12.3_
-  - [ ] 15.5 Implementasi cron job `InvoiceExpiryJob`
+  - [x] 15.5 Implementasi cron job `InvoiceExpiryJob`
     - Tandai invoice PENDING yang melewati `due_date` menjadi EXPIRED
     - _Requirements: 11.2_
   - [ ]* 15.6 Property test: Invoice number unik

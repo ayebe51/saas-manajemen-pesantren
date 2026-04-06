@@ -246,21 +246,30 @@ model Pengumuman {
 }
 
 model Invoice {
-  id        String        @id @default(uuid())
-  tenantId  String
-  santriId  String
-  amountDue Float
-  dueDate   DateTime
-  status    String        @default("UNPAID")
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
-  lines     InvoiceLine[]
-  santri    Santri        @relation(fields: [santriId], references: [id], onDelete: Cascade)
-  tenant    Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  payments  Payment[]
+  id            String        @id @default(uuid())
+  tenantId      String
+  santriId      String
+  invoiceNumber String        @unique  // Format: INV-YYYYMM-XXXXX — Requirement 11.1
+  tipe          String        @default("SPP")  // SPP, DAFTAR_ULANG, LAINNYA
+  jumlah        Decimal       @db.Decimal(15, 2)
+  amountDue     Float         @default(0)  // kept for backward compat
+  dueDate       DateTime
+  status        String        @default("PENDING")
+  // State machine: PENDING → PAID/EXPIRED/CANCELLED, PAID → REFUNDED — Requirement 11.2
+  paidAt        DateTime?
+  paidBy        String?       // userId of petugas who confirmed
+  keterangan    String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  lines         InvoiceLine[]
+  santri        Santri        @relation(fields: [santriId], references: [id], onDelete: Cascade)
+  tenant        Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  payments      Payment[]
 
   @@index([tenantId])
   @@index([santriId])
+  @@index([status])
+  @@index([dueDate])
   @@map("invoices")
 }
 
@@ -501,7 +510,9 @@ model Wallet {
   id           String              @id @default(uuid())
   tenantId     String
   santriId     String              @unique
-  balance      Float               @default(0)
+  saldo        Decimal             @default(0) @db.Decimal(15, 2)
+  // CHECK constraint saldo >= 0 enforced at DB level — Requirement 12.2
+  balance      Float               @default(0)  // kept for backward compat
   pin          String?
   isActive     Boolean             @default(true)
   updatedAt    DateTime            @updatedAt
@@ -514,17 +525,26 @@ model Wallet {
 }
 
 model WalletTransaction {
-  id          String   @id @default(uuid())
-  walletId    String
-  amount      Float
-  type        String
-  method      String
-  description String?
-  reference   String?
-  status      String   @default("SUCCESS")
-  handledBy   String?
-  createdAt   DateTime @default(now())
-  wallet      Wallet   @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  id             String   @id @default(uuid())
+  walletId       String
+  tipe           String   @default("TOPUP")  // TOPUP, DEBIT, REFUND — Requirement 12.2
+  jumlah         Decimal  @db.Decimal(15, 2)
+  saldoSebelum   Decimal  @db.Decimal(15, 2)
+  saldoSesudah   Decimal  @db.Decimal(15, 2)
+  referensiId    String?  // invoice_id or koperasi_transaction_id
+  keterangan     String?
+  serverTimestamp DateTime @default(now())
+  // Legacy fields kept for backward compat
+  amount         Float    @default(0)
+  type           String   @default("TOPUP")
+  method         String   @default("MANUAL")
+  description    String?
+  reference      String?
+  status         String   @default("SUCCESS")
+  handledBy      String?
+  createdAt      DateTime @default(now())
+  createdBy      String?  // userId
+  wallet         Wallet   @relation(fields: [walletId], references: [id], onDelete: Cascade)
 
   @@index([walletId])
   @@map("wallet_transactions")

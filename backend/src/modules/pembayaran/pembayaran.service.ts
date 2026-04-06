@@ -33,13 +33,21 @@ export class PembayaranService {
     // Total amount calculated from lines
     const totalAmount = dto.lines.reduce((sum, line) => sum + line.amount, 0);
 
+    // Generate a simple invoice number for legacy endpoint
+    const now = new Date();
+    const prefix = `INV-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}-`;
+    const seq = Math.floor(Math.random() * 99999) + 1;
+    const invoiceNumber = `${prefix}${String(seq).padStart(5, '0')}`;
+
     return this.prisma.invoice.create({
       data: {
         tenantId,
         santriId: dto.santriId,
+        invoiceNumber,
+        jumlah: totalAmount,
         amountDue: totalAmount,
         dueDate: new Date(dto.dueDate),
-        status: 'UNPAID',
+        status: 'PENDING',
         lines: {
           create: dto.lines.map((line) => ({
             description: line.description,

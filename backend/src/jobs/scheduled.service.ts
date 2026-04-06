@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from '../common/prisma/prisma.service';
 import { LicenseService } from '../modules/license/license.service';
+import { InvoiceService } from '../modules/pembayaran/invoice.service';
 
 @Injectable()
 export class ScheduledTasksService {
@@ -10,6 +11,7 @@ export class ScheduledTasksService {
   constructor(
     private prisma: PrismaService,
     private readonly licenseService: LicenseService,
+    private readonly invoiceService: InvoiceService,
   ) {}
 
   @Cron(CronExpression.EVERY_DAY_AT_8AM)
@@ -95,6 +97,22 @@ export class ScheduledTasksService {
       }
     } catch (err) {
       this.logger.error(`License check job failed: ${err.message}`, err.stack);
+    }
+  }
+
+  /**
+   * InvoiceExpiryJob — runs daily at 1 AM.
+   * Tandai invoice PENDING yang melewati due_date menjadi EXPIRED.
+   * Requirements: 11.2
+   */
+  @Cron('0 1 * * *')
+  async handleInvoiceExpiry() {
+    this.logger.log('Running daily invoice expiry check...');
+    try {
+      const count = await this.invoiceService.expireOverdueInvoices();
+      this.logger.log(`InvoiceExpiryJob: marked ${count} invoice(s) as EXPIRED`);
+    } catch (err) {
+      this.logger.error(`InvoiceExpiryJob failed: ${err.message}`, err.stack);
     }
   }
 }
