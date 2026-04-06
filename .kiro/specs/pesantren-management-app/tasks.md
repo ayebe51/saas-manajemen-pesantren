@@ -320,7 +320,7 @@ Implementasi dilakukan secara bertahap mengikuti urutan prioritas build order. S
   - [ ]* 22.3 Unit test: Penempatan melebihi kapasitas → 422, riwayat perpindahan tersimpan
     - _Requirements: 15.2, 15.3, 15.4_
 
-- [ ] 23. Checkpoint Fase 7 — Pastikan semua test lulus
+- [x] 23. Checkpoint Fase 7 — Pastikan semua test lulus
   - Pastikan semua unit test dan property test Fase 7 lulus, tanyakan kepada user jika ada pertanyaan.
 
 
