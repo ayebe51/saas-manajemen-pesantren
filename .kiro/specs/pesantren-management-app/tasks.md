@@ -242,7 +242,7 @@ Implementasi dilakukan secara bertahap mengikuti urutan prioritas build order. S
   - [ ]* 15.10 Unit test: Konfirmasi invoice sudah PAID → 409, saldo tidak cukup → 422, jumlah negatif → 400
     - _Requirements: 11.4, 13.3_
 
-- [ ] 16. Checkpoint Fase 5 — Pastikan semua test lulus
+- [x] 16. Checkpoint Fase 5 — Pastikan semua test lulus
   - Pastikan semua unit test dan property test Fase 5 lulus, tanyakan kepada user jika ada pertanyaan.
 
 ---
