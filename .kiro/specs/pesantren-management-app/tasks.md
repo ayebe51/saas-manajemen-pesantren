@@ -377,18 +377,18 @@ Implementasi dilakukan secara bertahap mengikuti urutan prioritas build order. S
     - Presensi pegawai terpisah dari presensi santri
     - _Requirements: 16.1, 16.2, 16.3_
 
-- [ ] 29. Implementasi modul Koperasi
-  - [ ] 29.1 Prisma migration: tabel `koperasi_item`, `koperasi_transaksi`
+- [x] 29. Implementasi modul Koperasi
+  - [x] 29.1 Prisma migration: tabel `koperasi_item`, `koperasi_transaksi`
     - Kolom item: `nama`, `harga`, `stok`, `kategori`
     - _Requirements: 13.1_
-  - [ ] 29.2 Implementasi `KoperasiService` dan `KoperasiController`
+  - [x] 29.2 Implementasi `KoperasiService` dan `KoperasiController`
     - Transaksi pembelian: debit saldo santri + kurangi stok secara atomik (database transaction)
     - Tolak jika saldo tidak cukup (HTTP 422) atau stok habis (HTTP 422)
     - _Requirements: 13.2, 13.3, 13.4_
   - [ ]* 29.3 Unit test: Saldo tidak cukup → 422, stok habis → 422
     - _Requirements: 13.3, 13.4_
 
-- [ ] 30. Checkpoint Fase 8 — Pastikan semua test lulus
+- [x] 30. Checkpoint Fase 8 — Pastikan semua test lulus
   - Pastikan semua unit test dan property test Fase 8 lulus, tanyakan kepada user jika ada pertanyaan.
 
 ---

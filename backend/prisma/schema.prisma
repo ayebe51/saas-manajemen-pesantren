@@ -165,7 +165,8 @@ model Santri {
   penempatan      PenempatanSantri[]
   nilaiSantri     NilaiSantri[]    @relation("NilaiSantriToSantri")
   bukuPenghubung  BukuPenghubung[] @relation("BukuPenghubungSantri")
-  ppdbPendaftaran PpdbPendaftaran? @relation("PpdbPendaftaranToSantri")
+  ppdbPendaftaran   PpdbPendaftaran?    @relation("PpdbPendaftaranToSantri")
+  koperasiTransaksi KoperasiTransaksi[] @relation("KoperasiTransaksiToSantri")
 
   @@index([tenantId])
   @@index([nis])
@@ -1329,6 +1330,43 @@ model BalasanBukuPenghubung {
   @@index([bukuPenghubungId])
   @@index([penulisId])
   @@map("balasan_buku_penghubung")
+}
+
+// ─── Koperasi (Cooperative Store) ────────────────────────────────────────────
+// Requirements: 13.1, 13.2, 13.3, 13.4
+
+model KoperasiItem {
+  id          String               @id @default(uuid())
+  nama        String
+  harga       Decimal              @db.Decimal(15, 2)
+  stok        Int                  @default(0)
+  kategori    String?
+  isActive    Boolean              @default(true)
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  transaksi   KoperasiTransaksi[]
+
+  @@index([isActive])
+  @@map("koperasi_item")
+}
+
+model KoperasiTransaksi {
+  id                  String    @id @default(uuid())
+  santriId            String
+  itemId              String
+  jumlah              Int       // quantity purchased
+  hargaSatuan         Decimal   @db.Decimal(15, 2)  // price at time of purchase
+  total               Decimal   @db.Decimal(15, 2)
+  walletTransactionId String?   // FK → wallet_transactions (optional, for traceability)
+  serverTimestamp     DateTime  @default(now()) @db.Timestamptz()
+  createdBy           String?   // FK → users (optional)
+  santri              Santri    @relation("KoperasiTransaksiToSantri", fields: [santriId], references: [id], onDelete: Cascade)
+  item                KoperasiItem @relation(fields: [itemId], references: [id])
+
+  @@index([santriId])
+  @@index([itemId])
+  @@index([serverTimestamp])
+  @@map("koperasi_transaksi")
 }
 
 // ─── Kepegawaian (HR Module) ──────────────────────────────────────────────────

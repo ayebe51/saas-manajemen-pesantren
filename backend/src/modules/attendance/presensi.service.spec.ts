@@ -207,7 +207,7 @@ describe('PresensiService — Property 13: Server Timestamp Selalu Digunakan unt
           fc.constant('2099-12-31T23:59:59Z'),   // far future
           fc.constant('invalid-timestamp'),       // invalid
           fc.constant(undefined),                 // missing
-          fc.date().map((d) => d.toISOString()),  // random date
+          fc.date({ noInvalidDate: true }).map((d) => d.toISOString()),  // random valid date
         ),
         async (clientTimestamp) => {
           const capturedData: any[] = [];
