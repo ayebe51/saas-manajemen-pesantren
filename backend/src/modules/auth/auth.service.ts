@@ -261,6 +261,18 @@ export class AuthService {
     return { success: true };
   }
 
+  /**
+   * Revoke all active refresh tokens for a user.
+   * Called externally when an employee is deactivated — Requirement 16.2
+   */
+  async revokeUserSessions(userId: string): Promise<void> {
+    await this.prisma.refreshToken.updateMany({
+      where: { userId, revoked: false },
+      data: { revoked: true, revokedAt: new Date() },
+    });
+    this.logger.log(`All sessions revoked for user ${userId} (employee deactivation)`);
+  }
+
   // ─── Private helpers ────────────────────────────────────────────────────────
 
   /** Record a login attempt to the login_attempts table for audit purposes */

@@ -60,6 +60,7 @@ model Tenant {
   perizinan             Perizinan[]            @relation("PerizinanToTenant")
   kunjunganTamu         KunjunganTamu[]        @relation("KunjunganTamuToTenant")
   asrama                Asrama[]
+  pegawai               Pegawai[]              @relation("PegawaiToTenant")
 
   @@map("tenants")
 }
@@ -90,6 +91,7 @@ model User {
   kunjunganKlinik    KunjunganKlinik[] @relation("KunjunganKlinikCreatedBy")
   bukuPenghubungWaliKelas BukuPenghubung[] @relation("BukuPenghubungWaliKelas")
   balasanBukuPenghubung   BalasanBukuPenghubung[] @relation("BalasanBukuPenghubungPenulis")
+  pegawai                 Pegawai?         @relation("PegawaiToUser")
 
   @@index([tenantId])
   @@map("users")
@@ -1327,4 +1329,54 @@ model BalasanBukuPenghubung {
   @@index([bukuPenghubungId])
   @@index([penulisId])
   @@map("balasan_buku_penghubung")
+}
+
+// ─── Kepegawaian (HR Module) ──────────────────────────────────────────────────
+// Requirements: 16.1, 16.2, 16.3
+
+model Pegawai {
+  id               String             @id @default(uuid())
+  tenantId         String
+  userId           String?            @unique  // linked User account for login access
+  nama             String
+  jabatan          String             // e.g. GURU, MUSYRIF, STAF, SECURITY, KEPALA_SEKOLAH
+  tanggalBergabung DateTime
+  statusAktif      Boolean            @default(true)
+  nip              String?            // Nomor Induk Pegawai
+  noHp             String?
+  alamat           String?
+  dokumenUrl       String?            // URL to uploaded documents
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  deletedAt        DateTime?          // soft delete
+  tenant           Tenant             @relation("PegawaiToTenant", fields: [tenantId], references: [id], onDelete: Cascade)
+  user             User?              @relation("PegawaiToUser", fields: [userId], references: [id])
+  presensi         PresensiPegawai[]
+
+  @@index([tenantId])
+  @@index([statusAktif])
+  @@index([deletedAt])
+  @@map("pegawai")
+}
+
+model PresensiPegawai {
+  id              String   @id @default(uuid())
+  tenantId        String
+  pegawaiId       String
+  tanggal         DateTime @db.Date
+  status          String   // HADIR, IZIN, SAKIT, ALPHA, TERLAMBAT
+  jamMasuk        DateTime?
+  jamKeluar       DateTime?
+  keterangan      String?
+  dicatatOleh     String?  // userId of recorder
+  serverTimestamp DateTime @default(now())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  pegawai         Pegawai  @relation(fields: [pegawaiId], references: [id], onDelete: Cascade)
+
+  @@unique([pegawaiId, tanggal])  // one record per employee per day
+  @@index([tenantId])
+  @@index([pegawaiId])
+  @@index([tanggal])
+  @@map("presensi_pegawai")
 }

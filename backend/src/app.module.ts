@@ -45,6 +45,7 @@ import { PointsModule } from './modules/points/points.module';
 import { RbacModule } from './modules/rbac/rbac.module';
 import { LicenseModule } from './modules/license/license.module';
 import { LicenseGuard } from './common/guards/license.guard';
+import { EidModule } from './modules/eid/eid.module';
 
 @Module({
   imports: [
@@ -103,6 +104,7 @@ import { LicenseGuard } from './common/guards/license.guard';
     PointsModule,
     RbacModule,
     LicenseModule,
+    EidModule,
   ],
   providers: [
     {

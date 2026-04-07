@@ -358,21 +358,21 @@ Implementasi dilakukan secara bertahap mengikuti urutan prioritas build order. S
     - Konversi data pendaftaran ACCEPTED menjadi data santri aktif (tanpa input ulang)
     - _Requirements: 4.2, 4.4, 4.5_
 
-- [ ] 27. Implementasi modul E-ID Card
-  - [ ] 27.1 Implementasi `EidService`: generate E-ID Card PDF
+- [x] 27. Implementasi modul E-ID Card
+  - [x] 27.1 Implementasi `EidService`: generate E-ID Card PDF
     - Gunakan `pdfmake` untuk generate PDF dengan foto, nama, NIS, kelas, QR code verifikasi
     - QR code berisi URL verifikasi yang dapat dipindai
     - Regenerasi saat data santri diperbarui
     - _Requirements: 17.1, 17.2, 17.3, 17.4_
-  - [ ] 27.2 Implementasi `EidController`
+  - [x] 27.2 Implementasi `EidController`
     - Endpoint: GET `/eid/:santriId` (download PDF), POST `/eid/:santriId/regenerate`
     - _Requirements: 17.2, 17.4_
 
-- [ ] 28. Implementasi modul Kepegawaian
-  - [ ] 28.1 Prisma migration: tabel `pegawai`, `presensi_pegawai`
+- [x] 28. Implementasi modul Kepegawaian
+  - [x] 28.1 Prisma migration: tabel `pegawai`, `presensi_pegawai`
     - Kolom pegawai: `nama`, `jabatan`, `tanggal_bergabung`, `status_aktif`, `user_id`
     - _Requirements: 16.1, 16.3_
-  - [ ] 28.2 Implementasi `KepegawaianService` dan `KepegawaianController`
+  - [x] 28.2 Implementasi `KepegawaianService` dan `KepegawaianController`
     - Nonaktifkan pegawai: revoke semua refresh token user terkait secara bersamaan
     - Presensi pegawai terpisah dari presensi santri
     - _Requirements: 16.1, 16.2, 16.3_
