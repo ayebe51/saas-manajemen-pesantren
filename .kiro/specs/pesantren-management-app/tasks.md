@@ -108,7 +108,7 @@ Implementasi dilakukan secara bertahap mengikuti urutan prioritas build order. S
     - Endpoint: GET `/santri`, POST `/santri`, GET `/santri/:id`, PUT `/santri/:id`, DELETE `/santri/:id`, GET `/santri/:id/history`
     - Guard: JWT + RolesGuard per endpoint
     - _Requirements: 3.1, 3.6_
-  - [ ]* 7.4 Unit test: CRUD santri, soft delete, pencarian, audit log
+  - [x] 7.4 Unit test: CRUD santri, soft delete, pencarian, audit log
     - Test validasi NIS duplikat, soft delete tidak menghapus data historis
     - _Requirements: 3.2, 3.3, 3.5_
 
@@ -116,7 +116,7 @@ Implementasi dilakukan secara bertahap mengikuti urutan prioritas build order. S
   - [x] 8.1 Implementasi filter data santri berdasarkan relasi `santri_wali` untuk role Wali_Santri
     - Middleware/guard yang memastikan Wali_Santri hanya melihat santri tanggungannya
     - _Requirements: 2.7_
-  - [ ]* 8.2 Property test: Wali santri hanya akses data santri sendiri
+  - [x] 8.2 Property test: Wali santri hanya akses data santri sendiri
     - **Property 10: Wali Santri Hanya Akses Data Santri Sendiri**
     - **Validates: Requirements 2.7**
 
@@ -125,7 +125,7 @@ Implementasi dilakukan secara bertahap mengikuti urutan prioritas build order. S
     - Saat user dinonaktifkan: revoke semua refresh token aktif
     - Catat perubahan RBAC ke audit log
     - _Requirements: 2.8, 16.2_
-  - [ ]* 9.2 Unit test: Nonaktifkan user merevoke sesi aktif
+  - [x] 9.2 Unit test: Nonaktifkan user merevoke sesi aktif
     - _Requirements: 16.2_
 
 - [x] 10. Checkpoint Fase 2 — Pastikan semua test lulus
@@ -430,34 +430,34 @@ Implementasi dilakukan secara bertahap mengikuti urutan prioritas build order. S
 
 ### Fase 10: Hardening, Test, Deployment
 
-- [ ] 35. Hardening keamanan dan non-fungsional
-  - [ ] 35.1 Implementasi anti-replay pada endpoint presensi dan pembayaran
+- [x] 35. Hardening keamanan dan non-fungsional
+  - [x] 35.1 Implementasi anti-replay pada endpoint presensi dan pembayaran
     - Presensi: QR token one-time-use via Redis (sudah di Fase 3)
     - Pembayaran: validasi `X-Idempotency-Key` header (sudah di Fase 5)
     - Verifikasi semua endpoint sensitif menggunakan nonce/idempotency key
     - _Requirements: 22.2_
-  - [ ] 35.2 Konfigurasi Nginx: HTTPS, TLS termination, rate limiting header
+  - [x] 35.2 Konfigurasi Nginx: HTTPS, TLS termination, rate limiting header
     - Pastikan semua komunikasi via HTTPS; konfigurasi `helmet` di NestJS
     - _Requirements: 22.1_
-  - [ ] 35.3 Implementasi backup otomatis harian
+  - [x] 35.3 Implementasi backup otomatis harian
     - Cron job atau script `pg_dump` harian; retensi 30 hari; simpan ke `/backup/`
     - _Requirements: 22.6_
-  - [ ] 35.4 Verifikasi error handling: tidak mengekspos stack trace ke client
+  - [x] 35.4 Verifikasi error handling: tidak mengekspos stack trace ke client
     - Implementasi global exception filter yang menyembunyikan detail error dari response
     - _Requirements: 22.8_
 
-- [ ] 36. Integrasi akhir dan wiring semua modul
-  - [ ] 36.1 Pastikan semua modul terdaftar di `AppModule`
+- [x] 36. Integrasi akhir dan wiring semua modul
+  - [x] 36.1 Pastikan semua modul terdaftar di `AppModule`
     - Verifikasi dependency injection antar modul (Santri → Presensi, Pembayaran → Wallet, dst.)
     - _Requirements: semua_
-  - [ ] 36.2 Implementasi Prisma seed data awal
+  - [x] 36.2 Implementasi Prisma seed data awal
     - Seed: 9 role default, matriks permission 19 modul, user Super_Admin default, template WA
     - _Requirements: 2.1, 2.5_
-  - [ ] 36.3 Finalisasi `docker-compose.yml` dan konfigurasi deployment
+  - [x] 36.3 Finalisasi `docker-compose.yml` dan konfigurasi deployment
     - Service: nginx, api, worker, postgres, redis; volume untuk pgdata, redisdata, backup
     - _Requirements: 22.4_
 
-- [ ] 37. Final checkpoint — Pastikan semua test lulus
+- [x] 37. Final checkpoint — Pastikan semua test lulus
   - Jalankan seluruh test suite (unit + property-based); pastikan semua lulus. Tanyakan kepada user jika ada pertanyaan.
 
 ---

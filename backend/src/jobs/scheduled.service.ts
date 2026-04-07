@@ -1,10 +1,15 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+import * as path from 'path';
 import { PrismaService } from '../common/prisma/prisma.service';
 import { LicenseService } from '../modules/license/license.service';
 import { InvoiceService } from '../modules/pembayaran/invoice.service';
 import { PerizinanService } from '../modules/perizinan/perizinan.service';
 import { WaQueueService } from '../modules/wa-engine/wa-queue.service';
+
+const execAsync = promisify(exec);
 
 @Injectable()
 export class ScheduledTasksService {
@@ -173,6 +178,40 @@ export class ScheduledTasksService {
       this.logger.log(`PerizinanLateCheckJob: marked ${overdue.length} perizinan as TERLAMBAT`);
     } catch (err) {
       this.logger.error(`PerizinanLateCheckJob failed: ${err.message}`, err.stack);
+    }
+  }
+
+  /**
+   * DatabaseBackupJob — runs daily at 3 AM.
+   * Executes pg_dump via backup.sh script, retains 30 days of backups.
+   * Requirements: 22.6
+   */
+  @Cron('0 3 * * *')
+  async handleDatabaseBackup() {
+    this.logger.log('Running daily database backup...');
+    const scriptPath = path.resolve(__dirname, '../../scripts/backup.sh');
+
+    try {
+      const { stdout, stderr } = await execAsync(`bash "${scriptPath}"`, {
+        env: {
+          ...process.env,
+          DB_HOST: process.env.DB_HOST ?? 'postgres',
+          DB_PORT: process.env.DB_PORT ?? '5432',
+          DB_USER: process.env.DB_USER ?? 'postgres',
+          DB_PASSWORD: process.env.DB_PASSWORD ?? '',
+          DB_NAME: process.env.DB_NAME ?? 'pesantren',
+          BACKUP_DIR: process.env.BACKUP_DIR ?? '/app/backup',
+          BACKUP_RETENTION_DAYS: process.env.BACKUP_RETENTION_DAYS ?? '30',
+        },
+        timeout: 5 * 60 * 1000, // 5 minute timeout
+      });
+
+      if (stdout) this.logger.log(`BackupJob stdout: ${stdout.trim()}`);
+      if (stderr) this.logger.warn(`BackupJob stderr: ${stderr.trim()}`);
+
+      this.logger.log('DatabaseBackupJob: backup completed successfully');
+    } catch (err) {
+      this.logger.error(`DatabaseBackupJob failed: ${err.message}`, err.stack);
     }
   }
 }

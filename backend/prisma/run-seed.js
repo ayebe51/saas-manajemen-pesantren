@@ -1,12 +1,13 @@
 const { execSync } = require('child_process');
 
-console.log('Compiling seed script...');
+console.log('Running seed with ts-node...');
 try {
-  execSync('npx tsc prisma/seed.ts', { stdio: 'inherit' });
-  console.log('Executing compiled seed script...');
-  execSync('node prisma/seed.js', { stdio: 'inherit' });
-  console.log('Seed command completed.');
+  execSync('npx ts-node -r tsconfig-paths/register prisma/seed.ts', {
+    stdio: 'inherit',
+    env: { ...process.env },
+  });
+  console.log('Seed completed.');
 } catch (error) {
-  console.error('Failed to run seed script:', error.message);
+  console.error('Seed failed:', error.message);
   process.exit(1);
 }

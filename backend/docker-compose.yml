@@ -11,6 +11,7 @@ services:
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/certs:/etc/nginx/certs:ro
+      - ./uploads:/app/uploads:ro
     depends_on:
       - api
     networks:
@@ -35,6 +36,7 @@ services:
       - WA_PROVIDER=${WA_PROVIDER:-fonnte}
       - WA_API_KEY=${WA_API_KEY}
       - LICENSE_SERVER_URL=${LICENSE_SERVER_URL}
+      - SENTRY_DSN=${SENTRY_DSN}
       - PORT=3000
     depends_on:
       postgres:
@@ -62,6 +64,7 @@ services:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
       - WA_PROVIDER=${WA_PROVIDER:-fonnte}
       - WA_API_KEY=${WA_API_KEY}
+      - SENTRY_DSN=${SENTRY_DSN}
     depends_on:
       postgres:
         condition: service_healthy
@@ -107,9 +110,40 @@ services:
     networks:
       - pesantren-net
 
+  # Daily backup service — Requirement 22.6 (RPO 24h, retention 30 days)
+  backup:
+    image: postgres:14-alpine
+    container_name: pesantren-backup
+    restart: always
+    environment:
+      PGPASSWORD: ${DB_PASSWORD:-postgres}
+      DB_USER: ${DB_USER:-postgres}
+      DB_NAME: ${DB_NAME:-pesantren}
+    volumes:
+      - backup:/backup
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - pesantren-net
+    # Run pg_dump daily at 02:00, retain last 30 dumps
+    entrypoint: >
+      sh -c "
+        while true; do
+          TIMESTAMP=$$(date +%Y%m%d_%H%M%S);
+          echo \"[$$TIMESTAMP] Starting backup...\";
+          pg_dump -h postgres -U $$DB_USER -Fc $$DB_NAME > /backup/pesantren_$$TIMESTAMP.dump && \
+            echo \"[$$TIMESTAMP] Backup OK\" || \
+            echo \"[$$TIMESTAMP] Backup FAILED\";
+          find /backup -name '*.dump' -mtime +30 -delete;
+          sleep 86400;
+        done
+      "
+
 volumes:
   pgdata:
   redisdata:
+  backup:
 
 networks:
   pesantren-net:

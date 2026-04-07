@@ -2,13 +2,39 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
+import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
+import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.useGlobalInterceptors(new LoggingInterceptor());
+
+  // Global exception filter — hides stack traces from clients (Requirement 22.8)
+  app.useGlobalFilters(new HttpExceptionFilter());
+
+  // Helmet — security headers (Requirement 22.1)
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: ["'self'"],
+          styleSrc: ["'self'", "'unsafe-inline'"],
+          imgSrc: ["'self'", 'data:', 'https:'],
+        },
+      },
+      hsts: {
+        maxAge: 31536000,
+        includeSubDomains: true,
+      },
+      noSniff: true,
+      frameguard: { action: 'sameorigin' },
+      xssFilter: true,
+    }),
+  );
 
   // Security & Middleware
   app.enableCors({
