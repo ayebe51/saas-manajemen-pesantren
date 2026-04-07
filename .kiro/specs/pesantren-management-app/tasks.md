@@ -339,21 +339,21 @@ Implementasi dilakukan secara bertahap mengikuti urutan prioritas build order. S
   - [ ]* 24.3 Unit test: Nilai di luar rentang → 400, konflik jadwal → 400
     - _Requirements: 6.2, 6.4_
 
-- [ ] 25. Implementasi modul Buku Penghubung
-  - [ ] 25.1 Prisma migration: tabel `buku_penghubung`, `balasan_buku_penghubung`
+- [x] 25. Implementasi modul Buku Penghubung
+  - [x] 25.1 Prisma migration: tabel `buku_penghubung`, `balasan_buku_penghubung`
     - Kolom: `santri_id`, `wali_kelas_id`, `isi`, `server_timestamp`; tidak ada soft delete
     - _Requirements: 7.1, 7.4_
-  - [ ] 25.2 Implementasi `BukuPenghubungService` dan `BukuPenghubungController`
+  - [x] 25.2 Implementasi `BukuPenghubungService` dan `BukuPenghubungController`
     - Kirim notifikasi WA ke Wali_Santri saat catatan baru dibuat
     - Simpan balasan Wali_Santri dan tampilkan ke Wali_Kelas
     - _Requirements: 7.2, 7.3, 7.4_
 
-- [ ] 26. Implementasi modul PPDB
-  - [ ] 26.1 Prisma migration: tabel `ppdb_pendaftaran`
+- [x] 26. Implementasi modul PPDB
+  - [x] 26.1 Prisma migration: tabel `ppdb_pendaftaran`
     - Status: DRAFT, SUBMITTED, REVIEW, ACCEPTED, REJECTED
     - Kolom: `nomor_pendaftaran` (UNIQUE), `data_calon` (JSONB), `status`, `created_at`
     - _Requirements: 4.1, 4.2, 4.3_
-  - [ ] 26.2 Implementasi `PpdbService` dan `PpdbController`
+  - [x] 26.2 Implementasi `PpdbService` dan `PpdbController`
     - Generate nomor pendaftaran unik; kirim notifikasi WA saat status berubah
     - Konversi data pendaftaran ACCEPTED menjadi data santri aktif (tanpa input ulang)
     - _Requirements: 4.2, 4.4, 4.5_

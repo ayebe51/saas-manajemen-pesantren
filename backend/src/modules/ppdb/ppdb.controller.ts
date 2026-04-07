@@ -1,76 +1,104 @@
-import { Controller, Get, Post, Body, Param, Put, UseGuards, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { PpdbService } from './ppdb.service';
-import { AddPpdbDocumentDto, AddPpdbExamDto, CreatePpdbDto, UpdatePpdbDto } from './dto/ppdb.dto';
+import { CreatePpdbDto } from './dto/create-ppdb.dto';
+import { UpdatePpdbStatusDto } from './dto/update-ppdb-status.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
-import { TenantGuard } from '../../common/guards/tenant.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
+import { Public } from '../../common/decorators/public.decorator';
 import { TenantId } from '../../common/decorators/tenant-id.decorator';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
 
-@ApiTags('PPDB (Penerimaan Siswa Baru)')
+@ApiTags('PPDB')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard, TenantGuard, RolesGuard)
+@UseGuards(JwtAuthGuard)
 @Controller('ppdb')
 export class PpdbController {
   constructor(private readonly ppdbService: PpdbService) {}
 
+  /**
+   * POST /ppdb — buat pendaftaran baru (Public)
+   * Requirements: 4.1, 4.2
+   */
   @Post()
-  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS')
-  @ApiOperation({ summary: 'Mendaftarkan calon santri baru' })
-  create(@TenantId() tenantId: string, @Body() createPpdbDto: CreatePpdbDto) {
-    return this.ppdbService.create(tenantId, createPpdbDto);
+  @Public()
+  @ApiOperation({ summary: 'Buat pendaftaran PPDB baru (status DRAFT)' })
+  create(@TenantId() tenantId: string, @Body() dto: CreatePpdbDto) {
+    return this.ppdbService.create(tenantId, dto);
   }
 
+  /**
+   * GET /ppdb — list semua pendaftaran (JWT + Admin)
+   * Requirements: 4.1
+   */
   @Get()
-  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS')
-  @ApiOperation({ summary: 'Melihat seluruh daftar pendaftar PPDB' })
-  @ApiQuery({
-    name: 'status',
-    required: false,
-    description: 'Filter by status (e.g PENDING, ACCEPTED)',
-  })
+  @UseGuards(RolesGuard)
+  @Roles('Admin_Pesantren', 'SUPERADMIN', 'Super_Admin', 'TENANT_ADMIN')
+  @ApiOperation({ summary: 'Daftar semua pendaftaran PPDB' })
+  @ApiQuery({ name: 'status', required: false, description: 'Filter by status' })
   findAll(@TenantId() tenantId: string, @Query('status') status?: string) {
     return this.ppdbService.findAll(tenantId, status);
   }
 
+  /**
+   * GET /ppdb/:id — detail pendaftaran (JWT)
+   * Requirements: 4.1
+   */
   @Get(':id')
-  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS')
-  @ApiOperation({ summary: 'Melihat detail pendaftar PPDB beserta dokumen dan hasil tes' })
-  findOne(@TenantId() tenantId: string, @Param('id') id: string) {
-    return this.ppdbService.findOne(tenantId, id);
+  @ApiOperation({ summary: 'Detail pendaftaran PPDB' })
+  findOne(@Param('id') id: string) {
+    return this.ppdbService.findOne(id);
   }
 
-  @Put(':id')
-  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS')
-  @ApiOperation({ summary: 'Mengubah status pendaftaran atau profil calon santri' })
-  update(
-    @TenantId() tenantId: string,
+  /**
+   * PUT /ppdb/:id/submit — submit pendaftaran DRAFT → SUBMITTED (JWT)
+   * Requirements: 4.2, 4.4
+   */
+  @Put(':id/submit')
+  @ApiOperation({ summary: 'Submit pendaftaran (DRAFT → SUBMITTED)' })
+  submit(@Param('id') id: string) {
+    return this.ppdbService.submit(id);
+  }
+
+  /**
+   * PUT /ppdb/:id/status — update status oleh admin (JWT + Admin)
+   * Requirements: 4.3, 4.4
+   */
+  @Put(':id/status')
+  @UseGuards(RolesGuard)
+  @Roles('Admin_Pesantren', 'SUPERADMIN', 'Super_Admin', 'TENANT_ADMIN')
+  @ApiOperation({ summary: 'Update status PPDB (SUBMITTED → REVIEW → ACCEPTED/REJECTED)' })
+  updateStatus(
     @Param('id') id: string,
-    @Body() updatePpdbDto: UpdatePpdbDto,
+    @Body() dto: UpdatePpdbStatusDto,
+    @CurrentUser() user: any,
   ) {
-    return this.ppdbService.update(tenantId, id, updatePpdbDto);
+    // Inject reviewedBy from JWT if not provided in body
+    if (!dto.reviewedBy && user?.id) {
+      dto.reviewedBy = user.id;
+    }
+    return this.ppdbService.updateStatus(id, dto);
   }
 
-  @Post(':id/documents')
-  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS')
-  @ApiOperation({ summary: 'Melampirkan dokumen persyaratan pendaftar (KK, Ijazah)' })
-  addDocument(
-    @TenantId() tenantId: string,
-    @Param('id') registrationId: string,
-    @Body() addDocDto: AddPpdbDocumentDto,
-  ) {
-    return this.ppdbService.addDocument(tenantId, registrationId, addDocDto);
-  }
-
-  @Post(':id/exams')
-  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS')
-  @ApiOperation({ summary: 'Menginput jadwal atau nilai tes masuk (Wawancara, Tulis, Ngaji)' })
-  addExam(
-    @TenantId() tenantId: string,
-    @Param('id') registrationId: string,
-    @Body() addExamDto: AddPpdbExamDto,
-  ) {
-    return this.ppdbService.addExam(tenantId, registrationId, addExamDto);
+  /**
+   * POST /ppdb/:id/convert — konversi ACCEPTED ke santri (JWT + Admin)
+   * Requirements: 4.5
+   */
+  @Post(':id/convert')
+  @UseGuards(RolesGuard)
+  @Roles('Admin_Pesantren', 'SUPERADMIN', 'Super_Admin', 'TENANT_ADMIN')
+  @ApiOperation({ summary: 'Konversi pendaftaran ACCEPTED menjadi data santri aktif' })
+  convertToSantri(@Param('id') id: string, @TenantId() tenantId: string) {
+    return this.ppdbService.convertToSantri(id, tenantId);
   }
 }

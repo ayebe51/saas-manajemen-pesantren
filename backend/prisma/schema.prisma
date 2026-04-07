@@ -45,6 +45,7 @@ model Tenant {
   ppdbDocuments         PpdbDocument[]
   ppdbExams             PpdbExam[]
   ppdbRegistrations     PpdbRegistration[]
+  ppdbPendaftaran       PpdbPendaftaran[]
   purchaseOrders        PurchaseOrder[]
   roomAssignments       RoomAssignment[]
   rooms                 Room[]
@@ -87,6 +88,8 @@ model User {
   pelanggaranDibuat  Pelanggaran[]  @relation("PelanggaranCreatedBy")
   rewardDibuat       RewardPoin[]   @relation("RewardPoinCreatedBy")
   kunjunganKlinik    KunjunganKlinik[] @relation("KunjunganKlinikCreatedBy")
+  bukuPenghubungWaliKelas BukuPenghubung[] @relation("BukuPenghubungWaliKelas")
+  balasanBukuPenghubung   BalasanBukuPenghubung[] @relation("BalasanBukuPenghubungPenulis")
 
   @@index([tenantId])
   @@map("users")
@@ -159,6 +162,8 @@ model Santri {
   kunjunganTamu   KunjunganTamu[]  @relation("KunjunganTamuToSantri")
   penempatan      PenempatanSantri[]
   nilaiSantri     NilaiSantri[]    @relation("NilaiSantriToSantri")
+  bukuPenghubung  BukuPenghubung[] @relation("BukuPenghubungSantri")
+  ppdbPendaftaran PpdbPendaftaran? @relation("PpdbPendaftaranToSantri")
 
   @@index([tenantId])
   @@index([nis])
@@ -1259,4 +1264,67 @@ model PenempatanSantri {
   @@index([kamarId])
   @@index([isAktif])
   @@map("penempatan_santri")
+}
+
+// ─── PPDB Pendaftaran (New Student Enrollment) ───────────────────────────────
+// Requirements: 4.1, 4.2, 4.3, 4.4, 4.5
+
+enum PpdbStatus {
+  DRAFT
+  SUBMITTED
+  REVIEW
+  ACCEPTED
+  REJECTED
+}
+
+model PpdbPendaftaran {
+  id                  String      @id @default(uuid())
+  tenantId            String
+  nomorPendaftaran    String      @unique
+  dataCalon           Json        // JSONB: nama_lengkap, no_hp_wali, jenis_kelamin, tanggal_lahir, tempat_lahir, alamat, foto_url, etc.
+  status              PpdbStatus  @default(DRAFT)
+  catatan             String?
+  reviewedBy          String?     // UUID ref to users
+  reviewedAt          DateTime?
+  santriId            String?     @unique // set after convertToSantri
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+  tenant              Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  santri              Santri?     @relation("PpdbPendaftaranToSantri", fields: [santriId], references: [id])
+
+  @@index([tenantId])
+  @@index([status])
+  @@map("ppdb_pendaftaran")
+}
+
+// ─── Buku Penghubung (Parent Communication) ───────────────────────────────────
+// Requirements: 7.1, 7.4
+
+model BukuPenghubung {
+  id              String                  @id @default(uuid())
+  santriId        String
+  waliKelasId     String                  // FK → users (wali kelas yang menulis)
+  isi             String
+  serverTimestamp DateTime                @default(now())
+  santri          Santri                  @relation("BukuPenghubungSantri", fields: [santriId], references: [id], onDelete: Cascade)
+  waliKelas       User                    @relation("BukuPenghubungWaliKelas", fields: [waliKelasId], references: [id])
+  balasan         BalasanBukuPenghubung[]
+
+  @@index([santriId])
+  @@index([waliKelasId])
+  @@map("buku_penghubung")
+}
+
+model BalasanBukuPenghubung {
+  id                String         @id @default(uuid())
+  bukuPenghubungId  String
+  penulisId         String         // FK → users (wali santri atau wali kelas yang membalas)
+  isi               String
+  serverTimestamp   DateTime       @default(now())
+  bukuPenghubung    BukuPenghubung @relation(fields: [bukuPenghubungId], references: [id], onDelete: Cascade)
+  penulis           User           @relation("BalasanBukuPenghubungPenulis", fields: [penulisId], references: [id])
+
+  @@index([bukuPenghubungId])
+  @@index([penulisId])
+  @@map("balasan_buku_penghubung")
 }

@@ -26,8 +26,18 @@ export class PpdbPublicController {
   async register(@Body() dto: PublicCreatePpdbDto) {
     this.logger.log(`Pendaftaran PPDB Publik untuk tenant: ${dto.tenantId}`);
     try {
-      const { tenantId, ...createData } = dto;
-      const result = await this.ppdbService.create(tenantId, createData);
+      const { tenantId, ...fields } = dto;
+      // Map legacy flat fields into the new dataCalon JSONB format
+      const dataCalon: Record<string, any> = {
+        nama_lengkap: (fields as any).fullName ?? (fields as any).nama_lengkap,
+        jenis_kelamin: (fields as any).gender ?? (fields as any).jenis_kelamin,
+        tanggal_lahir: (fields as any).dob ?? (fields as any).tanggal_lahir,
+        sekolah_asal: (fields as any).previousSchool ?? (fields as any).sekolah_asal,
+        jalur: (fields as any).pathway ?? (fields as any).jalur,
+        no_hp_wali: (fields as any).no_hp_wali ?? '',
+        ...fields,
+      };
+      const result = await this.ppdbService.create(tenantId, { dataCalon });
       return result;
     } catch (error: any) {
       this.logger.error(`Error in PPDB register: ${error.message}`, error.stack);
