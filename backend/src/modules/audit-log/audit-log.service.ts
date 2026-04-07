@@ -46,6 +46,9 @@ export class AuditLogService {
     action?: string,
     entity?: string,
     userId?: string,
+    startDate?: string,
+    endDate?: string,
+    page: number = 1,
   ) {
     const where: any = { tenantId };
 
@@ -53,16 +56,43 @@ export class AuditLogService {
     if (entity) where.entity = entity;
     if (userId) where.userId = userId;
 
-    return this.prisma.auditLog.findMany({
-      where,
-      orderBy: { createdAt: 'desc' },
-      take: limit,
-      include: {
-        user: {
-          select: { name: true, role: true },
+    if (startDate || endDate) {
+      where.serverTimestamp = {};
+      if (startDate) where.serverTimestamp.gte = new Date(startDate);
+      if (endDate) {
+        // Include the full end day by setting time to end of day
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        where.serverTimestamp.lte = end;
+      }
+    }
+
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.prisma.auditLog.findMany({
+        where,
+        orderBy: { serverTimestamp: 'desc' },
+        take: limit,
+        skip,
+        include: {
+          user: {
+            select: { name: true, role: true },
+          },
         },
+      }),
+      this.prisma.auditLog.count({ where }),
+    ]);
+
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
       },
-    });
+    };
   }
 
   async findOne(tenantId: string, id: string) {

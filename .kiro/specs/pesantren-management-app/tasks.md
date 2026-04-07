@@ -395,12 +395,12 @@ Implementasi dilakukan secara bertahap mengikuti urutan prioritas build order. S
 
 ### Fase 9: Laporan + Dashboard
 
-- [ ] 31. Implementasi modul Laporan
-  - [ ] 31.1 Implementasi `ReportWorker` dengan BullMQ
+- [x] 31. Implementasi modul Laporan
+  - [x] 31.1 Implementasi `ReportWorker` dengan BullMQ
     - Job queue untuk generate laporan besar secara asinkron
     - Simpan hasil laporan ke file storage (S3/local); kirim notifikasi ke user saat siap
     - _Requirements: 21.4_
-  - [ ] 31.2 Implementasi `LaporanService` dan `LaporanController`
+  - [x] 31.2 Implementasi `LaporanService` dan `LaporanController`
     - Ekspor PDF (pdfmake) dan Excel (exceljs) untuk semua modul relevan
     - Filter berdasarkan rentang tanggal, kelas, asrama, dan parameter per jenis laporan
     - Modul laporan: santri, presensi, keuangan, pelanggaran, kesehatan, kunjungan, asrama, kepegawaian, koperasi
@@ -408,22 +408,22 @@ Implementasi dilakukan secara bertahap mengikuti urutan prioritas build order. S
   - [ ]* 31.3 Unit test: Generate laporan PDF dan Excel, filter parameter
     - _Requirements: 21.3, 21.5_
 
-- [ ] 32. Implementasi modul Dashboard
-  - [ ] 32.1 Implementasi `DashboardService`
+- [x] 32. Implementasi modul Dashboard
+  - [x] 32.1 Implementasi `DashboardService`
     - Agregasi data: jumlah santri aktif, rekap presensi hari ini, tagihan jatuh tempo, notifikasi terbaru
     - Gunakan Redis cache dengan TTL pendek untuk mempercepat response < 2 detik (p95)
     - _Requirements: 21.1, 21.2_
-  - [ ] 32.2 Implementasi `DashboardController`
+  - [x] 32.2 Implementasi `DashboardController`
     - Endpoint: GET `/dashboard/summary`
     - _Requirements: 21.1_
 
-- [ ] 33. Implementasi modul Audit Log (endpoint query)
-  - [ ] 33.1 Implementasi `AuditLogController`
+- [x] 33. Implementasi modul Audit Log (endpoint query)
+  - [x] 33.1 Implementasi `AuditLogController`
     - Endpoint: GET `/audit-logs` dengan filter: jenis aksi, rentang waktu, user_id
     - Akses hanya untuk Super_Admin dan Owner
     - _Requirements: 20.5_
 
-- [ ] 34. Checkpoint Fase 9 — Pastikan semua test lulus
+- [x] 34. Checkpoint Fase 9 — Pastikan semua test lulus
   - Pastikan semua unit test dan property test Fase 9 lulus, tanyakan kepada user jika ada pertanyaan.
 
 ---

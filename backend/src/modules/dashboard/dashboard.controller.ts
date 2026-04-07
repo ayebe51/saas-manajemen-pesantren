@@ -15,11 +15,15 @@ import { CacheTTL } from '@nestjs/cache-manager';
 export class DashboardController {
   constructor(private readonly dashboardService: DashboardService) {}
 
+  /**
+   * Ringkasan data operasional dashboard: santri aktif, presensi hari ini,
+   * tagihan jatuh tempo, notifikasi terbaru.
+   * Data di-cache Redis 60 detik — Requirements 21.1, 21.2
+   */
   @Get('summary')
-  @ApiOperation({ summary: 'Get high level dashboard summary metrics' })
-  @CacheTTL(300) // 5 Menit
-  getSummary(@TenantId() tenantId: string) {
-    return this.dashboardService.getSummary(tenantId);
+  @ApiOperation({ summary: 'Ringkasan operasional dashboard (santri aktif, presensi, tagihan, notifikasi)' })
+  getDashboardSummary() {
+    return this.dashboardService.getDashboardSummary();
   }
 
   @Get('trends')

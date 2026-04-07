@@ -92,6 +92,7 @@ model User {
   bukuPenghubungWaliKelas BukuPenghubung[] @relation("BukuPenghubungWaliKelas")
   balasanBukuPenghubung   BalasanBukuPenghubung[] @relation("BalasanBukuPenghubungPenulis")
   pegawai                 Pegawai?         @relation("PegawaiToUser")
+  reportJobs              ReportJob[]
 
   @@index([tenantId])
   @@map("users")
@@ -1417,4 +1418,24 @@ model PresensiPegawai {
   @@index([pegawaiId])
   @@index([tanggal])
   @@map("presensi_pegawai")
+}
+
+// ─── Report Jobs (Async Report Generation) ───────────────────────────────────
+// Requirements: 21.4
+
+model ReportJob {
+  id        String   @id @default(uuid())
+  userId    String
+  tipe      String   // SANTRI, PRESENSI, KEUANGAN, PELANGGARAN, KESEHATAN, KUNJUNGAN, ASRAMA, KEPEGAWAIAN, KOPERASI
+  status    String   @default("PENDING") // PENDING, PROCESSING, DONE, FAILED
+  filter    Json?
+  filePath  String?
+  errorMsg  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@map("report_jobs")
 }
