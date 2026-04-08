@@ -40,18 +40,20 @@ export class AuthController {
       (request as any).ip ||
       'unknown';
     const { accessToken, refreshToken, user } = await this.authService.login(loginDto, ip);
+    const isProduction = process.env.NODE_ENV === 'production';
 
     // Set refresh token in secure httpOnly cookie
     response.cookie('refresh_token', refreshToken, {
       httpOnly: true,
-      secure: true, // SameSite 'none' requires Secure to be true always
-      sameSite: 'none',
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
     return {
       message: 'Login successful',
       accessToken,
+      refreshToken, // also return in body for localStorage fallback
       user,
     };
   }
@@ -85,11 +87,12 @@ export class AuthController {
     const { accessToken, newRefreshToken, user } =
       await this.authService.refreshToken(refreshToken);
 
+    const isProduction = process.env.NODE_ENV === 'production';
     // Set new refresh token in cookie
     response.cookie('refresh_token', newRefreshToken, {
       httpOnly: true,
-      secure: true, // SameSite 'none' requires Secure to be true always
-      sameSite: 'none',
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 

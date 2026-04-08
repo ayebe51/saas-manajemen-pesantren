@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { Hash, MapPin, School, User, CheckCircle, Upload, FileText, Loader2, X } from 'lucide-react';
+import { MapPin, School, User, CheckCircle, Upload, FileText, Loader2, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { api } from '@/lib/api/client';
 
@@ -27,11 +26,8 @@ interface PpdbFormState {
 }
 
 export const PpdbPortalPage = () => {
-  const { tenantId: urlTenantId } = useParams<{ tenantId?: string }>();
-  const hasTenantFromUrl = !!urlTenantId;
-
   const [formData, setFormData] = useState<PpdbFormState>({
-    tenantId: urlTenantId || '',
+    tenantId: '',
     fullName: '',
     gender: 'L',
     dob: '',
@@ -70,11 +66,6 @@ export const PpdbPortalPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!formData.tenantId) {
-      toast.error('Kode Pesantren wajib diisi');
-      return;
-    }
     
     setIsSubmitting(true);
     try {
@@ -152,37 +143,6 @@ export const PpdbPortalPage = () => {
           <div className="bg-white py-8 px-4 shadow-2xl sm:rounded-3xl sm:px-10 border border-gray-100">
             <form className="space-y-6" onSubmit={handleSubmit}>
               
-              <div className="bg-emerald-50 rounded-xl p-4 border border-emerald-100">
-                <label className="block text-sm font-medium text-emerald-900 mb-1">
-                  Kode Pesantren Terdaftar
-                </label>
-                {hasTenantFromUrl ? (
-                  <div className="flex items-center gap-3 bg-white rounded-lg py-3 px-4 border border-emerald-200">
-                    <Hash className="h-5 w-5 text-emerald-500 flex-shrink-0" />
-                    <span className="text-lg font-bold text-emerald-700 uppercase tracking-wider font-mono">{formData.tenantId}</span>
-                    <span className="ml-auto text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full font-medium">Otomatis</span>
-                  </div>
-                ) : (
-                  <>
-                    <p className="text-xs text-emerald-600 mb-3 block">Masukkan kode unik dari pondok pesantren tujuan</p>
-                    <div className="relative rounded-md shadow-sm">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Hash className="h-5 w-5 text-emerald-400" />
-                      </div>
-                      <input
-                        type="text"
-                        name="tenantId"
-                        required
-                        value={formData.tenantId}
-                        onChange={handleChange}
-                        className="focus:ring-emerald-500 focus:border-emerald-500 block w-full pl-10 sm:text-sm border-emerald-300 rounded-lg py-3 bg-white transition-shadow uppercase font-mono tracking-wider"
-                        placeholder="KODE-PESANTREN"
-                      />
-                    </div>
-                  </>
-                )}
-              </div>
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700">Nama Lengkap Santri</label>

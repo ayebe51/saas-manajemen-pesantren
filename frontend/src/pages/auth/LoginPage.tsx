@@ -27,6 +27,9 @@ export function LoginPage() {
       
       // Simpan session
       localStorage.setItem('accessToken', accessToken);
+      if (response.data.refreshToken) {
+        localStorage.setItem('refreshToken', response.data.refreshToken);
+      }
       setUser(user);
       
       // Redirect ke Dashboard

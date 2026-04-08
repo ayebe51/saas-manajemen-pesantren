@@ -22,11 +22,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const response = await api.get('/auth/me');
         if (response.data && response.data.data) {
            setUser(response.data.data);
+        } else if (response.data && response.data.id) {
+           setUser(response.data);
         }
-      } catch {
-        // Jika gagal (token tidak valid / expire), store.logout() akan dipanggil otomatis
-        // via interceptor jika 401. Namun kita backup di sini:
-        logout();
+      } catch (err: any) {
+        // Hanya logout jika 401 (token invalid), bukan error jaringan
+        if (err?.response?.status === 401) {
+          logout();
+        }
+        // Error lain (network, 500) — biarkan user tetap login dengan token yang ada
       } finally {
         setIsInitializing(false);
       }

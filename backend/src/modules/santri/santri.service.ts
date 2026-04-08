@@ -349,31 +349,73 @@ export class SantriService {
     const ws = workbook.addWorksheet('Data Santri');
 
     ws.columns = [
-      { header: 'NIS (*)', key: 'nis', width: 15 },
-      { header: 'NISN', key: 'nisn', width: 15 },
-      { header: 'NAMA LENGKAP (*)', key: 'name', width: 30 },
-      { header: 'L/P (*)', key: 'gender', width: 8 },
-      { header: 'DOB (YYYY-MM-DD)', key: 'dob', width: 20 },
-      { header: 'KELAS', key: 'kelas', width: 15 },
-      { header: 'KAMAR/ASRAMA', key: 'room', width: 20 },
-      { header: 'KONTAK/HP', key: 'contact', width: 20 },
-      { header: 'ALAMAT', key: 'address', width: 40 },
+      { header: 'NISN (*)', key: 'nisn', width: 15 },
+      { header: 'Nama Lengkap (*)', key: 'name', width: 30 },
+      { header: 'NIK', key: 'nik', width: 20 },
+      { header: 'Tempat Lahir', key: 'tempatLahir', width: 20 },
+      { header: 'Tanggal Lahir (YYYY-MM-DD)', key: 'dob', width: 25 },
+      { header: 'Kelas', key: 'kelas', width: 12 },
+      { header: 'Jenis Kelamin (L/P) (*)', key: 'gender', width: 22 },
+      { header: 'Status (AKTIF/ALUMNI/KELUAR)', key: 'status', width: 28 },
+      { header: 'Nama Ayah', key: 'namaAyah', width: 25 },
+      { header: 'Nama Ibu', key: 'namaIbu', width: 25 },
+      { header: 'Provinsi', key: 'provinsi', width: 20 },
+      { header: 'Kabupaten/Kota', key: 'kabupaten', width: 20 },
+      { header: 'Kecamatan', key: 'kecamatan', width: 20 },
+      { header: 'Kelurahan/Desa', key: 'kelurahan', width: 20 },
+      { header: 'Alamat Lengkap (Jalan/RT/RW)', key: 'alamat', width: 40 },
+      { header: 'No. Telepon', key: 'noHp', width: 18 },
+      { header: 'Nama Wali', key: 'waliName', width: 25 },
+      { header: 'No. HP Wali', key: 'waliPhone', width: 18 },
+      { header: 'Hubungan Wali (Ayah/Ibu/dll)', key: 'waliRelation', width: 28 },
     ];
 
+    // Header styling
+    ws.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
+    ws.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF2563EB' } };
+    ws.getRow(1).alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+    ws.getRow(1).height = 30;
+
+    // Contoh data
     ws.addRow({
-      nis: 'PSN-2024-001',
-      nisn: '1234567890',
-      name: 'Fulan bin Fulan',
+      nisn: '0012345678',
+      name: 'Ahmad Fauzi',
+      nik: '3301012345678901',
+      tempatLahir: 'Cilacap',
+      dob: '2008-03-12',
+      kelas: '6',
       gender: 'L',
-      dob: '2005-08-17',
-      kelas: '10',
-      room: 'Abu Bakar 01',
-      contact: '081234567890',
-      address: 'Jl. Raya Pesantren No. 1',
+      status: 'AKTIF',
+      namaAyah: 'Bapak Fulan',
+      namaIbu: 'Ibu Fulanah',
+      provinsi: 'Jawa Tengah',
+      kabupaten: 'Cilacap',
+      kecamatan: 'Gandrungmangu',
+      kelurahan: 'Karanganyar',
+      alamat: 'Jl. Merdeka No.12 RT 01/RW 02',
+      noHp: '081328308530',
+      waliName: 'Siti Aminah',
+      waliPhone: '081234567890',
+      waliRelation: 'Ibu',
     });
 
-    ws.getRow(1).font = { bold: true };
-    ws.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE0E0E0' } };
+    // Style contoh data row
+    ws.getRow(2).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF0F9FF' } };
+
+    // Add note row
+    ws.addRow({});
+    const noteRow = ws.addRow({ nisn: '* Kolom bertanda (*) wajib diisi' });
+    noteRow.getCell(1).font = { italic: true, color: { argb: 'FFDC2626' } };
+
+    // Border untuk header dan data
+    [1, 2].forEach(rowNum => {
+      ws.getRow(rowNum).eachCell(cell => {
+        cell.border = {
+          top: { style: 'thin' }, left: { style: 'thin' },
+          bottom: { style: 'thin' }, right: { style: 'thin' },
+        };
+      });
+    });
 
     return workbook.xlsx.writeBuffer();
   }
@@ -402,29 +444,41 @@ export class SantriService {
       const rowNumber = i + 2;
 
       try {
-        const nis = row.getCell(1).text?.trim() || null;
-        const nisn = row.getCell(2).text?.trim() || null;
-        const name = row.getCell(3).text?.trim();
-        const genderRaw = row.getCell(4).text?.trim()?.toUpperCase();
-        const gender = genderRaw === 'L' || genderRaw === 'P' ? genderRaw : 'L';
-        const dobRaw = row.getCell(5).value;
-        const kelas = row.getCell(6).text?.trim() || null;
-        const room = row.getCell(7).text?.trim() || null;
-        const contact = row.getCell(8).text?.trim() || null;
-        const address = row.getCell(9).text?.trim() || null;
+        // Kolom sesuai template baru
+        const nisn        = row.getCell(1).text?.trim() || null;
+        const name        = row.getCell(2).text?.trim();
+        const nik         = row.getCell(3).text?.trim() || null;
+        const tempatLahir = row.getCell(4).text?.trim() || null;
+        const dobRaw      = row.getCell(5).value;
+        const kelas       = row.getCell(6).text?.trim() || null;
+        const genderRaw   = row.getCell(7).text?.trim()?.toUpperCase();
+        const gender      = genderRaw === 'L' || genderRaw === 'P' ? genderRaw : 'L';
+        const statusRaw   = row.getCell(8).text?.trim()?.toUpperCase();
+        const status      = ['AKTIF', 'ALUMNI', 'KELUAR'].includes(statusRaw) ? statusRaw : 'AKTIF';
+        const namaAyah    = row.getCell(9).text?.trim() || null;
+        const namaIbu     = row.getCell(10).text?.trim() || null;
+        const provinsi    = row.getCell(11).text?.trim() || null;
+        const kabupaten   = row.getCell(12).text?.trim() || null;
+        const kecamatan   = row.getCell(13).text?.trim() || null;
+        const kelurahan   = row.getCell(14).text?.trim() || null;
+        const alamat      = row.getCell(15).text?.trim() || null;
+        const noHp        = row.getCell(16).text?.trim() || null;
+        const waliName    = row.getCell(17).text?.trim() || null;
+        const waliPhone   = row.getCell(18).text?.trim() || null;
+        const waliRelation = row.getCell(19).text?.trim() || 'Wali';
 
         if (!name) {
-          errors.push(`Baris ${rowNumber}: Nama wajib diisi`);
+          errors.push(`Baris ${rowNumber}: Nama Lengkap wajib diisi`);
           failedCount++;
           continue;
         }
 
-        if (nis) {
-          const nisExists = await this.prisma.santri.findFirst({
-            where: { nis, deletedAt: null },
+        if (nisn) {
+          const nisnExists = await this.prisma.santri.findFirst({
+            where: { nisn, deletedAt: null },
           });
-          if (nisExists) {
-            errors.push(`Baris ${rowNumber}: NIS '${nis}' sudah digunakan`);
+          if (nisnExists) {
+            errors.push(`Baris ${rowNumber}: NISN '${nisn}' sudah digunakan`);
             failedCount++;
             continue;
           }
@@ -438,8 +492,32 @@ export class SantriService {
         }
 
         const santri = await this.prisma.santri.create({
-          data: { tenantId, nis, nisn, name, namaLengkap: name, gender, jenisKelamin: gender, dob, tanggalLahir: dob, kelas, room, contact, noHp: contact, address, alamat: address, status: 'AKTIF' },
+          data: {
+            tenantId, nisn, nik, name, namaLengkap: name,
+            gender, jenisKelamin: gender,
+            dob, tanggalLahir: dob, tempatLahir,
+            kelas, noHp, contact: noHp,
+            alamat, address: alamat,
+            provinsi, kabupaten, kecamatan, kelurahan,
+            namaAyah, namaIbu,
+            status,
+          },
         });
+
+        // Buat wali jika ada
+        if (waliName && waliPhone) {
+          const wali = await this.prisma.wali.create({
+            data: {
+              tenantId,
+              name: waliName,
+              phone: waliPhone,
+              relation: waliRelation,
+            },
+          });
+          await this.prisma.santriWali.create({
+            data: { santriId: santri.id, waliId: wali.id, isPrimary: true },
+          });
+        }
 
         await this.auditLog.log({
           userId,

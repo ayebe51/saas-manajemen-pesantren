@@ -28,20 +28,30 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
-        // Coba tembak endpoint refresh-token
-        const res = await axios.post(`${API_URL}/auth/refresh`, {}, { withCredentials: true });
+        const refreshToken = localStorage.getItem('refreshToken');
+
+        // Coba refresh — kirim via cookie (production) atau body (development)
+        const res = await axios.post(
+          `${API_URL}/auth/refresh`,
+          refreshToken ? { refreshToken } : {},
+          { withCredentials: true }
+        );
         
         // Simpan token baru
-        const newToken = res.data.accessToken;
+        const newToken = res.data.accessToken || res.data.data?.accessToken;
+        const newRefresh = res.data.refreshToken || res.data.data?.refreshToken;
         localStorage.setItem('accessToken', newToken);
+        if (newRefresh) localStorage.setItem('refreshToken', newRefresh);
         
         // Sisipkan dan ulangi request yang gagal
         api.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+        originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
         return api(originalRequest);
         
       } catch (refreshError) {
         // Refresh token gagal / daluarsa total -> Paksa Log out
         localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
         window.location.href = '/login';
         return Promise.reject(refreshError);
       }
