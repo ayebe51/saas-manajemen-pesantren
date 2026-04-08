@@ -23,10 +23,27 @@ export class CreateKelasDto {
   @IsNotEmpty()
   nama: string;
 
-  @ApiPropertyOptional({ example: '7' })
+  @ApiPropertyOptional({ example: 1 })
+  @IsNumber()
+  @IsOptional()
+  @Type(() => Number)
+  tingkat?: number;
+
+  @ApiPropertyOptional()
   @IsString()
   @IsOptional()
-  tingkat?: string;
+  rombel?: string;
+
+  @ApiPropertyOptional({ example: 30 })
+  @IsNumber()
+  @IsOptional()
+  @Type(() => Number)
+  kapasitas?: number;
+
+  @ApiPropertyOptional()
+  @IsBoolean()
+  @IsOptional()
+  isTertinggi?: boolean;
 
   @ApiPropertyOptional({ description: 'User ID wali kelas' })
   @IsUUID()
@@ -46,9 +63,26 @@ export class UpdateKelasDto {
   nama?: string;
 
   @ApiPropertyOptional()
+  @IsNumber()
+  @IsOptional()
+  @Type(() => Number)
+  tingkat?: number;
+
+  @ApiPropertyOptional()
   @IsString()
   @IsOptional()
-  tingkat?: string;
+  rombel?: string;
+
+  @ApiPropertyOptional()
+  @IsNumber()
+  @IsOptional()
+  @Type(() => Number)
+  kapasitas?: number;
+
+  @ApiPropertyOptional()
+  @IsBoolean()
+  @IsOptional()
+  isTertinggi?: boolean;
 
   @ApiPropertyOptional()
   @IsUUID()

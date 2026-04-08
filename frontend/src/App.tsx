@@ -11,6 +11,7 @@ import TopUpPage from './pages/wallet/TopUpPage';
 import { PerizinanPage } from '@/pages/perizinan/PerizinanPage';
 import { ScanPage } from '@/pages/perizinan/ScanPage';
 import { AkademikPage } from '@/pages/akademik/AkademikPage';
+import { ManajemenKelasPage } from '@/pages/akademik/ManajemenKelasPage';
 import { InventoryPage } from '@/pages/inventory/InventoryPage';
 import { POSPage } from '@/pages/inventory/POSPage';
 import { HRPage } from '@/pages/hr/HRPage';
@@ -59,6 +60,7 @@ export default function App() {
           <Route path="santri" element={<SantriPage />} />
           <Route path="santri/:id" element={<SantriProfilPage />} />
           <Route path="akademik" element={<AkademikPage />} />
+          <Route path="akademik/kelas" element={<ManajemenKelasPage />} />
           <Route path="finance" element={<WalletPage />} />
           <Route path="wallet/topup" element={<TopUpPage />} />
 

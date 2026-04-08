@@ -58,7 +58,7 @@ export class AcademicController {
   }
 
   @Put('kelas/:id')
-  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS')
+  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS', 'Super_Admin', 'Admin_Pesantren')
   @ApiOperation({ summary: 'Update data kelas' })
   updateKelas(
     @TenantId() tenantId: string,
@@ -66,6 +66,34 @@ export class AcademicController {
     @Body() dto: UpdateKelasDto,
   ) {
     return this.academicService.updateKelas(tenantId, kelasId, dto);
+  }
+
+  @Delete('kelas/:id')
+  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'Super_Admin', 'Admin_Pesantren')
+  @ApiOperation({ summary: 'Nonaktifkan kelas' })
+  deleteKelas(@TenantId() tenantId: string, @Param('id') kelasId: string) {
+    return this.academicService.deleteKelas(tenantId, kelasId);
+  }
+
+  @Post('kelas/naik-kelas/preview')
+  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'Super_Admin', 'Admin_Pesantren')
+  @ApiOperation({ summary: 'Preview naik kelas massal — lihat santri yang terdampak' })
+  previewNaikKelas(
+    @TenantId() tenantId: string,
+    @Body() dto: { mappings: { kelasAsalId: string; kelasTujuanId?: string }[] },
+  ) {
+    return this.academicService.previewNaikKelas(tenantId, dto);
+  }
+
+  @Post('kelas/naik-kelas/eksekusi')
+  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'Super_Admin', 'Admin_Pesantren')
+  @ApiOperation({ summary: 'Eksekusi naik kelas massal' })
+  eksekusiNaikKelas(
+    @TenantId() tenantId: string,
+    @Body() dto: { mappings: { kelasAsalId: string; kelasTujuanId?: string }[] },
+    @CurrentUser() user: any,
+  ) {
+    return this.academicService.eksekusiNaikKelas(tenantId, dto, user?.id);
   }
 
   // ─── Mata Pelajaran ──────────────────────────────────────────────────────────

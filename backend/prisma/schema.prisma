@@ -1151,9 +1151,12 @@ model Kelas {
   id              String            @id @default(uuid())
   tenantId        String
   nama            String            // e.g. "Kelas 7A", "Kelas 8B"
-  tingkat         String?           // e.g. "7", "8", "9"
+  tingkat         Int               // e.g. 1, 2, 3, 4, 5, 6
+  rombel          String?           // e.g. "A", "B", "C"
   waliKelasId     String?           // FK → users (wali kelas)
+  kapasitas       Int               @default(30)
   tahunAjaran     String?           // e.g. "2024/2025"
+  isTertinggi     Boolean           @default(false) // kelas tertinggi → santri lulus/promosi
   isActive        Boolean           @default(true)
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
@@ -1161,6 +1164,7 @@ model Kelas {
   nilaiSantri     NilaiSantri[]
 
   @@index([tenantId])
+  @@index([tenantId, tingkat])
   @@map("kelas")
 }
 
