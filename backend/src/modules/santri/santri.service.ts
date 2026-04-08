@@ -68,6 +68,7 @@ export class SantriService {
         tenantId,
         nis: dto.nis ?? null,
         nisn: dto.nisn ?? null,
+        nik: (dto as any).nik ?? null,
         namaLengkap: dto.namaLengkap ?? dto.name,
         namaPanggilan: dto.namaPanggilan ?? null,
         name: dto.name,
@@ -82,6 +83,12 @@ export class SantriService {
         contact: dto.contact ?? dto.noHp ?? null,
         address: dto.address ?? dto.alamat ?? null,
         alamat: dto.alamat ?? dto.address ?? null,
+        provinsi: (dto as any).provinsi ?? null,
+        kabupaten: (dto as any).kabupaten ?? null,
+        kecamatan: (dto as any).kecamatan ?? null,
+        kelurahan: (dto as any).kelurahan ?? null,
+        namaAyah: (dto as any).namaAyah ?? null,
+        namaIbu: (dto as any).namaIbu ?? null,
         fotoUrl: dto.fotoUrl ?? dto.photo ?? null,
         photo: dto.photo ?? dto.fotoUrl ?? null,
         tanggalMasuk: dto.tanggalMasuk ? new Date(dto.tanggalMasuk) : null,
@@ -195,6 +202,13 @@ export class SantriService {
         ...(dto.noHp !== undefined && { noHp: dto.noHp, contact: dto.noHp }),
         ...(dto.address !== undefined && { address: dto.address, alamat: dto.address }),
         ...(dto.alamat !== undefined && { alamat: dto.alamat, address: dto.alamat }),
+        ...((dto as any).provinsi !== undefined && { provinsi: (dto as any).provinsi }),
+        ...((dto as any).kabupaten !== undefined && { kabupaten: (dto as any).kabupaten }),
+        ...((dto as any).kecamatan !== undefined && { kecamatan: (dto as any).kecamatan }),
+        ...((dto as any).kelurahan !== undefined && { kelurahan: (dto as any).kelurahan }),
+        ...((dto as any).namaAyah !== undefined && { namaAyah: (dto as any).namaAyah }),
+        ...((dto as any).namaIbu !== undefined && { namaIbu: (dto as any).namaIbu }),
+        ...((dto as any).nik !== undefined && { nik: (dto as any).nik }),
         ...(dto.fotoUrl !== undefined && { fotoUrl: dto.fotoUrl, photo: dto.fotoUrl }),
         ...(dto.photo !== undefined && { photo: dto.photo, fotoUrl: dto.photo }),
         ...(dto.tanggalMasuk !== undefined && { tanggalMasuk: new Date(dto.tanggalMasuk) }),
@@ -444,5 +458,61 @@ export class SantriService {
     }
 
     return { message: 'Impor data massal selesai', successCount, failedCount, errors };
+  }
+
+  // ─── Promosi Santri → Pengurus/Ustadz ────────────────────────────────────────
+
+  async promote(
+    santriId: string,
+    tenantId: string,
+    role: string = 'PENGURUS',
+    userId?: string,
+    ipAddress?: string,
+  ) {
+    const santri = await this.assertExists(santriId, tenantId);
+
+    // Cek apakah sudah punya akun user
+    const existingUser = await this.prisma.user.findFirst({
+      where: { email: `${santri.nisn || santri.nis || santriId}@pesantren.internal` },
+    });
+
+    if (existingUser) {
+      // Update role jika sudah ada
+      await this.prisma.user.update({
+        where: { id: existingUser.id },
+        data: { role },
+      });
+    } else {
+      // Buat akun baru dengan password default (NIS/NISN)
+      const bcrypt = await import('bcrypt');
+      const defaultPassword = santri.nisn || santri.nis || santriId.substring(0, 8);
+      const passwordHash = await bcrypt.hash(defaultPassword, 10);
+
+      await this.prisma.user.create({
+        data: {
+          tenantId,
+          email: `${santri.nisn || santri.nis || santriId}@pesantren.internal`,
+          name: santri.name,
+          passwordHash,
+          role,
+          isActive: true,
+        },
+      });
+    }
+
+    await this.auditLog.log({
+      userId,
+      aksi: 'PROMOTE_SANTRI',
+      modul: 'santri',
+      entitasId: santriId,
+      entitasTipe: 'Santri',
+      nilaiAfter: { role, santriName: santri.name },
+      ipAddress,
+    });
+
+    return {
+      message: `${santri.name} berhasil dipromosikan sebagai ${role}`,
+      defaultPassword: santri.nisn || santri.nis || santriId.substring(0, 8),
+    };
   }
 }

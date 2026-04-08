@@ -118,6 +118,7 @@ model Santri {
   tenantId       String
   nis            String?         @unique  // Nomor Induk Santri — unique per pesantren
   nisn           String?
+  nik            String?         // NIK KTP/KK santri
   namaLengkap    String?
   namaPanggilan  String?
   name           String
@@ -132,7 +133,13 @@ model Santri {
   contact        String?
   noHp           String?
   address        String?
-  alamat         String?
+  alamat         String?         // Alamat lengkap (Jalan/RT/RW)
+  provinsi       String?
+  kabupaten      String?
+  kecamatan      String?
+  kelurahan      String?
+  namaAyah       String?
+  namaIbu        String?
   photo          String?
   fotoUrl        String?
   tanggalMasuk   DateTime?

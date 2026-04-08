@@ -175,6 +175,23 @@ export class SantriController {
     return this.santriService.getHistory(id, tenantId);
   }
 
+  /**
+   * POST /santri/:id/promote
+   * Promosikan santri menjadi Pengurus/Ustadz — buat akun login
+   */
+  @Post(':id/promote')
+  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'Super_Admin', 'Admin_Pesantren')
+  @ApiOperation({ summary: 'Promosikan santri menjadi Pengurus/Ustadz' })
+  promote(
+    @Param('id') id: string,
+    @Body() body: { role?: string },
+    @TenantId() tenantId: string,
+    @CurrentUser() user: any,
+    @Req() req: Request,
+  ) {
+    return this.santriService.promote(id, tenantId, body.role || 'PENGURUS', user?.id, req.ip);
+  }
+
   // ─── Wali Management ─────────────────────────────────────────────────────────
 
   /**

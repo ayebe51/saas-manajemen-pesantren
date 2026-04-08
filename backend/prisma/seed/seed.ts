@@ -259,21 +259,10 @@ async function main() {
   // Seed roles and permissions first
   await seedRolesAndPermissions();
 
-  // 1. Create Super Admin User (No Tenant)
+  // 1. Create Super Admin User (No Tenant) — will be linked to tenant after tenant creation
   const superAdminPassword = await bcrypt.hash('superadmin123', 10);
-  const superAdmin = await prisma.user.upsert({
-    where: { email: 'superadmin@pesantren.com' },
-    update: {},
-    create: {
-      email: 'superadmin@pesantren.com',
-      passwordHash: superAdminPassword,
-      name: 'Super Administrator',
-      role: 'SUPERADMIN',
-    },
-  });
-  console.log('Super Admin User created:', superAdmin.email);
 
-  // 2. Create Sample Tenant
+  // 2. Create Sample Tenant first
   const existingTenant = await prisma.tenant.findFirst({
     where: { name: 'Pesantren Al-Hikmah' },
   });
@@ -283,12 +272,31 @@ async function main() {
       name: 'Pesantren Al-Hikmah',
       address: 'Jl. Pesantren No. 1, Jakarta',
       phone: '021-12345678',
-      adminUserId: superAdmin.id,
       plan: 'PRO',
       status: 'ACTIVE',
     },
   });
   console.log('Tenant:', tenant.name);
+
+  // Create Super Admin linked to the tenant
+  const superAdmin = await prisma.user.upsert({
+    where: { email: 'superadmin@pesantren.com' },
+    update: { tenantId: tenant.id },
+    create: {
+      email: 'superadmin@pesantren.com',
+      passwordHash: superAdminPassword,
+      name: 'Super Administrator',
+      role: 'SUPERADMIN',
+      tenantId: tenant.id,
+    },
+  });
+  console.log('Super Admin User created:', superAdmin.email);
+
+  // Update tenant adminUserId
+  await prisma.tenant.update({
+    where: { id: tenant.id },
+    data: { adminUserId: superAdmin.id },
+  });
 
   // 3. Create Tenant Admin
   const adminPassword = await bcrypt.hash('admin123', 10);

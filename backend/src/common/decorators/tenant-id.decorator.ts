@@ -2,13 +2,12 @@ import {
   createParamDecorator,
   ExecutionContext,
   UnauthorizedException,
-  BadRequestException,
 } from '@nestjs/common';
 
 export const TenantId = createParamDecorator((data: unknown, ctx: ExecutionContext) => {
   const request = ctx.switchToHttp().getRequest();
 
-  // First try to get it from the authenticated user
+  // First try to get it from the authenticated user's JWT payload
   if (request.user && request.user.tenantId) {
     return request.user.tenantId;
   }
@@ -18,16 +17,13 @@ export const TenantId = createParamDecorator((data: unknown, ctx: ExecutionConte
     return request.tenantId;
   }
 
-  // Required unless it's a superadmin action
-  if (request.user && request.user.role === 'SUPERADMIN') {
-    const queryTenantId = request.query.tenantId || request.body.tenantId;
+  // For SUPERADMIN without tenantId: check query/body override first
+  if (request.user && (request.user.role === 'SUPERADMIN' || request.user.role === 'Super_Admin')) {
+    const queryTenantId = request.query?.tenantId || request.body?.tenantId;
     if (queryTenantId) return queryTenantId;
 
-    // Do not throw Unauthorized (401) here, as it triggers logout in the frontend.
-    // Throw BadRequest (400) or Forbidden (403) instead.
-    throw new BadRequestException(
-      'Superadmin must specify tenantId in query params or body for tenant-specific actions',
-    );
+    // Return a sentinel value — the service layer will resolve the single tenant
+    return '__SUPERADMIN__';
   }
 
   throw new UnauthorizedException('Tenant context is missing');

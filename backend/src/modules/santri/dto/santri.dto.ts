@@ -22,6 +22,11 @@ export class CreateSantriDto {
   @IsOptional()
   nisn?: string;
 
+  @ApiPropertyOptional({ description: 'NIK KTP/KK santri' })
+  @IsString()
+  @IsOptional()
+  nik?: string;
+
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
@@ -95,6 +100,36 @@ export class CreateSantriDto {
   @ApiPropertyOptional()
   @IsString()
   @IsOptional()
+  provinsi?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  kabupaten?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  kecamatan?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  kelurahan?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  namaAyah?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  namaIbu?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
   photo?: string;
 
   @ApiPropertyOptional()
@@ -123,6 +158,16 @@ export class UpdateSantriDto {
   @ApiPropertyOptional()
   @IsString()
   @IsOptional()
+  nisn?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  nik?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
   name?: string;
 
   @ApiPropertyOptional()
@@ -134,6 +179,21 @@ export class UpdateSantriDto {
   @IsString()
   @IsOptional()
   namaPanggilan?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  tempatLahir?: string;
+
+  @ApiPropertyOptional()
+  @IsDateString()
+  @IsOptional()
+  dob?: Date;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  gender?: string;
 
   @ApiPropertyOptional()
   @IsString()
@@ -170,6 +230,36 @@ export class UpdateSantriDto {
   @IsString()
   @IsOptional()
   alamat?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  provinsi?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  kabupaten?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  kecamatan?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  kelurahan?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  namaAyah?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  namaIbu?: string;
 
   @ApiPropertyOptional()
   @IsString()
