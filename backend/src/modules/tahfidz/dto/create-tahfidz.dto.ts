@@ -1,1 +1,1 @@
-export class CreateTahfidzDto {}
+export { CreateTahfidzDto, TahfidzType } from './tahfidz.dto';

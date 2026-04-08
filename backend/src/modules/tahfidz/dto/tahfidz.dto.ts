@@ -16,79 +16,100 @@ export enum TahfidzType {
 }
 
 export class CreateTahfidzDto {
-  @ApiProperty()
+  @ApiProperty({ description: 'ID santri yang melakukan setoran hafalan' })
   @IsUUID()
   @IsNotEmpty()
   santriId: string;
 
-  @ApiProperty()
+  @ApiProperty({ description: 'Nama surah atau juz yang dihafalkan' })
   @IsString()
   @IsNotEmpty()
   surah: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ description: 'Ayat atau halaman yang dihafalkan' })
   @IsString()
   @IsOptional()
   ayat?: string;
 
-  @ApiProperty({ enum: TahfidzType })
+  @ApiProperty({
+    enum: TahfidzType,
+    description: 'Tipe setoran: ZIYADAH (hafalan baru), MUROJAAH (ulangan), SABAQ',
+  })
   @IsEnum(TahfidzType)
   @IsNotEmpty()
   type: TahfidzType;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    description: 'Predikat hafalan: MUMTAZ (Sangat Baik), LANCAR (Jiyyad), CUKUP (Maqbul), KURANG (Perlu Diulang)',
+  })
   @IsString()
   @IsOptional()
   grade?: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ description: 'Catatan tambahan tentang hafalan (tajwid, makhraj, dll)' })
   @IsString()
   @IsOptional()
   notes?: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    description: 'Tanggal setoran hafalan (ISO 8601 format, default: hari ini)',
+  })
   @IsDateString()
   @IsOptional()
   date?: string;
 }
 
 export class CreateMutabaahDto {
-  @ApiProperty()
+  @ApiProperty({ description: 'ID santri untuk pencatatan mutabaah harian' })
   @IsUUID()
   @IsNotEmpty()
   santriId: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    description: 'Tanggal mutabaah (ISO 8601 format, default: hari ini)',
+  })
   @IsDateString()
   @IsOptional()
   date?: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    description: 'Status sholat wajib (default: true)',
+  })
   @IsBoolean()
   @IsOptional()
   sholatWajib?: boolean;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    description: 'Status tahajud (default: false)',
+  })
   @IsBoolean()
   @IsOptional()
   tahajud?: boolean;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    description: 'Status sholat dhuha (default: false)',
+  })
   @IsBoolean()
   @IsOptional()
   dhuha?: boolean;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    description: 'Status puasa sunnah (default: false)',
+  })
   @IsBoolean()
   @IsOptional()
   puasaSunnah?: boolean;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    description: 'Status baca Quran (default: true)',
+  })
   @IsBoolean()
   @IsOptional()
   bacaQuran?: boolean;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    description: 'Catatan tambahan untuk mutabaah harian',
+  })
   @IsString()
   @IsOptional()
   notes?: string;

@@ -1,1 +1,1 @@
-export class CreateInventoryDto {}
+export { CreateItemDto as CreateInventoryDto } from './inventory.dto';

@@ -1,1 +1,1 @@
-export class CreateEmployeeDto {}
+export { CreateEmployeeDto } from './employee.dto';

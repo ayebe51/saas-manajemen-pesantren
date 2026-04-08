@@ -188,6 +188,50 @@ export class AcademicService {
     });
   }
 
+  /**
+   * Fetch santri by kelas ID — untuk menampilkan daftar santri dalam kelas
+   */
+  async getSantriByKelas(tenantId: string, kelasId: string) {
+    const kelas = await this.findKelasOrThrow(tenantId, kelasId);
+    
+    const santri = await this.prisma.santri.findMany({
+      where: {
+        tenantId,
+        kelas: kelas.nama,
+        deletedAt: null,
+        status: 'AKTIF',
+      },
+      select: {
+        id: true,
+        nis: true,
+        nisn: true,
+        name: true,
+        namaLengkap: true,
+        gender: true,
+        kelas: true,
+        status: true,
+        photo: true,
+        fotoUrl: true,
+        noHp: true,
+        contact: true,
+      },
+      orderBy: { name: 'asc' },
+    });
+
+    return {
+      kelas: {
+        id: kelas.id,
+        nama: kelas.nama,
+        tingkat: kelas.tingkat,
+        rombel: kelas.rombel,
+        kapasitas: kelas.kapasitas,
+        tahunAjaran: kelas.tahunAjaran,
+      },
+      santri,
+      total: santri.length,
+    };
+  }
+
   async updateKelas(tenantId: string, kelasId: string, dto: UpdateKelasDto) {
     await this.findKelasOrThrow(tenantId, kelasId);
     return this.prisma.kelas.update({

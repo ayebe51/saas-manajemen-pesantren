@@ -1,20 +1,35 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { useAuthStore } from '@/lib/store/auth.store';
 import { 
   Home, Users, Briefcase, GraduationCap, 
   Wallet, ArchiveRestore, Building2, FileBarChart, Settings, Shield, CreditCard, IdCard,
   ClipboardList, MessageSquare, Receipt, Heart, AlertTriangle, UserCheck,
-  Sun, Moon, LogOut, ChevronDown, QrCode, Trophy
+  Sun, Moon, LogOut, ChevronDown, QrCode, Trophy, BookOpen
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api/client';
 
-const navItems = [
+interface NavItem {
+  path: string;
+  icon: any;
+  label: string;
+  submenu?: { path: string; label: string }[];
+}
+
+const navItems: NavItem[] = [
   { path: '/dashboard', icon: Home, label: 'Beranda' },
   { path: '/dashboard/santri', icon: Users, label: 'Kesantrian' },
   { path: '/dashboard/ppdb', icon: ClipboardList, label: 'PPDB' },
-  { path: '/dashboard/akademik', icon: GraduationCap, label: 'Akademik' },
+  { 
+    path: '/dashboard/akademik', 
+    icon: GraduationCap, 
+    label: 'Akademik',
+    submenu: [
+      { path: '/dashboard/akademik', label: 'Tahfidz & Penilaian' },
+      { path: '/dashboard/akademik/kelas', label: 'Manajemen Kelas' },
+    ]
+  },
   { path: '/dashboard/catatan', icon: MessageSquare, label: 'Buku Penghubung' },
   { path: '/dashboard/pelanggaran', icon: AlertTriangle, label: 'Pelanggaran' },
   { path: '/dashboard/kesehatan', icon: Heart, label: 'Kesehatan' },
@@ -36,9 +51,11 @@ interface Tenant { id: string; name: string; }
 
 export function Sidebar() {
   const { user, logout, setUser } = useAuthStore();
+  const location = useLocation();
   const [dark, setDark] = useState(() => localStorage.getItem('theme') === 'dark');
   const [tenants, setTenants] = useState<Tenant[]>([]);
   const [showTenantPicker, setShowTenantPicker] = useState(false);
+  const [expandedMenu, setExpandedMenu] = useState<string | null>(null);
 
   useEffect(() => {
     if (dark) {
@@ -61,6 +78,16 @@ export function Sidebar() {
         .catch(() => setTenants([]));
     }
   }, [user?.role]);
+
+  // Auto-expand menu if submenu is active
+  useEffect(() => {
+    const activeItem = navItems.find(item => 
+      item.submenu?.some(sub => location.pathname.startsWith(sub.path))
+    );
+    if (activeItem) {
+      setExpandedMenu(activeItem.path);
+    }
+  }, [location.pathname]);
 
   const handleLogout = () => {
     logout();
@@ -131,24 +158,72 @@ export function Sidebar() {
         </div>
         
         <nav className="space-y-0.5">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              end={item.path === '/dashboard'}
-              className={({ isActive }) =>
-                clsx(
-                  'flex items-center gap-3 px-3 py-2 rounded-md transition-all font-medium text-sm',
-                  isActive 
-                    ? 'bg-primary text-inverse shadow-glow' 
-                    : 'text-muted hover:bg-surface-glass hover:text-primary'
-                )
-              }
-            >
-              <item.icon className="w-4 h-4 shrink-0" />
-              <span className="truncate">{item.label}</span>
-            </NavLink>
-          ))}
+          {navItems.map((item) => {
+            const isActive = location.pathname === item.path || 
+                           (item.submenu?.some(sub => location.pathname.startsWith(sub.path)) ?? false);
+            const isExpanded = expandedMenu === item.path;
+
+            if (item.submenu) {
+              return (
+                <div key={item.path}>
+                  <button
+                    onClick={() => setExpandedMenu(isExpanded ? null : item.path)}
+                    className={clsx(
+                      'w-full flex items-center gap-3 px-3 py-2 rounded-md transition-all font-medium text-sm',
+                      isActive 
+                        ? 'bg-primary text-inverse shadow-glow' 
+                        : 'text-muted hover:bg-surface-glass hover:text-primary'
+                    )}
+                  >
+                    <item.icon className="w-4 h-4 shrink-0" />
+                    <span className="truncate flex-1 text-left">{item.label}</span>
+                    <ChevronDown className={clsx("w-4 h-4 shrink-0 transition-transform", isExpanded && "rotate-180")} />
+                  </button>
+                  {isExpanded && (
+                    <div className="ml-4 mt-1 space-y-0.5 border-l border-primary/30 pl-3">
+                      {item.submenu.map((sub) => {
+                        const isSubActive = location.pathname === sub.path;
+                        return (
+                          <NavLink
+                            key={sub.path}
+                            to={sub.path}
+                            className={clsx(
+                              'flex items-center gap-2 px-3 py-1.5 rounded-md transition-all text-sm font-medium',
+                              isSubActive
+                                ? 'bg-primary/20 text-primary'
+                                : 'text-muted hover:bg-surface-glass hover:text-primary'
+                            )}
+                          >
+                            <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                            <span className="truncate">{sub.label}</span>
+                          </NavLink>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
+            return (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                end={item.path === '/dashboard'}
+                className={({ isActive: navIsActive }) =>
+                  clsx(
+                    'flex items-center gap-3 px-3 py-2 rounded-md transition-all font-medium text-sm',
+                    navIsActive 
+                      ? 'bg-primary text-inverse shadow-glow' 
+                      : 'text-muted hover:bg-surface-glass hover:text-primary'
+                  )
+                }
+              >
+                <item.icon className="w-4 h-4 shrink-0" />
+                <span className="truncate">{item.label}</span>
+              </NavLink>
+            );
+          })}
         </nav>
       </div>
 

@@ -57,6 +57,16 @@ export class AcademicController {
     return this.academicService.getKelasList(tenantId, tahunAjaran);
   }
 
+  @Get('kelas/:id')
+  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS', 'GURU', 'WALI', 'SANTRI')
+  @ApiOperation({ summary: 'Fetch santri by kelas ID' })
+  getSantriByKelas(
+    @TenantId() tenantId: string,
+    @Param('id') kelasId: string,
+  ) {
+    return this.academicService.getSantriByKelas(tenantId, kelasId);
+  }
+
   @Put('kelas/:id')
   @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS', 'Super_Admin', 'Admin_Pesantren')
   @ApiOperation({ summary: 'Update data kelas' })

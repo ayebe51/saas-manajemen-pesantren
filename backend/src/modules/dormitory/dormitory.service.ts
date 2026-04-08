@@ -15,82 +15,108 @@ import {
 export class DormitoryService {
   constructor(private readonly prisma: PrismaService) {}
 
-  // --- Buildings ---
+  // --- Buildings (Asrama) ---
   async createBuilding(tenantId: string, dto: CreateBuildingDto) {
-    return this.prisma.building.create({ data: { ...dto, tenantId } });
+    // Map English DTO to Indonesian model
+    return this.prisma.asrama.create({
+      data: {
+        tenantId,
+        nama: dto.name,
+        deskripsi: dto.description,
+      },
+    });
   }
 
   async findAllBuildings(tenantId: string) {
-    return this.prisma.building.findMany({
+    return this.prisma.asrama.findMany({
       where: { tenantId },
       include: {
-        _count: { select: { rooms: true } },
+        _count: { select: { kamar: true } },
       },
     });
   }
 
   async updateBuilding(tenantId: string, id: string, dto: UpdateBuildingDto) {
-    const building = await this.prisma.building.findFirst({ where: { id, tenantId } });
-    if (!building) throw new NotFoundException('Building not found');
-    return this.prisma.building.update({ where: { id }, data: dto });
+    const building = await this.prisma.asrama.findFirst({ where: { id, tenantId } });
+    if (!building) throw new NotFoundException('Asrama tidak ditemukan');
+    return this.prisma.asrama.update({
+      where: { id },
+      data: {
+        ...(dto.name && { nama: dto.name }),
+        ...(dto.description && { deskripsi: dto.description }),
+      },
+    });
   }
 
-  // --- Rooms ---
+  // --- Rooms (Kamar) ---
   async createRoom(tenantId: string, dto: CreateRoomDto) {
-    return this.prisma.room.create({ data: { ...dto, tenantId } });
+    // Map buildingId to asramaId
+    return this.prisma.kamar.create({
+      data: {
+        asramaId: dto.buildingId, // buildingId is actually asramaId
+        nama: dto.name,
+        kapasitas: dto.capacity,
+      },
+    });
   }
 
   async findAllRooms(tenantId: string, buildingId?: string) {
-    const where: any = { tenantId };
-    if (buildingId) where.buildingId = buildingId;
+    const where: any = {};
+    if (buildingId) where.asramaId = buildingId;
 
-    return this.prisma.room.findMany({
+    return this.prisma.kamar.findMany({
       where,
       include: {
-        building: { select: { name: true, gender: true } },
-        _count: { select: { assignments: { where: { status: 'ACTIVE' } } } }, // Current occupants
+        asrama: { select: { nama: true } },
+        _count: { select: { penempatan: { where: { status: 'AKTIF' } } } },
       },
     });
   }
 
   async updateRoom(tenantId: string, id: string, dto: UpdateRoomDto) {
-    const room = await this.prisma.room.findFirst({ where: { id, tenantId } });
-    if (!room) throw new NotFoundException('Room not found');
-    return this.prisma.room.update({ where: { id }, data: dto });
+    const room = await this.prisma.kamar.findFirst({ where: { id } });
+    if (!room) throw new NotFoundException('Kamar tidak ditemukan');
+    return this.prisma.kamar.update({
+      where: { id },
+      data: {
+        ...(dto.name && { nama: dto.name }),
+        ...(dto.capacity && { kapasitas: dto.capacity }),
+      },
+    });
   }
 
-  // --- Assign Santri to Room ---
+  // --- Assign Santri to Room (Penempatan Santri) ---
   async assignRoom(tenantId: string, roomId: string, dto: AssignRoomDto) {
-    await this.prisma.room.findFirstOrThrow({ where: { id: roomId, tenantId } });
+    await this.prisma.kamar.findFirstOrThrow({ where: { id: roomId } });
 
-    // Cek apakah santri sudah aktif di kamar lain, unassign dulu jika ya
-    await this.prisma.roomAssignment.updateMany({
-      where: { tenantId, santriId: dto.santriId, status: 'ACTIVE' },
-      data: { status: 'MOVED', endDate: new Date() },
+    // Cek apakah santri sudah aktif di kamar lain, ubah status dulu jika ya
+    await this.prisma.penempatanSantri.updateMany({
+      where: { santriId: dto.santriId, status: 'AKTIF' },
+      data: { status: 'PINDAH', tanggalKeluar: new Date() },
     });
 
-    return this.prisma.roomAssignment.create({
+    return this.prisma.penempatanSantri.create({
       data: {
-        tenantId,
-        roomId,
+        kamarId: roomId,
         santriId: dto.santriId,
-        startDate: dto.startDate ? new Date(dto.startDate) : new Date(),
+        tanggalMasuk: dto.startDate ? new Date(dto.startDate) : new Date(),
+        status: 'AKTIF',
       },
     });
   }
 
   async checkoutRoom(tenantId: string, assignmentId: string, dto: CheckoutRoomDto) {
-    const assignment = await this.prisma.roomAssignment.findFirst({
-      where: { id: assignmentId, tenantId, status: 'ACTIVE' },
+    const assignment = await this.prisma.penempatanSantri.findFirst({
+      where: { id: assignmentId, status: 'AKTIF' },
     });
 
-    if (!assignment) throw new NotFoundException('Active room assignment not found');
+    if (!assignment) throw new NotFoundException('Penempatan santri aktif tidak ditemukan');
 
-    return this.prisma.roomAssignment.update({
+    return this.prisma.penempatanSantri.update({
       where: { id: assignmentId },
       data: {
-        status: dto.status || 'MOVED',
-        endDate: new Date(dto.endDate),
+        status: dto.status || 'PINDAH',
+        tanggalKeluar: new Date(dto.endDate),
       },
     });
   }
@@ -113,7 +139,7 @@ export class DormitoryService {
     return this.prisma.maintenanceTicket.findMany({
       where,
       include: {
-        room: { select: { name: true, building: { select: { name: true } } } },
+        room: { select: { nama: true, asrama: { select: { nama: true } } } },
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -121,7 +147,7 @@ export class DormitoryService {
 
   async updateTicket(tenantId: string, id: string, dto: UpdateMaintenanceTicketDto) {
     const ticket = await this.prisma.maintenanceTicket.findFirst({ where: { id, tenantId } });
-    if (!ticket) throw new NotFoundException('Ticket not found');
+    if (!ticket) throw new NotFoundException('Tiket tidak ditemukan');
 
     return this.prisma.maintenanceTicket.update({
       where: { id },

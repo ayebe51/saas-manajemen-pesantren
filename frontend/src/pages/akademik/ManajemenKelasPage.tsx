@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api/client';
-import { Plus, Edit2, Trash2, Loader2, ArrowUpCircle, X, Users } from 'lucide-react';
+import { Plus, Edit2, Trash2, Loader2, ArrowUpCircle, X, Users, Eye } from 'lucide-react';
 import toast from 'react-hot-toast';
 import clsx from 'clsx';
 
@@ -25,6 +25,34 @@ interface KelasFormData {
   tahunAjaran: string;
 }
 
+interface Santri {
+  id: string;
+  nis: string | null;
+  nisn: string | null;
+  name: string;
+  namaLengkap: string | null;
+  gender: string;
+  kelas: string | null;
+  status: string;
+  photo: string | null;
+  fotoUrl: string | null;
+  noHp: string | null;
+  contact: string | null;
+}
+
+interface KelasDetail {
+  kelas: {
+    id: string;
+    nama: string;
+    tingkat: number;
+    rombel: string | null;
+    kapasitas: number;
+    tahunAjaran: string | null;
+  };
+  santri: Santri[];
+  total: number;
+}
+
 const defaultForm: KelasFormData = {
   nama: '', tingkat: 1, rombel: 'A', kapasitas: 30, isTertinggi: false, tahunAjaran: '',
 };
@@ -36,6 +64,12 @@ export function ManajemenKelasPage() {
   const [editKelas, setEditKelas] = useState<Kelas | null>(null);
   const [formData, setFormData] = useState<KelasFormData>(defaultForm);
   const [saving, setSaving] = useState(false);
+
+  // Santri modal state
+  const [showSantriModal, setShowSantriModal] = useState(false);
+  const [selectedKelas, setSelectedKelas] = useState<Kelas | null>(null);
+  const [kelasDetail, setKelasDetail] = useState<KelasDetail | null>(null);
+  const [loadingSantri, setLoadingSantri] = useState(false);
 
   // Naik kelas state
   const [showNaikKelas, setShowNaikKelas] = useState(false);
@@ -53,6 +87,21 @@ export function ManajemenKelasPage() {
       toast.error('Gagal memuat data kelas');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleOpenSantriModal = async (kelas: Kelas) => {
+    setSelectedKelas(kelas);
+    setShowSantriModal(true);
+    setLoadingSantri(true);
+    try {
+      const res = await api.get(`/academic/kelas/${kelas.id}`);
+      setKelasDetail(res.data?.data || res.data);
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Gagal memuat data santri');
+      setShowSantriModal(false);
+    } finally {
+      setLoadingSantri(false);
     }
   };
 
@@ -213,6 +262,7 @@ export function ManajemenKelasPage() {
                       {k.isTertinggi && <span className="text-xs text-accent font-medium">Kelas Tertinggi</span>}
                     </div>
                     <div className="flex gap-1">
+                      <button onClick={() => handleOpenSantriModal(k)} className="p-1 text-muted hover:text-primary rounded" title="Lihat santri"><Eye className="w-3.5 h-3.5" /></button>
                       <button onClick={() => handleOpenForm(k)} className="p-1 text-muted hover:text-primary rounded"><Edit2 className="w-3.5 h-3.5" /></button>
                       <button onClick={() => handleDelete(k)} className="p-1 text-muted hover:text-danger rounded"><Trash2 className="w-3.5 h-3.5" /></button>
                     </div>
@@ -343,6 +393,57 @@ export function ManajemenKelasPage() {
               <button onClick={handleEksekusi} disabled={executing || preview.length === 0} className="btn btn-primary">
                 {executing ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Eksekusi Naik Kelas'}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Santri Modal */}
+      {showSantriModal && selectedKelas && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowSantriModal(false)} />
+          <div className="relative glass-panel w-full max-w-3xl bg-surface p-6 max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95">
+            <div className="flex justify-between items-center mb-4 border-b pb-3 border-light">
+              <div>
+                <h2 className="font-bold text-main">Daftar Santri - {selectedKelas.nama}</h2>
+                <p className="text-xs text-muted mt-1">Tingkat {selectedKelas.tingkat} | Kapasitas: {selectedKelas.kapasitas}</p>
+              </div>
+              <button onClick={() => setShowSantriModal(false)}><X className="w-5 h-5 text-muted" /></button>
+            </div>
+
+            {loadingSantri ? (
+              <div className="py-12 text-center text-muted">Memuat data santri...</div>
+            ) : kelasDetail && kelasDetail.santri.length > 0 ? (
+              <div className="space-y-3">
+                <div className="text-sm text-muted mb-3">Total: {kelasDetail.total} santri</div>
+                <div className="space-y-2 max-h-[60vh] overflow-y-auto">
+                  {kelasDetail.santri.map(s => (
+                    <div key={s.id} className="border border-light rounded-lg p-3 flex items-center gap-3 hover:bg-app/50 transition">
+                      {s.fotoUrl || s.photo ? (
+                        <img src={s.fotoUrl || s.photo} alt={s.name} className="w-10 h-10 rounded-full object-cover" />
+                      ) : (
+                        <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary">
+                          {s.name.charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium text-sm text-main truncate">{s.name}</div>
+                        <div className="text-xs text-muted">NIS: {s.nis || '-'} | NISN: {s.nisn || '-'}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-xs font-medium text-primary">{s.gender === 'L' ? 'Laki-laki' : 'Perempuan'}</div>
+                        <div className="text-xs text-muted">{s.status}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="py-12 text-center text-muted">Belum ada santri di kelas ini</div>
+            )}
+
+            <div className="flex justify-end gap-2 mt-4 pt-4 border-t border-light">
+              <button onClick={() => setShowSantriModal(false)} className="btn btn-outline">Tutup</button>
             </div>
           </div>
         </div>
