@@ -1,0 +1,190 @@
+version: '3.8'
+
+# ============================================================
+# Aplikasi Manajemen Pesantren — Production Docker Compose
+# Jalankan: docker compose up -d
+# Setup SSL pertama kali: bash scripts/init-ssl.sh
+# ============================================================
+
+services:
+
+  # ── Nginx reverse proxy ──────────────────────────────────────────────────
+  nginx:
+    image: nginx:alpine
+    container_name: pesantren-nginx
+    restart: always
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certbot/conf:/etc/letsencrypt:ro
+      - ./certbot/www:/var/www/certbot:ro
+      - ./backend/uploads:/app/uploads:ro
+    depends_on:
+      - api
+      - frontend
+    networks:
+      - pesantren-net
+    environment:
+      - DOMAIN=${DOMAIN}
+
+  # ── Frontend (React SPA) ─────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: https://${DOMAIN}/api/v1
+    container_name: pesantren-frontend
+    restart: always
+    networks:
+      - pesantren-net
+
+  # ── Backend API ──────────────────────────────────────────────────────────
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: pesantren-api
+    restart: always
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-15m}
+      JWT_REFRESH_EXPIRATION: ${JWT_REFRESH_EXPIRATION:-7d}
+      FRONTEND_URL: https://${DOMAIN}
+      WA_PROVIDER: ${WA_PROVIDER:-fonnte}
+      WA_API_KEY: ${WA_API_KEY}
+      STORAGE_DRIVER: ${STORAGE_DRIVER:-local}
+      UPLOAD_DIR: /app/uploads
+      AWS_REGION: ${AWS_REGION}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_S3_BUCKET: ${AWS_S3_BUCKET}
+      LICENSE_SERVER_URL: ${LICENSE_SERVER_URL}
+      LICENSE_KEY: ${LICENSE_KEY}
+      SENTRY_DSN: ${SENTRY_DSN}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - pesantren-net
+    volumes:
+      - ./backend/uploads:/app/uploads
+      - ./backend/backup:/app/backup
+
+  # ── Background worker ────────────────────────────────────────────────────
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: pesantren-worker
+    restart: always
+    command: node dist/worker.js
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      WA_PROVIDER: ${WA_PROVIDER:-fonnte}
+      WA_API_KEY: ${WA_API_KEY}
+      SENTRY_DSN: ${SENTRY_DSN}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - pesantren-net
+
+  # ── PostgreSQL ───────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:14-alpine
+    container_name: pesantren-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME:-pesantren}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-pesantren}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - pesantren-net
+
+  # ── Redis ────────────────────────────────────────────────────────────────
+  redis:
+    image: redis:6-alpine
+    container_name: pesantren-redis
+    restart: always
+    command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - pesantren-net
+
+  # ── Certbot (Let's Encrypt SSL) ──────────────────────────────────────────
+  certbot:
+    image: certbot/certbot
+    container_name: pesantren-certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    # Auto-renew every 12 hours (cert expires every 90 days)
+    entrypoint: /bin/sh -c "trap exit TERM; while :; do certbot renew --quiet; sleep 12h & wait $${!}; done"
+    networks:
+      - pesantren-net
+
+  # ── Daily backup ─────────────────────────────────────────────────────────
+  backup:
+    image: postgres:14-alpine
+    container_name: pesantren-backup
+    restart: always
+    environment:
+      PGPASSWORD: ${DB_PASSWORD}
+      DB_USER: ${DB_USER:-postgres}
+      DB_NAME: ${DB_NAME:-pesantren}
+    volumes:
+      - ./backend/backup:/backup
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - pesantren-net
+    entrypoint: >
+      sh -c "
+        while true; do
+          TIMESTAMP=$$(date +%Y%m%d_%H%M%S);
+          pg_dump -h postgres -U $$DB_USER -Fc $$DB_NAME > /backup/pesantren_$$TIMESTAMP.dump && \
+            echo \"[$$TIMESTAMP] Backup OK\" || echo \"[$$TIMESTAMP] Backup FAILED\";
+          find /backup -name '*.dump' -mtime +30 -delete;
+          sleep 86400;
+        done
+      "
+
+volumes:
+  pgdata:
+  redisdata:
+
+networks:
+  pesantren-net:
+    driver: bridge
