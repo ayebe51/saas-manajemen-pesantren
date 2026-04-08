@@ -1,7 +1,7 @@
 import { Module, MiddlewareConsumer, NestModule, RequestMethod } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { EventEmitterModule } from '@nestjs/event-emitter';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { CacheModule } from '@nestjs/cache-manager';
 
@@ -9,6 +9,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { PrismaModule } from './common/prisma/prisma.module';
 import { TenantMiddleware } from './common/middleware/tenant.middleware';
 import { TenantGuard } from './common/guards/tenant.guard';
+import { TenantResolverInterceptor } from './common/interceptors/tenant-resolver.interceptor';
 
 // Function Modules
 import { AuthModule } from './modules/auth/auth.module';
@@ -107,6 +108,10 @@ import { EidModule } from './modules/eid/eid.module';
     EidModule,
   ],
   providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: TenantResolverInterceptor,
+    },
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,

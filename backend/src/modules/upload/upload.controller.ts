@@ -1,6 +1,7 @@
 import {
   Controller,
   Post,
+  UseGuards,
   UseInterceptors,
   UploadedFile,
   ParseFilePipe,
@@ -8,10 +9,13 @@ import {
   FileTypeValidator,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiTags, ApiConsumes, ApiBody, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiConsumes, ApiBody, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { UploadService } from './upload.service';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 
 @ApiTags('Upload')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('upload')
 export class UploadController {
   constructor(private readonly uploadService: UploadService) {}
