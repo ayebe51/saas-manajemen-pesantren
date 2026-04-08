@@ -36,8 +36,8 @@ import { LandingPage } from '@/pages/public/LandingPage';
 
 export default function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
+    <BrowserRouter>
+      <AuthProvider>
         <Routes>
         {/* Rute Publik */}
         <Route path="/" element={<LandingPage />} />
@@ -91,7 +91,7 @@ export default function App() {
         {/* Catch-all 404 */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      </AuthProvider>
     </BrowserRouter>
-    </AuthProvider>
   );
 }

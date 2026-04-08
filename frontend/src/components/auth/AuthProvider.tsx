@@ -2,9 +2,21 @@ import { useEffect } from 'react';
 import { useAuthStore } from '@/lib/store/auth.store';
 import { api } from '@/lib/api/client';
 import { Loader2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { setUser, logout, setInitializing, isInitializing } = useAuthStore();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Listen for forced logout from interceptor
+    const handleForcedLogout = () => {
+      logout();
+      navigate('/login', { replace: true });
+    };
+    window.addEventListener('auth:logout', handleForcedLogout);
+    return () => window.removeEventListener('auth:logout', handleForcedLogout);
+  }, [logout, navigate]);
 
   useEffect(() => {
     const initializeAuth = async () => {
@@ -22,10 +34,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setUser(userData);
         }
       } catch (err: any) {
+        // Hanya logout jika 401 — bukan network error atau 500
         if (err?.response?.status === 401) {
           logout();
         }
-        // Network/server error — keep existing token, don't force logout
       } finally {
         setInitializing(false);
       }
