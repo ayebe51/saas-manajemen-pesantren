@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import QRCode from 'react-qr-code';
+import JsBarcode from 'jsbarcode';
 import { api } from '@/lib/api/client';
 import { Search, Printer, UserCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -23,6 +24,23 @@ export function IdCardGeneratorPage() {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
+
+  // Generate barcode when selectedPerson changes
+  useEffect(() => {
+    if (selectedPerson) {
+      try {
+        JsBarcode(`#barcode-${selectedPerson.id}`, selectedPerson.id, {
+          format: 'CODE128',
+          width: 2,
+          height: 30,
+          displayValue: false,
+          margin: 0,
+        });
+      } catch (err) {
+        console.error('Failed to generate barcode:', err);
+      }
+    }
+  }, [selectedPerson]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -165,15 +183,23 @@ export function IdCardGeneratorPage() {
                        <p className="text-sm font-semibold text-gray-500 mt-2 uppercase tracking-wide">{selectedPerson.subtitle}</p>
                     </div>
 
-                    {/* QR Code */}
-                    <div className="mt-auto mb-6 p-2 bg-white rounded-xl shadow-sm border border-gray-100">
-                       <QRCode 
-                          value={JSON.stringify({ id: selectedPerson.id, type: selectedPerson.type })}
-                          size={90}
-                          level="H"
-                          bgColor="#ffffff"
-                          fgColor="#0f172a"
-                       />
+                    {/* QR Code & Barcode */}
+                    <div className="mt-auto mb-4 space-y-2">
+                       {/* QR Code */}
+                       <div className="p-2 bg-white rounded-lg shadow-sm border border-gray-100 flex justify-center">
+                          <QRCode 
+                             value={JSON.stringify({ id: selectedPerson.id, type: selectedPerson.type })}
+                             size={70}
+                             level="H"
+                             bgColor="#ffffff"
+                             fgColor="#0f172a"
+                          />
+                       </div>
+                       
+                       {/* Barcode */}
+                       <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-1 flex justify-center">
+                          <svg id={`barcode-${selectedPerson.id}`} className="w-full h-8"></svg>
+                       </div>
                     </div>
                     
                     {/* Footer */}

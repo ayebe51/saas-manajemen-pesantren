@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Building, DoorOpen, Loader2, Activity, Users, Plus, X, Save } from 'lucide-react';
+import { Building, DoorOpen, Loader2, Activity, Users, Plus, X, Save, Eye } from 'lucide-react';
 import { api } from '@/lib/api/client';
 import toast from 'react-hot-toast';
 
 interface Building_ { id: string; name: string; type: string; _count?: { rooms: number }; }
 interface Room { id: string; name: string; capacity: number; currentOccupancy: number; floor: string; building?: { name: string }; }
+interface Santri { id: string; name: string; nis?: string; nisn?: string; gender?: string; photo?: string; status?: string; tanggalMasuk?: string; }
 
 export function AsramaPage() {
   const [tab, setTab] = useState<'buildings' | 'rooms'>('buildings');
@@ -12,6 +13,12 @@ export function AsramaPage() {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+
+  // Modal santri per kamar
+  const [showSantriModal, setShowSantriModal] = useState(false);
+  const [selectedKamar, setSelectedKamar] = useState<Room | null>(null);
+  const [santriList, setSantriList] = useState<Santri[]>([]);
+  const [loadingSantri, setLoadingSantri] = useState(false);
 
   // Building form
   const [bName, setBName] = useState('');
@@ -44,6 +51,25 @@ export function AsramaPage() {
         }
       }
     } catch { /* empty */ } finally { setLoading(false); }
+  };
+
+  const fetchSantriByKamar = async (kamarId: string) => {
+    setLoadingSantri(true);
+    try {
+      const res = await api.get(`/dormitory/rooms/${kamarId}/santri`);
+      setSantriList(Array.isArray(res.data) ? res.data : (res.data.data || []));
+    } catch {
+      toast.error('Gagal memuat data santri.');
+      setSantriList([]);
+    } finally {
+      setLoadingSantri(false);
+    }
+  };
+
+  const handleViewSantri = (room: Room) => {
+    setSelectedKamar(room);
+    setShowSantriModal(true);
+    fetchSantriByKamar(room.id);
   };
 
   const resetForm = () => {
@@ -192,6 +218,7 @@ export function AsramaPage() {
                   <th className="py-4 px-6 font-semibold text-sm text-muted">Lantai</th>
                   <th className="py-4 px-6 font-semibold text-sm text-muted">Kapasitas</th>
                   <th className="py-4 px-6 font-semibold text-sm text-muted">Terisi</th>
+                  <th className="py-4 px-6 font-semibold text-sm text-muted">Aksi</th>
                 </tr></thead>
                 <tbody>
                   {rooms.map(r => (
@@ -206,6 +233,11 @@ export function AsramaPage() {
                           <span className={`font-bold ${(r.currentOccupancy || 0) >= r.capacity ? 'text-danger' : 'text-success'}`}>{r.currentOccupancy || 0}/{r.capacity}</span>
                         </div>
                       </td>
+                      <td className="py-4 px-6">
+                        <button onClick={() => handleViewSantri(r)} className="btn btn-sm btn-outline flex items-center gap-1" title="Lihat santri di kamar ini">
+                          <Eye className="w-4 h-4" /> Lihat
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -214,6 +246,66 @@ export function AsramaPage() {
           )
         )}
       </div>
+
+      {/* MODAL SANTRI PER KAMAR */}
+      {showSantriModal && selectedKamar && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="glass-panel max-w-2xl w-full max-h-[80vh] overflow-y-auto rounded-xl">
+            <div className="sticky top-0 bg-app/80 backdrop-blur p-6 border-b border-light flex justify-between items-center">
+              <div>
+                <h2 className="text-xl font-bold text-main">Data Santri - Kamar {selectedKamar.name}</h2>
+                <p className="text-sm text-muted mt-1">{selectedKamar.building?.name} • Lantai {selectedKamar.floor}</p>
+              </div>
+              <button onClick={() => setShowSantriModal(false)} className="p-1 hover:bg-surface-glass rounded-full">
+                <X className="w-5 h-5 text-muted" />
+              </button>
+            </div>
+
+            <div className="p-6">
+              {loadingSantri ? (
+                <div className="flex justify-center items-center py-12">
+                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                </div>
+              ) : santriList.length === 0 ? (
+                <div className="text-center py-12 text-muted">
+                  <Users className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                  <p>Belum ada santri di kamar ini</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {santriList.map(s => (
+                    <div key={s.id} className="flex items-center gap-4 p-4 bg-surface-glass rounded-lg hover:bg-surface-glass/80 transition-colors">
+                      {s.photo ? (
+                        <img src={s.photo} alt={s.name} className="w-12 h-12 rounded-lg object-cover" />
+                      ) : (
+                        <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                          <Users className="w-6 h-6" />
+                        </div>
+                      )}
+                      <div className="flex-1">
+                        <div className="font-semibold text-main">{s.name}</div>
+                        <div className="text-xs text-muted space-y-1">
+                          {s.nis && <div>NIS: {s.nis}</div>}
+                          {s.nisn && <div>NISN: {s.nisn}</div>}
+                          {s.gender && <div>Jenis Kelamin: {s.gender === 'L' ? 'Laki-laki' : 'Perempuan'}</div>}
+                          {s.tanggalMasuk && <div>Masuk: {new Date(s.tanggalMasuk).toLocaleDateString('id-ID')}</div>}
+                        </div>
+                      </div>
+                      {s.status && (
+                        <div className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          s.status === 'AKTIF' ? 'bg-success/20 text-success' : 'bg-warning/20 text-warning'
+                        }`}>
+                          {s.status}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

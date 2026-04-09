@@ -420,7 +420,7 @@ export function ManajemenKelasPage() {
                   {kelasDetail.santri.map(s => (
                     <div key={s.id} className="border border-light rounded-lg p-3 flex items-center gap-3 hover:bg-app/50 transition">
                       {s.fotoUrl || s.photo ? (
-                        <img src={s.fotoUrl || s.photo} alt={s.name} className="w-10 h-10 rounded-full object-cover" />
+                        <img src={s.fotoUrl || s.photo || ''} alt={s.name} className="w-10 h-10 rounded-full object-cover" />
                       ) : (
                         <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary">
                           {s.name.charAt(0).toUpperCase()}

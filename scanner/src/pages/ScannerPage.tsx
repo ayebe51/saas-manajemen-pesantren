@@ -46,9 +46,16 @@ export function ScannerPage() {
     }
   };
 
-  const handleHarianScan = async (santriId: string) => {
+  const handleHarianScan = async (santriId: string, gps?: { lat: number; lng: number; accuracy: number }) => {
     try {
-      const res = await api.post('/attendance/scan', { santriId, type: harianType, mode: 'HARIAN' });
+      const res = await api.post('/attendance/scan', {
+        santriId,
+        type: harianType,
+        mode: 'HARIAN',
+        gpsLat: gps?.lat || 0,
+        gpsLng: gps?.lng || 0,
+        gpsAccuracy: gps?.accuracy || 0,
+      });
       const name = res.data?.santriName || res.data?.santri?.name || santriId.substring(0, 8);
       setLastScan({ 
         name, 
@@ -63,16 +70,19 @@ export function ScannerPage() {
     }
   };
 
-  const handleMapelScan = async (santriId: string) => {
+  const handleMapelScan = async (santriId: string, gps?: { lat: number; lng: number; accuracy: number }) => {
     if (!selectedScheduleId) {
       toast.error('Pilih jadwal pelajaran terlebih dahulu');
       return;
     }
     try {
-      const res = await api.post('/attendance/scan', { 
-        santriId, 
-        mode: 'MAPEL', 
-        scheduleId: selectedScheduleId 
+      const res = await api.post('/attendance/scan', {
+        santriId,
+        mode: 'MAPEL',
+        scheduleId: selectedScheduleId,
+        gpsLat: gps?.lat || 0,
+        gpsLng: gps?.lng || 0,
+        gpsAccuracy: gps?.accuracy || 0,
       });
       const name = res.data?.santriName || res.data?.santri?.name || santriId.substring(0, 8);
       
@@ -145,7 +155,7 @@ export function ScannerPage() {
     }
   };
 
-  const handleScan = async (result: string) => {
+  const handleScan = async (result: string, gps?: { lat: number; lng: number; accuracy: number }) => {
     if (processing) return;
     setProcessing(true);
 
@@ -156,11 +166,11 @@ export function ScannerPage() {
     } catch { /* raw text */ }
 
     if (scanMode === 'HARIAN') {
-      await handleHarianScan(parsedId);
+      await handleHarianScan(parsedId, gps);
     } else if (scanMode === 'MAPEL') {
-      await handleMapelScan(parsedId);
+      await handleMapelScan(parsedId, gps);
     } else if (scanMode === 'PERIZINAN') {
-      await handlePerizinanScan(result); // Pass raw QR for perizinan
+      await handlePerizinanScan(result);
     }
 
     setTimeout(() => setProcessing(false), 2000);

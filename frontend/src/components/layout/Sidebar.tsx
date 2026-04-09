@@ -4,7 +4,7 @@ import {
   Home, Users, Briefcase, GraduationCap, 
   Wallet, ArchiveRestore, Building2, FileBarChart, Settings, Shield, CreditCard, IdCard,
   ClipboardList, MessageSquare, Receipt, Heart, AlertTriangle, UserCheck,
-  Sun, Moon, LogOut, ChevronDown, QrCode, Trophy, BookOpen
+  Sun, Moon, LogOut, ChevronDown, QrCode, Trophy, Smartphone
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useState, useEffect } from 'react';
@@ -229,6 +229,17 @@ export function Sidebar() {
 
       {/* Bottom Panel */}
       <div className="shrink-0 p-3 border-t border-light bg-app">
+        {/* Scanner Mobile Button */}
+        <a
+          href="/scanner"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 px-3 py-2 rounded-md bg-primary/10 hover:bg-primary/20 text-primary transition-colors font-medium text-sm w-full mb-2"
+        >
+          <Smartphone className="w-4 h-4 shrink-0" />
+          <span>Scanner Mobile</span>
+          <span className="ml-auto text-[10px] bg-primary/20 px-1.5 py-0.5 rounded font-mono">↗</span>
+        </a>
         <div className="flex gap-1 mb-2">
           <NavLink 
             to="/dashboard/audit-log"

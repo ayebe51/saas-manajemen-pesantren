@@ -4,7 +4,7 @@ import { IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from
 export class CreateBuildingDto {
   @ApiProperty() @IsString() @IsNotEmpty() name: string;
   @ApiPropertyOptional() @IsString() @IsOptional() description?: string;
-  @ApiProperty({ description: 'Gender peruntukan: L/P' }) @IsString() @IsNotEmpty() gender: string;
+  @ApiPropertyOptional({ description: 'Tipe: PUTRA, PUTRI, MIXED' }) @IsString() @IsOptional() type?: string;
   @ApiPropertyOptional() @IsNumber() @IsOptional() capacity?: number;
 }
 
@@ -14,6 +14,7 @@ export class CreateRoomDto {
   @ApiProperty() @IsString() @IsNotEmpty() buildingId: string;
   @ApiProperty() @IsString() @IsNotEmpty() name: string;
   @ApiProperty() @IsNumber() @IsNotEmpty() capacity: number;
+  @ApiPropertyOptional() @IsString() @IsOptional() floor?: string;
   @ApiPropertyOptional() @IsString() @IsOptional() picName?: string;
 }
 

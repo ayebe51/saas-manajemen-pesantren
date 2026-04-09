@@ -28,12 +28,20 @@ export class DormitoryService {
   }
 
   async findAllBuildings(tenantId: string) {
-    return this.prisma.asrama.findMany({
+    const buildings = await this.prisma.asrama.findMany({
       where: { tenantId },
       include: {
         _count: { select: { kamar: true } },
       },
     });
+    
+    // Map Indonesian field names to English for frontend compatibility
+    return buildings.map(b => ({
+      id: b.id,
+      name: b.nama,
+      type: 'Asrama', // Default type since model doesn't have type field
+      _count: { rooms: b._count.kamar },
+    }));
   }
 
   async updateBuilding(tenantId: string, id: string, dto: UpdateBuildingDto) {
@@ -56,6 +64,7 @@ export class DormitoryService {
         asramaId: dto.buildingId, // buildingId is actually asramaId
         nama: dto.name,
         kapasitas: dto.capacity,
+        ...(dto.floor && { lantai: parseInt(dto.floor) }),
       },
     });
   }
@@ -64,13 +73,59 @@ export class DormitoryService {
     const where: any = {};
     if (buildingId) where.asramaId = buildingId;
 
-    return this.prisma.kamar.findMany({
+    const rooms = await this.prisma.kamar.findMany({
       where,
       include: {
         asrama: { select: { nama: true } },
-        _count: { select: { penempatan: { where: { status: 'AKTIF' } } } },
+        _count: { select: { penempatan: { where: { isAktif: true } } } },
       },
     });
+
+    // Map Indonesian field names to English for frontend compatibility
+    return rooms.map(r => ({
+      id: r.id,
+      name: r.nama,
+      capacity: r.kapasitas,
+      floor: r.lantai?.toString() || '1',
+      building: { name: r.asrama.nama },
+      currentOccupancy: r._count.penempatan,
+    }));
+  }
+
+  async getSantriByKamar(tenantId: string, kamarId: string) {
+    const kamar = await this.prisma.kamar.findFirst({ where: { id: kamarId } });
+    if (!kamar) throw new NotFoundException('Kamar tidak ditemukan');
+
+    const penempatan = await this.prisma.penempatanSantri.findMany({
+      where: { kamarId, isAktif: true },
+      include: {
+        santri: {
+          select: {
+            id: true,
+            name: true,
+            nis: true,
+            nisn: true,
+            jenisKelamin: true,
+            photo: true,
+            status: true,
+          },
+        },
+      },
+    });
+
+    return penempatan.map(p => ({
+      id: p.id,
+      santri: {
+        id: p.santri.id,
+        name: p.santri.name,
+        nis: p.santri.nis,
+        nisn: p.santri.nisn,
+        gender: p.santri.jenisKelamin,
+        photo: p.santri.photo,
+        status: p.santri.status,
+      },
+      tanggalMasuk: p.tanggalMasuk,
+    }));
   }
 
   async updateRoom(tenantId: string, id: string, dto: UpdateRoomDto) {
@@ -91,8 +146,8 @@ export class DormitoryService {
 
     // Cek apakah santri sudah aktif di kamar lain, ubah status dulu jika ya
     await this.prisma.penempatanSantri.updateMany({
-      where: { santriId: dto.santriId, status: 'AKTIF' },
-      data: { status: 'PINDAH', tanggalKeluar: new Date() },
+      where: { santriId: dto.santriId, isAktif: true },
+      data: { isAktif: false, tanggalKeluar: new Date() },
     });
 
     return this.prisma.penempatanSantri.create({
@@ -100,14 +155,14 @@ export class DormitoryService {
         kamarId: roomId,
         santriId: dto.santriId,
         tanggalMasuk: dto.startDate ? new Date(dto.startDate) : new Date(),
-        status: 'AKTIF',
+        isAktif: true,
       },
     });
   }
 
   async checkoutRoom(tenantId: string, assignmentId: string, dto: CheckoutRoomDto) {
     const assignment = await this.prisma.penempatanSantri.findFirst({
-      where: { id: assignmentId, status: 'AKTIF' },
+      where: { id: assignmentId, isAktif: true },
     });
 
     if (!assignment) throw new NotFoundException('Penempatan santri aktif tidak ditemukan');
@@ -115,7 +170,7 @@ export class DormitoryService {
     return this.prisma.penempatanSantri.update({
       where: { id: assignmentId },
       data: {
-        status: dto.status || 'PINDAH',
+        isAktif: false,
         tanggalKeluar: new Date(dto.endDate),
       },
     });
@@ -139,7 +194,7 @@ export class DormitoryService {
     return this.prisma.maintenanceTicket.findMany({
       where,
       include: {
-        room: { select: { nama: true, asrama: { select: { nama: true } } } },
+        room: { select: { name: true, building: { select: { name: true } } } },
       },
       orderBy: { createdAt: 'desc' },
     });

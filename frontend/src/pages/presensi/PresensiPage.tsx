@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { QrCode, Loader2, Activity, Settings, Clock, Users, RefreshCw, Key } from 'lucide-react';
+import { QrCode, Loader2, Activity, Settings, Clock, Users, RefreshCw, Key, Smartphone, Copy, Check } from 'lucide-react';
+import QRCode from 'react-qr-code';
 import { api } from '@/lib/api/client';
 import toast from 'react-hot-toast';
 import clsx from 'clsx';
@@ -18,12 +19,15 @@ export function PresensiPage() {
   const [loading, setLoading] = useState(true);
   const [pinLoading, setPinLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [urlCopied, setUrlCopied] = useState(false);
+
+  const scannerUrl = window.location.hostname === 'localhost'
+    ? `${window.location.protocol}//${window.location.hostname}:5174`
+    : `${window.location.protocol}//scanner.${window.location.hostname}`;
 
   const fetchScannerPin = useCallback(async () => {
     const targetId = selectedTenantId || 'me';
-    // If it's still null/me and it's a superadmin, the backend might reject it.
     if (user?.role === 'SUPERADMIN' && !selectedTenantId) return;
-
     try {
       const res = await api.get(`/tenants/${targetId}/scanner-pin?tenantId=${targetId}`);
       setScannerPin(res.data.scannerPin);
@@ -34,10 +38,7 @@ export function PresensiPage() {
 
   const fetchData = useCallback(async () => {
     setLoading(true);
-    
     let targetTenantId = selectedTenantId;
-    
-    // Fallback for Superadmin: fetch first tenant if none selected
     if (user?.role === 'SUPERADMIN' && !targetTenantId) {
       try {
         const tenantsRes = await api.get('/tenants');
@@ -45,18 +46,10 @@ export function PresensiPage() {
           targetTenantId = tenantsRes.data[0].id;
           setSelectedTenantId(targetTenantId);
         }
-      } catch {
-        console.error('Failed to fetch tenants for superadmin');
-      }
+      } catch { /* silent */ }
     }
-
-    if (!targetTenantId) {
-        setLoading(false);
-        return;
-    }
-
+    if (!targetTenantId) { setLoading(false); return; }
     const tenantParam = `?tenantId=${targetTenantId}`;
-    
     try {
       const [santriRes, logRes] = await Promise.allSettled([
         api.get(`/santri${tenantParam}`),
@@ -85,14 +78,11 @@ export function PresensiPage() {
     setPinLoading(true);
     const targetId = user?.tenantId || 'all';
     const tenantParam = user?.role === 'SUPERADMIN' ? '?tenantId=' + targetId : '';
-    
     try {
       if (user?.role === 'SUPERADMIN' && !user?.tenantId) {
         toast.error('Gunakan akun Admin Pesantren untuk generate PIN Scanner.');
-        setPinLoading(false);
         return;
       }
-      
       const res = await api.post(`/tenants/${targetId}/scanner-pin/generate${tenantParam}`);
       setScannerPin(res.data.scannerPin);
       toast.success('PIN Scanner berhasil digenerate');
@@ -103,7 +93,6 @@ export function PresensiPage() {
     }
   };
 
-  // Generate QR data URL using a simple SVG-based QR placeholder
   const generateQRSvg = (text: string) => {
     const encoded = btoa(text);
     const size = 160;
@@ -121,16 +110,26 @@ export function PresensiPage() {
     return `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}">${rects}</svg>`)}`;
   };
 
-  const filteredSantri = santriList.filter(s => 
+  const filteredSantri = santriList.filter(s =>
     s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     (s.nisn || '').includes(searchTerm)
   );
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-main">Presensi Digital QR Code</h1>
-        <p className="text-muted text-sm mt-1">Kelola presensi santri dan pengaturan Portal Scanner.</p>
+      <div className="flex justify-between items-start">
+        <div>
+          <h1 className="text-2xl font-bold text-main">Presensi Digital QR Code</h1>
+          <p className="text-muted text-sm mt-1">Kelola presensi santri dan pengaturan Portal Scanner.</p>
+        </div>
+        <a
+          href={scannerUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn btn-primary shadow-glow flex items-center gap-2"
+        >
+          <Smartphone className="w-4 h-4" /> Scanner Mobile
+        </a>
       </div>
 
       {/* Tabs */}
@@ -177,7 +176,6 @@ export function PresensiPage() {
                     src={generateQRSvg(s.id)}
                     alt={`QR ${s.name}`}
                     className="w-32 h-32 mx-auto mb-3 text-main"
-                    style={{ filter: 'none' }}
                   />
                   <div className="text-xs text-muted font-mono mb-1 truncate" title={s.id}>{s.id.substring(0, 8)}...</div>
                   <div className="font-semibold text-sm">{s.name}</div>
@@ -193,10 +191,10 @@ export function PresensiPage() {
             <div className="bg-primary/20 p-4 rounded-full text-primary">
               <Key className="w-8 h-8" />
             </div>
-            
+
             <div className="text-center">
               <h3 className="text-xl font-bold text-main mb-1">PIN Portal Scanner</h3>
-              <p className="text-sm text-muted">Gunakan PIN ini untuk login ke aplikasi terpisah (Scanner Portal) tanpa perlu memasukkan email/password admin.</p>
+              <p className="text-sm text-muted">Gunakan PIN ini untuk login ke Scanner Mobile di HP.</p>
             </div>
 
             <div className="w-full bg-surface-glass border border-light rounded-lg p-6 text-center">
@@ -219,6 +217,47 @@ export function PresensiPage() {
               {pinLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <RefreshCw className="w-4 h-4 mr-2" />}
               {scannerPin ? 'Generate Ulang PIN' : 'Generate PIN Scanner'}
             </button>
+
+            {/* Scanner URL Section */}
+            <div className="w-full border-t border-light pt-6 space-y-4">
+              <div className="text-center">
+                <h3 className="text-lg font-bold text-main mb-1 flex items-center justify-center gap-2">
+                  <Smartphone className="w-5 h-5" /> Akses Scanner Mobile
+                </h3>
+                <p className="text-sm text-muted">Scan QR code ini dari HP untuk membuka scanner absensi</p>
+              </div>
+
+              <div className="flex justify-center">
+                <div className="p-4 bg-white rounded-xl shadow-sm border border-light">
+                  <QRCode value={scannerUrl} size={160} level="H" bgColor="#ffffff" fgColor="#0f172a" />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 bg-surface-glass border border-light rounded-lg px-3 py-2">
+                <span className="text-sm font-mono text-muted flex-1 truncate">{scannerUrl}</span>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(scannerUrl);
+                    setUrlCopied(true);
+                    toast.success('URL disalin!');
+                    setTimeout(() => setUrlCopied(false), 2000);
+                  }}
+                  className="btn btn-sm btn-outline flex items-center gap-1 shrink-0"
+                >
+                  {urlCopied ? <Check className="w-3 h-3 text-success" /> : <Copy className="w-3 h-3" />}
+                  {urlCopied ? 'Disalin' : 'Salin'}
+                </button>
+              </div>
+
+              <a
+                href={scannerUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-outline w-full flex items-center justify-center gap-2"
+              >
+                <Smartphone className="w-4 h-4" /> Buka Scanner Mobile
+              </a>
+            </div>
           </div>
         </div>
       ) : (
@@ -246,7 +285,11 @@ export function PresensiPage() {
                 {logs.map((log, i) => (
                   <tr key={i} className="border-b last:border-0 hover:bg-surface-glass transition-colors border-light">
                     <td className="py-3 px-6 text-sm font-medium">{log.santriName}</td>
-                    <td className="py-3 px-6"><span className={`badge ${log.type === 'MASUK' || log.type === 'HADIR' ? 'badge-success' : 'badge-warning'}`}>{log.type}</span></td>
+                    <td className="py-3 px-6">
+                      <span className={`badge ${log.type === 'MASUK' || log.type === 'HADIR' ? 'badge-success' : 'badge-warning'}`}>
+                        {log.type}
+                      </span>
+                    </td>
                     <td className="py-3 px-6 text-sm text-muted">{new Date(log.timestamp).toLocaleTimeString('id-ID')}</td>
                   </tr>
                 ))}

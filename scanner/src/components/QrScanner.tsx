@@ -1,16 +1,44 @@
 import { useEffect, useRef, useState } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
-import { Camera, CameraOff, Loader2 } from 'lucide-react';
+import { Camera, CameraOff, Loader2, MapPin } from 'lucide-react';
 
 interface QrScannerProps {
-  onScan: (result: string) => void;
+  onScan: (result: string, gps?: { lat: number; lng: number; accuracy: number }) => void;
 }
 
 export function QrScanner({ onScan }: QrScannerProps) {
   const [isScanning, setIsScanning] = useState(false);
   const [error, setError] = useState('');
+  const [gps, setGps] = useState<{ lat: number; lng: number; accuracy: number } | null>(null);
+  const [gpsStatus, setGpsStatus] = useState<'idle' | 'loading' | 'ok' | 'error'>('idle');
   const scannerRef = useRef<Html5Qrcode | null>(null);
+  const watchIdRef = useRef<number | null>(null);
   const containerId = 'scanner-camera-region';
+
+  // Start GPS watch when scanning begins
+  useEffect(() => {
+    if (isScanning) {
+      setGpsStatus('loading');
+      if (!navigator.geolocation) {
+        setGpsStatus('error');
+        return;
+      }
+      watchIdRef.current = navigator.geolocation.watchPosition(
+        (pos) => {
+          setGps({ lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: Math.round(pos.coords.accuracy) });
+          setGpsStatus('ok');
+        },
+        () => setGpsStatus('error'),
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
+    }
+    return () => {
+      if (watchIdRef.current !== null) {
+        navigator.geolocation.clearWatch(watchIdRef.current);
+        watchIdRef.current = null;
+      }
+    };
+  }, [isScanning]);
 
   const startScanner = async () => {
     setError('');
@@ -20,7 +48,7 @@ export function QrScanner({ onScan }: QrScannerProps) {
       await scanner.start(
         { facingMode: 'environment' },
         { fps: 10, qrbox: { width: 220, height: 220 }, aspectRatio: 1 },
-        (decoded) => { onScan(decoded); },
+        (decoded) => { onScan(decoded, gps ?? undefined); },
         () => {}
       );
       setIsScanning(true);
@@ -37,6 +65,8 @@ export function QrScanner({ onScan }: QrScannerProps) {
       }
     } catch { /* ignore */ }
     setIsScanning(false);
+    setGpsStatus('idle');
+    setGps(null);
   };
 
   useEffect(() => {
@@ -66,6 +96,17 @@ export function QrScanner({ onScan }: QrScannerProps) {
           </div>
         )}
       </div>
+
+      {/* GPS Status */}
+      {isScanning && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.75rem', color: gpsStatus === 'ok' ? 'var(--success)' : gpsStatus === 'error' ? 'var(--danger)' : 'var(--text-muted)' }}>
+          <MapPin size={13} />
+          {gpsStatus === 'loading' && 'Mencari GPS...'}
+          {gpsStatus === 'ok' && gps && `GPS OK (±${gps.accuracy}m)`}
+          {gpsStatus === 'error' && 'GPS tidak tersedia'}
+          {gpsStatus === 'idle' && ''}
+        </div>
+      )}
 
       {error && (
         <div style={{ padding: '0.75rem', borderRadius: '0.75rem', background: 'rgba(239,68,68,0.1)', color: 'var(--danger)', fontSize: '0.8125rem', textAlign: 'center', width: '100%', maxWidth: '320px' }}>

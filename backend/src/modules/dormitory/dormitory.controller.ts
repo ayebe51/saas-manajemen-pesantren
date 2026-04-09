@@ -67,6 +67,13 @@ export class DormitoryController {
     return this.dormitoryService.findAllRooms(tenantId, buildingId);
   }
 
+  @Get('rooms/:id/santri')
+  @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS', 'MUSYRIF')
+  @ApiOperation({ summary: 'Melihat data santri yang menempati kamar tertentu' })
+  getSantriByKamar(@TenantId() tenantId: string, @Param('id') kamarId: string) {
+    return this.dormitoryService.getSantriByKamar(tenantId, kamarId);
+  }
+
   @Put('rooms/:id')
   @Roles('SUPERADMIN', 'TENANT_ADMIN', 'PENGURUS')
   @ApiOperation({ summary: 'Mengedit kapasitas atau penanggung jawab Kamar' })
